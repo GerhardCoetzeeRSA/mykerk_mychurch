@@ -6,7 +6,7 @@
 <title>MyKerk MyChurch – Gemeenskapsbou & Kerkbestuur</title>
   <meta name="description" content="MyKerk MyChurch – 'n Kerkplatform wat gemeentes help om hul aktiwiteite te bestuur terwyl gemeenskap en omgee versterk word.">
   <meta name="keywords" content="kerk app, church app, gemeente bestuur, church management, Afrikaans, South Africa">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Gahramond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
   --gold: #C9A84C;
@@ -3717,7 +3717,7 @@ function renderSubscriptionCard(sub, af) {
       '<div class="sub-status-label" style="color:#C53030">⚠️ ' + (af ? 'Proeftydperk Verstreke' : 'Trial Expired') + '</div>' +
       '<div class="sub-status-title">' + (af ? 'Inteken om voort te gaan' : 'Subscribe to Continue') + '</div>' +
       '<div class="sub-status-desc">' +
-        (af ? 'Jou gratis proeftydperk het verval. Kies \u2019n plan hieronder om voort te gaan.' :
+        (af ? "Jou gratis proeftydperk het verval. Kies 'n plan hieronder om voort te gaan." :
                'Your free trial has ended. Choose a plan below to continue.') +
       '</div>';
   }
@@ -3759,7 +3759,7 @@ function checkRenewalReminder(sub, af) {
 
     if (isTrialExpiring) {
       if (titleEl) titleEl.textContent = urgency + ' ' + (af ? 'Proeftydperk verval oor ' + daysLeft + ' da' + (daysLeft===1?'ag':'e') : 'Trial expires in ' + daysLeft + ' day' + (daysLeft===1?'':'s'));
-      if (descEl) descEl.textContent = af ? 'Kies "n intekeningplan om toegang te behou. Geen data gaan verlore nie.' : 'Choose a subscription plan to keep your access. No data will be lost.';
+      if (descEl) descEl.textContent = af ? "Kies 'n intekeningplan om toegang te behou. Geen data gaan verlore nie." : 'Choose a subscription plan to keep your access. No data will be lost.';
     } else {
       if (titleEl) titleEl.textContent = urgency + ' ' + (af ? 'Intekening verval oor ' + daysLeft + ' da' + (daysLeft===1?'ag':'e') : 'Subscription expires in ' + daysLeft + ' day' + (daysLeft===1?'':'s'));
       if (descEl) descEl.textContent = af ? 'Hernu jou intekening om ononderbroke toegang te verseker.' : 'Renew your subscription to ensure uninterrupted access.';
@@ -3895,7 +3895,7 @@ function printLegalModal() {
   const body = document.getElementById('legalModalBody');
   const title = document.getElementById('legalModalTitle').textContent;
   const w = window.open('', '_blank');
-  w.document.write('<html><head><title>' + title + '</title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:17px;margin:20px 0 8px;border-top:1px solid #eee;padding-top:12px}h2:first-child{border-top:none}p,li{font-size:13px;color:#555;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}.legal-highlight{background:#F5EDD6;border-left:3px solid #C9A84C;padding:10px 14px;margin:10px 0}.legal-updated{font-size:11px;color:#888;padding-bottom:10px;border-bottom:1px solid #eee;margin-bottom:14px}.info-reg{background:#EBF5FB;border:1px solid #AED6F1;border-radius:8px;padding:12px;font-size:12px;margin:12px 0}.legal-toc{background:#F5EDD6;border-radius:8px;padding:12px 16px;margin:12px 0}.legal-toc a{display:block;font-size:12px;color:#C9A84C;text-decoration:none;padding:2px 0}@media print{a{color:#000}}</style></head><body>\n');
+  w.document.write('<html><head><title>' + title + '</title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:17px;margin:20px 0 8px;border-top:1px solid #eee;padding-top:12px}h2:first-child{border-top:none}p,li{font-size:13px;color:#555;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}.legal-highlight{background:#F5EDD6;border-left:3px solid #C9A84C;padding:10px 14px;margin:10px 0}.legal-updated{font-size:11px;color:#888;padding-bottom:10px;border-bottom:1px solid #eee;margin-bottom:14px}.info-reg{background:#EBF5FB;border:1px solid #AED6F1;border-radius:8px;padding:12px;font-size:12px;margin:12px 0}.legal-toc{background:#F5EDD6;border-radius:8px;padding:12px 16px;margin:12px 0}.legal-toc a{display:block;font-size:12px;color:#C9A84C;text-decoration:none;padding:2px 0}@media print{a{color:#000}}</style></head><body>\n');;
   w.document.write('<h1 style="font-family:Georgia,serif;font-size:22px;border-bottom:2px solid #C9A84C;padding-bottom:8px">' + title + '</h1>');
   w.document.write(body.innerHTML);
   w.document.write('</body></html>');
@@ -3920,7 +3920,7 @@ function printLegal(contentId) {
   const content = document.getElementById(contentId);
   if (!content) return;
   const w = window.open('', '_blank');
-  w.document.write('<html><head><title>MyKerk Legal</title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:18px;margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:6px}h3{font-size:15px;margin:14px 0 6px}p,li{font-size:13px;color:#444;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}@media print{a{color:#000}}</style></head><body>\n');
+  w.document.write('<html><head><title>MyKerk Legal</title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:18px;margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:6px}h3{font-size:15px;margin:14px 0 6px}p,li{font-size:13px;color:#444;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}@media print{a{color:#000}}</style></head><body>\n');;
   w.document.write(content.innerHTML);
   w.document.write('</body></html>');
   w.document.close();
