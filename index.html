@@ -3759,7 +3759,7 @@ function checkRenewalReminder(sub, af) {
 
     if (isTrialExpiring) {
       if (titleEl) titleEl.textContent = urgency + ' ' + (af ? 'Proeftydperk verval oor ' + daysLeft + ' da' + (daysLeft===1?'ag':'e') : 'Trial expires in ' + daysLeft + ' day' + (daysLeft===1?'':'s'));
-      if (descEl) descEl.textContent = af ? 'Kies 'n intekeningplan om toegang te behou. Geen data gaan verlore nie.' : 'Choose a subscription plan to keep your access. No data will be lost.';
+      if (descEl) descEl.textContent = af ? 'Kies "n intekeningplan om toegang te behou. Geen data gaan verlore nie.' : 'Choose a subscription plan to keep your access. No data will be lost.';
     } else {
       if (titleEl) titleEl.textContent = urgency + ' ' + (af ? 'Intekening verval oor ' + daysLeft + ' da' + (daysLeft===1?'ag':'e') : 'Subscription expires in ' + daysLeft + ' day' + (daysLeft===1?'':'s'));
       if (descEl) descEl.textContent = af ? 'Hernu jou intekening om ononderbroke toegang te verseker.' : 'Renew your subscription to ensure uninterrupted access.';
