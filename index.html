@@ -857,6 +857,11 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 
       <!-- DASHBOARD -->
       <div class="screen active" id="screen-dashboard">
+  <!-- LID WELKOM BANNER (versteek vir admins) -->
+  <div id="memberWelcomeBanner" style="display:none;background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border-bottom:1px solid #C6F6D5;padding:10px 20px;font-size:13px;color:#276749;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+    <span>👋 <span data-en="Welcome! You have free access as a congregation member." data-af="Welkom! Jy het gratis toegang as gemeentelid.">Welkom! Jy het gratis toegang as gemeentelid.</span></span>
+    <span style="font-size:11px;color:#27AE60;font-weight:600" id="memberChurchBadge"></span>
+  </div>
         <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-icon">👥</div>
@@ -1278,10 +1283,34 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 
             <!-- ── REGISTER FORM ── -->
             <div id="formRegister" style="display:none">
-              <div style="background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border:1px solid #C6F6D5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#276749">
-                🎉 <strong data-en="1 Month FREE Trial" data-af="1 Maand GRATIS Probeer">1 Maand GRATIS Probeer</strong>
-                <span data-en=" — no credit card required. Cancel anytime." data-af=" — geen kredietkaart benodig. Kanselleer enige tyd."> — geen kredietkaart benodig. Kanselleer enige tyd.</span>
+
+              <!-- ROL KEUZE -->
+              <div id="regRoleStep" style="margin-bottom:16px">
+                <div style="font-size:13px;font-weight:600;color:var(--deep);margin-bottom:10px;text-align:center" data-en="Who are you?" data-af="Wie is jy?">Wie is jy?</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px">
+                  <div id="roleAdminCard" onclick="selectRegRole('admin')"
+                    style="border:2px solid #C9A84C;border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;background:rgba(201,168,76,0.08);transition:all 0.2s">
+                    <div style="font-size:24px;margin-bottom:6px">🏛️</div>
+                    <div style="font-size:12px;font-weight:600;color:var(--deep)" data-en="Church Admin" data-af="Kerkbestuurder">Kerkbestuurder</div>
+                    <div style="font-size:10px;color:var(--muted);margin-top:3px" data-en="Manage your congregation" data-af="Bestuur jou gemeente">Bestuur jou gemeente</div>
+                    <div style="font-size:10px;color:#C9A84C;font-weight:600;margin-top:4px" data-en="30 days FREE" data-af="30 dae GRATIS">30 dae GRATIS</div>
+                  </div>
+                  <div id="roleMemberCard" onclick="selectRegRole('member')"
+                    style="border:2px solid var(--border);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;background:transparent;transition:all 0.2s">
+                    <div style="font-size:24px;margin-bottom:6px">🙋</div>
+                    <div style="font-size:12px;font-weight:600;color:var(--deep)" data-en="Congregation Member" data-af="Gemeentelid">Gemeentelid</div>
+                    <div style="font-size:10px;color:var(--muted);margin-top:3px" data-en="Join your church" data-af="Sluit aan by jou kerk">Sluit aan by jou kerk</div>
+                    <div style="font-size:10px;color:#27AE60;font-weight:600;margin-top:4px" data-en="Always FREE" data-af="Altyd GRATIS">Altyd GRATIS</div>
+                  </div>
+                </div>
               </div>
+
+              <!-- ADMIN REGISTRASIE VELDE -->
+              <div id="regAdminFields" style="display:none">
+                <div style="background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border:1px solid #C6F6D5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#276749">
+                  🎉 <strong data-en="1 Month FREE Trial" data-af="1 Maand GRATIS Probeer">1 Maand GRATIS Probeer</strong>
+                  <span data-en=" — no credit card required." data-af=" — geen kredietkaart benodig."> — geen kredietkaart benodig.</span>
+                </div>
               <div class="form-row">
                 <div class="form-group">
                   <label class="form-label" data-en="First Name" data-af="Voornaam">Voornaam</label>
@@ -1313,8 +1342,49 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
               <div style="font-size:11px;color:var(--muted);margin-bottom:12px" data-en="By registering you agree to our Terms of Service and Privacy Policy." data-af="Deur te registreer stem jy in met ons Diensvoorwaardes en Privaatheidsbeleid.">
                 Deur te registreer stem jy in met ons Diensvoorwaardes en Privaatheidsbeleid.
               </div>
-              <button class="btn btn-primary" id="btnRegister" style="width:100%;padding:12px;font-size:15px;background:#27AE60;border-color:#27AE60" onclick="doRegister()"
+              <button class="btn btn-primary" id="btnRegister" style="width:100%;padding:12px;font-size:15px;background:#C9A84C;border-color:#C9A84C;display:none" onclick="doRegister()"
                 data-en="Start Free Trial" data-af="Begin Gratis Probeer">Begin Gratis Probeer</button>
+              </div><!-- end regAdminFields -->
+
+              <!-- LID REGISTRASIE VELDE -->
+              <div id="regMemberFields" style="display:none">
+                <div style="background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border:1px solid #C6F6D5;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12px;color:#276749">
+                  🙋 <strong data-en="Join Your Congregation — Always FREE" data-af="Sluit aan by Jou Gemeente — Altyd GRATIS">Sluit aan by Jou Gemeente — Altyd GRATIS</strong>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-en="Congregation Code" data-af="Gemeente-kode">Gemeente-kode</label>
+                  <input class="form-input" type="text" id="memChurchCode" placeholder="bv. HOOP-PAARL" style="text-transform:uppercase;letter-spacing:2px"
+                    oninput="this.value=this.value.toUpperCase()">
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px" data-en="Get this code from your church administrator" data-af="Kry hierdie kode van jou kerkbestuurder">Kry hierdie kode van jou kerkbestuurder</div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" data-en="First Name" data-af="Voornaam">Voornaam</label>
+                    <input class="form-input" type="text" id="memName" placeholder="Jan">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" data-en="Surname" data-af="Van">Van</label>
+                    <input class="form-input" type="text" id="memSurname" placeholder="Visser">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-en="Email Address" data-af="E-posadres">E-posadres</label>
+                  <input class="form-input" type="email" id="memEmail" placeholder="jan@gmail.com">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" data-en="Password" data-af="Wagwoord">Wagwoord</label>
+                    <input class="form-input" type="password" id="memPass" placeholder="Min 6 karakters">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" data-en="Confirm" data-af="Bevestig">Bevestig</label>
+                    <input class="form-input" type="password" id="memPass2" placeholder="Herhaal">
+                  </div>
+                </div>
+                <button class="btn btn-primary" id="btnMemberRegister" style="width:100%;padding:12px;font-size:15px;background:#27AE60;border-color:#27AE60" onclick="doMemberRegister()"
+                  data-en="Join Congregation" data-af="Sluit aan by Gemeente">Sluit aan by Gemeente</button>
+              </div>
+
             </div>
 
             <!-- ── FORGOT PASSWORD FORM ── -->
@@ -1388,27 +1458,27 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 
             <div class="settings-sidebar-section">
               <div class="settings-sidebar-section-label" data-en="Administration" data-af="Administrasie">Administrasie</div>
-              <div class="settings-nav-item" onclick="switchSettingsTab('tab-import', this)">
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-import', this)" data-admin-only>
                 <span class="settings-nav-icon">📥</span><span data-en="Import Members" data-af="Voer Lede In">Voer Lede In</span>
               </div>
-              <div class="settings-nav-item" onclick="switchSettingsTab('tab-users', this)">
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-users', this)" data-admin-only>
                 <span class="settings-nav-icon">👥</span><span data-en="User Access" data-af="Gebruikerstoegang">Gebruikerstoegang</span>
               </div>
-              <div class="settings-nav-item" onclick="switchSettingsTab('tab-audit', this)">
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-audit', this)" data-admin-only>
                 <span class="settings-nav-icon">📋</span><span data-en="Audit Log" data-af="Ouditlys">Ouditlys</span>
               </div>
-              <div class="settings-nav-item" onclick="switchSettingsTab('tab-backup', this)">
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-backup', this)" data-admin-only>
                 <span class="settings-nav-icon">💾</span><span data-en="Backup &amp; Export" data-af="Rugsteun &amp; Uitvoer">Rugsteun &amp; Uitvoer</span>
               </div>
               <div class="settings-nav-item" onclick="switchSettingsTab('tab-security', this)">
                 <span class="settings-nav-icon">🛡️</span><span data-en="Security" data-af="Sekuriteit">Sekuriteit</span>
               </div>
-              <div class="settings-nav-item" onclick="switchSettingsTab('tab-subscription', this)">
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-subscription', this)" data-admin-only>
                 <span class="settings-nav-icon">💳</span><span data-en="Subscription" data-af="Intekening">Intekening</span>
               </div>
             </div>
 
-            <div class="settings-nav-item" onclick="switchSettingsPanel('firebase')" id="sni-firebase">
+            <div class="settings-nav-item" onclick="switchSettingsPanel('firebase')" id="sni-firebase" data-admin-only>
             <span class="settings-nav-icon">🔥</span><span data-en="Firebase Setup" data-af="Firebase Opstel">Firebase Opstel</span>
           </div>
           <div class="settings-logout">
@@ -1423,6 +1493,20 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
             <div class="settings-panel active" id="tab-congregation">
               <div class="settings-section-title" data-en="Congregation Info" data-af="Gemeente-inligting">Gemeente-inligting</div>
               <div class="settings-section-desc" data-en="Manage your congregation's basic information" data-af="Bestuur jou gemeente se basiese inligting">Bestuur jou gemeente se basiese inligting</div>
+
+              <!-- GEMEENTE KODE KAART - wys aan admins -->
+              <div class="settings-card" style="background:linear-gradient(135deg,#FEF9E7,#FDF3D0);border:1px solid #F9E4B7;margin-bottom:16px" data-admin-only>
+                <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+                  <div>
+                    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#856404;margin-bottom:4px" data-en="Your Congregation Code" data-af="Jou Gemeente-Kode">Jou Gemeente-Kode</div>
+                    <div id="adminGemeenteCode" style="font-size:28px;font-weight:700;letter-spacing:4px;color:#1A1208;font-family:monospace">----</div>
+                    <div style="font-size:11px;color:#856404;margin-top:4px" data-en="Share this code with your congregation members so they can join for free" data-af="Deel hierdie kode met jou gemeentelede sodat hulle gratis kan aansluit">Deel hierdie kode met jou gemeentelede sodat hulle gratis kan aansluit</div>
+                  </div>
+                  <button class="btn" onclick="copyGemeenteCode()" style="background:#C9A84C;color:#1A1208;border:none;font-weight:600;white-space:nowrap">
+                    📋 <span data-en="Copy Code" data-af="Kopieer Kode">Kopieer Kode</span>
+                  </button>
+                </div>
+              </div>
               <div class="settings-card">
                 <div class="settings-card-title" data-en="Church Details" data-af="Kerkbesonderhede">Kerkbesonderhede</div>
                 <div class="form-group">
@@ -2485,36 +2569,99 @@ function initFirebase() {
 }
 
 function onUserSignedIn(user) {
-  // Laai gemeente profiel
-  db.collection('gemeentes').doc(user.uid).get().then(function(doc) {
-    var af = currentLang === 'af';
-    if (doc.exists) {
-      var data = doc.data();
-      // Vul gemeente naam in
-      var churchNameEl = document.getElementById('churchNameDisplay');
-      if (churchNameEl && data.churchName) churchNameEl.textContent = data.churchName;
-      var sidebarNameEl = document.getElementById('churchNameSidebar');
-      if (sidebarNameEl && data.churchName) sidebarNameEl.textContent = data.churchName;
-      var adminNameEl = document.getElementById('adminNameDisplay');
-      if (adminNameEl && data.adminName) adminNameEl.textContent = data.adminName;
+  var af = currentLang === 'af';
 
-      // Check subscription / trial status
-      checkTrialStatus(data, user.uid);
+  // Kyk eers of die gebruiker 'n lid of admin is
+  db.collection('gebruikers').doc(user.uid).get().then(function(userDoc) {
+    if (userDoc.exists) {
+      var userData = userDoc.data();
+      var rol = userData.rol || 'lid';
+      currentGemeenteCode = userData.gemeenteCode || null;
+
+      if (rol === 'admin') {
+        // Admin: laai gemeente profiel normaal
+        var gemeenteId = userData.gemeenteId || user.uid;
+        currentGemeenteId = gemeenteId;
+        return db.collection('gemeentes').doc(gemeenteId).get().then(function(doc) {
+          if (doc.exists) {
+            var data = doc.data();
+            updateChurchNameUI(data.churchName, user.displayName || data.adminName);
+            currentGemeenteCode = data.gemeenteCode || currentGemeenteCode;
+            checkTrialStatus(data, gemeenteId);
+          }
+          applyRoleToUI('admin');
+          hideAuthGate();
+          loadAllData();
+        });
+      } else {
+        // Lid: laai gemeentedata via gemeenteId
+        var gemeenteId = userData.gemeenteId;
+        currentGemeenteId = gemeenteId;
+        return db.collection('gemeentes').doc(gemeenteId).get().then(function(doc) {
+          if (doc.exists) {
+            var data = doc.data();
+            updateChurchNameUI(data.churchName, user.displayName || userData.naam);
+          }
+          applyRoleToUI('lid');
+          hideAuthGate();
+          loadAllData();
+          showToast(af ? '👋 Welkom, ' + (user.displayName || '') + '!' : '👋 Welcome, ' + (user.displayName || '') + '!');
+        });
+      }
     } else {
-      // Nuwe gebruiker — skep gemeente dokument
-      createGemeenteProfile(user);
+      // Geen gebruiker-profiel: probeer gemeente-profiel (admin wat voor nuwe stelsel geregistreer het)
+      return db.collection('gemeentes').doc(user.uid).get().then(function(doc) {
+        if (doc.exists) {
+          var data = doc.data();
+          currentGemeenteId = user.uid;
+          currentGemeenteCode = data.gemeenteCode || null;
+          updateChurchNameUI(data.churchName, user.displayName || data.adminName);
+          // Skep gebruiker-profiel vir ou rekening
+          db.collection('gebruikers').doc(user.uid).set({
+            naam: user.displayName || data.adminName,
+            email: user.email,
+            rol: 'admin',
+            gemeenteId: user.uid,
+            churchName: data.churchName,
+            gemeenteCode: data.gemeenteCode || generateGemeenteCode(data.churchName || 'KERK')
+          });
+          if (!data.gemeenteCode) {
+            var newCode = generateGemeenteCode(data.churchName || 'KERK');
+            db.collection('gemeentes').doc(user.uid).update({ gemeenteCode: newCode });
+            currentGemeenteCode = newCode;
+          }
+          checkTrialStatus(data, user.uid);
+          applyRoleToUI('admin');
+        } else {
+          createGemeenteProfile(user);
+          applyRoleToUI('admin');
+        }
+        hideAuthGate();
+        loadAllData();
+      });
     }
-    // Versteek auth gate, wys app
-    hideAuthGate();
-    // Laai data
-    loadMembersFromFirestore();
-    loadEventsFromFirestore();
-    loadPrayersFromFirestore();
-    loadSeedDataIfEmpty();
   }).catch(function(err) {
-    console.warn('Gemeente profiel laai fout:', err);
+    console.warn('Gebruiker profiel fout:', err);
     hideAuthGate();
+    loadAllData();
   });
+}
+
+function updateChurchNameUI(churchName, adminName) {
+  var els = ['churchNameDisplay', 'churchNameSidebar', 'drawerChurchName', 'mobileChurchName'];
+  els.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && churchName) el.textContent = churchName;
+  });
+  var adminEl = document.getElementById('adminNameDisplay');
+  if (adminEl && adminName) adminEl.textContent = adminName;
+}
+
+function loadAllData() {
+  loadMembersFromFirestore();
+  loadEventsFromFirestore();
+  loadPrayersFromFirestore();
+  loadSeedDataIfEmpty();
 }
 
 function createGemeenteProfile(user) {
@@ -2682,10 +2829,13 @@ function doRegister() {
         // Create gemeente profile in Firestore
         var trialEnd = new Date();
         trialEnd.setDate(trialEnd.getDate() + 30);
+        var code = generateGemeenteCode(church);
         return db.collection('gemeentes').doc(user.uid).set({
           adminName: name,
           adminEmail: email,
           churchName: church,
+          gemeenteCode: code,
+          adminUid: user.uid,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           subscription: {
             status: 'trial',
@@ -2694,6 +2844,16 @@ function doRegister() {
             plan: null,
             paidUntil: null
           }
+        }).then(function() {
+          // Stoor ook gebruiker profiel
+          return db.collection('gebruikers').doc(user.uid).set({
+            naam: name,
+            email: email,
+            rol: 'admin',
+            gemeenteId: user.uid,
+            churchName: church,
+            gemeenteCode: code
+          });
         });
       });
     })
@@ -3627,6 +3787,184 @@ function checkWelcomeOverlay() {
     // Small delay for smooth page load
     setTimeout(showWelcomeOverlay, 800);
   }
+}
+
+
+
+// ═══════════════════════════════════════════════════════════════
+// ROL STELSEL: Admin (betaal) vs Lid (gratis)
+// ═══════════════════════════════════════════════════════════════
+
+// currentUserRole already declared above — using existing variable
+// currentGemeenteCode declared here
+var currentGemeenteCode = null;
+
+// Genereer 'n unieke gemeente-kode
+function generateGemeenteCode(churchName) {
+  var words = churchName.toUpperCase().replace(/[^A-Z0-9\s]/g, '').split(/\s+/);
+  var code = words.slice(0, 2).map(function(w) { return w.slice(0, 4); }).join('-');
+  var rand = Math.floor(Math.random() * 900) + 100;
+  return code + '-' + rand;
+}
+
+// Kies rol op registrasie-skerm
+function copyGemeenteCode() {
+  var af = currentLang === 'af';
+  var code = currentGemeenteCode || (document.getElementById('adminGemeenteCode') || {}).textContent || '';
+  if (!code || code === '----') { showToast(af ? 'Geen kode beskikbaar nie.' : 'No code available.'); return; }
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code).then(function() {
+      showToast(af ? '✅ Kode gekopieer: ' + code : '✅ Code copied: ' + code);
+    });
+  } else {
+    var el = document.createElement('textarea');
+    el.value = code;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast(af ? '✅ Kode gekopieer: ' + code : '✅ Code copied: ' + code);
+  }
+}
+
+function selectRegRole(role) {
+  var adminCard = document.getElementById('roleAdminCard');
+  var memberCard = document.getElementById('roleMemberCard');
+  var adminFields = document.getElementById('regAdminFields');
+  var memberFields = document.getElementById('regMemberFields');
+  var btnAdmin = document.getElementById('btnRegister');
+
+  if (role === 'admin') {
+    if (adminCard) { adminCard.style.borderColor = '#C9A84C'; adminCard.style.background = 'rgba(201,168,76,0.12)'; }
+    if (memberCard) { memberCard.style.borderColor = 'var(--border)'; memberCard.style.background = 'transparent'; }
+    if (adminFields) adminFields.style.display = 'block';
+    if (memberFields) memberFields.style.display = 'none';
+    if (btnAdmin) btnAdmin.style.display = 'block';
+  } else {
+    if (memberCard) { memberCard.style.borderColor = '#27AE60'; memberCard.style.background = 'rgba(39,174,96,0.08)'; }
+    if (adminCard) { adminCard.style.borderColor = 'var(--border)'; adminCard.style.background = 'transparent'; }
+    if (memberFields) memberFields.style.display = 'block';
+    if (adminFields) adminFields.style.display = 'none';
+    if (btnAdmin) btnAdmin.style.display = 'none';
+  }
+}
+
+// Lid registrasie
+function doMemberRegister() {
+  var af = currentLang === 'af';
+  var code = (document.getElementById('memChurchCode').value || '').trim().toUpperCase();
+  var name = ((document.getElementById('memName').value || '').trim() + ' ' + (document.getElementById('memSurname').value || '').trim()).trim();
+  var email = (document.getElementById('memEmail').value || '').trim();
+  var pass = document.getElementById('memPass').value;
+  var pass2 = document.getElementById('memPass2').value;
+
+  if (!code) { showAuthError(af ? 'Voer jou gemeente-kode in.' : 'Enter your congregation code.'); return; }
+  if (!name || !email || !pass) { showAuthError(af ? 'Vul alle velde in.' : 'Fill in all fields.'); return; }
+  if (pass.length < 6) { showAuthError(af ? 'Wagwoord te kort (min 6).' : 'Password too short (min 6).'); return; }
+  if (pass !== pass2) { showAuthError(af ? 'Wagwoorde stem nie ooreen.' : 'Passwords do not match.'); return; }
+
+  var btn = document.getElementById('btnMemberRegister');
+  if (btn) { btn.disabled = true; btn.textContent = af ? 'Besig...' : 'Please wait...'; }
+
+  // Soek die gemeente met hierdie kode
+  if (!db) { showAuthError(af ? 'Geen verbinding nie. Probeer later.' : 'No connection. Try later.'); return; }
+
+  db.collection('gemeentes').where('gemeenteCode', '==', code).limit(1).get()
+    .then(function(snap) {
+      if (snap.empty) {
+        if (btn) { btn.disabled = false; btn.textContent = af ? 'Sluit aan by Gemeente' : 'Join Congregation'; }
+        showAuthError(af ? 'Gemeente-kode nie gevind nie. Kyk of dit korrek is.' : 'Congregation code not found. Check that it is correct.');
+        return;
+      }
+      var gemeenteDoc = snap.docs[0];
+      var gemeenteId = gemeenteDoc.id;
+      var churchName = gemeenteDoc.data().churchName || '';
+
+      // Skep Firebase Auth rekening
+      return firebase.auth().createUserWithEmailAndPassword(email, pass)
+        .then(function(cred) {
+          var user = cred.user;
+          return user.updateProfile({ displayName: name }).then(function() {
+            // Stoor lid in gemeente se lede-lys
+            return db.collection('gemeentes').doc(gemeenteId).collection('lede').doc(user.uid).set({
+              naam: name,
+              email: email,
+              rol: 'lid',
+              gemeenteId: gemeenteId,
+              churchName: churchName,
+              gemeenteCode: code,
+              joined: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }).then(function() {
+            // Stoor gebruiker se profiel
+            return db.collection('gebruikers').doc(user.uid).set({
+              naam: name,
+              email: email,
+              rol: 'lid',
+              gemeenteId: gemeenteId,
+              churchName: churchName,
+              gemeenteCode: code,
+              joined: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          });
+        })
+        .then(function() {
+          showAuthSuccess(af ? '🎉 Welkom by ' + churchName + '!' : '🎉 Welcome to ' + churchName + '!');
+          if (btn) { btn.disabled = false; btn.textContent = af ? 'Sluit aan by Gemeente' : 'Join Congregation'; }
+        });
+    })
+    .catch(function(err) {
+      if (btn) { btn.disabled = false; btn.textContent = af ? 'Sluit aan by Gemeente' : 'Join Congregation'; }
+      var msg = af ? 'Registrasie gefaal.' : 'Registration failed.';
+      if (err.code === 'auth/email-already-in-use') msg = af ? 'E-pos al geregistreer. Teken in.' : 'Email already registered. Sign in.';
+      showAuthError(msg);
+    });
+}
+
+// Pas UI aan vir rol
+function applyRoleToUI(role) {
+  currentUserRole = role;
+  // Admin-slegs elemente
+  var adminEls = document.querySelectorAll('[data-admin-only]');
+  adminEls.forEach(function(el) {
+    el.style.display = (role === 'admin') ? '' : 'none';
+  });
+  // Lid-sigbare elemente
+  var memberEls = document.querySelectorAll('[data-member-visible]');
+  memberEls.forEach(function(el) {
+    el.style.display = (role === 'admin' || role === 'member') ? '' : 'none';
+  });
+  // Wys gemeente-kode aan admin in Settings
+  if (role === 'admin') {
+    setTimeout(function() {
+      var codeEl = document.getElementById('adminGemeenteCode');
+      if (codeEl && currentGemeenteCode) {
+        codeEl.textContent = currentGemeenteCode;
+      }
+    }, 500);
+  }
+  // Wys/versteek lid welkom banner
+  var banner = document.getElementById('memberWelcomeBanner');
+  if (banner) banner.style.display = role === 'member' ? 'flex' : 'none';
+  if (role === 'member') {
+    var badgeEl = document.getElementById('memberChurchBadge');
+    if (badgeEl && currentGemeenteId) {
+      db.collection('gemeentes').doc(currentGemeenteId).get().then(function(doc) {
+        if (doc.exists && badgeEl) badgeEl.textContent = doc.data().churchName || '';
+      }).catch(function(){});
+    }
+  }
+
+  // Wys rol badge in sidebar
+  var roleEl = document.getElementById('adminRoleBadge');
+  if (roleEl) {
+    roleEl.textContent = role === 'admin' ? (currentLang === 'af' ? 'Bestuurder' : 'Admin') : (currentLang === 'af' ? 'Lid' : 'Member');
+    roleEl.style.background = role === 'admin' ? '#C9A84C' : '#27AE60';
+    roleEl.style.display = 'inline-block';
+  }
+  // Versteek intekening-tab vir lede (lede betaal nie)
+  var subNav = document.querySelector('[onclick*="tab-subscription"]');
+  if (subNav) subNav.style.display = role === 'admin' ? '' : 'none';
 }
 
 
