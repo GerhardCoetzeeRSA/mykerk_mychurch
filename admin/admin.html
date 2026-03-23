@@ -984,9 +984,9 @@ body {
 
 <script>
 // ════════════════════════════════════════════════════
-// CONFIG — change ADMIN_PASSWORD to something strong
+// CONFIG — verander ADMIN_PASSWORD na jou eie wagwoord
 // ════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'MyKerk@SuperAdmin2026!';
+const ADMIN_PASSWORD = 'MykerkAdmin2026';
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCDMHWV1KeN1_sSc-JG0R-SrOhAC_V5FS4",
@@ -1451,7 +1451,7 @@ function infoRow(key, val) {
 function emailAdmin(email, churchName) {
   if (!email) { showToast('No email address'); return; }
   const subject = 'MyKerk MyChurch — ' + churchName;
-  const body = 'Goeiedag / Good day,\n\nHierdie is 'n boodskap van die MyKerk MyChurch span.\n\nVriendlike groete / Kind regards\nMyKerk Support';
+  const body = "Goeiedag / Good day,\n\nHierdie is 'n boodskap van die MyKerk MyChurch span.\n\nVriendlike groete / Kind regards\nMyKerk Support";
   window.open('mailto:' + email + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
 }
 
