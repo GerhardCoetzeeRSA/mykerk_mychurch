@@ -602,36 +602,12 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 </style>
 
 <!-- Firebase SDK - dynamic loader -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script>
-// Dynamically load Firebase SDK so it works when hosted on a web server
-// When opened as file://, Firebase will run in offline/demo mode
-(function() {
-  var scripts = [
-    'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-    'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js',
-    'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js',
-    'https://www.gstatic.com/firebasejs/10.7.1/firebase-functions-compat.js'
-  ];
-  var loaded = 0;
-  function onLoad() {
-    loaded++;
-    if (loaded === scripts.length) {
-      window._firebaseSDKLoaded = true;
-      // Trigger init if DOM is ready
-      if (typeof initFirebase === 'function') initFirebase();
-    }
-  }
-  scripts.forEach(function(src) {
-    var s = document.createElement('script');
-    s.src = src;
-    s.onload = onLoad;
-    s.onerror = function() {
-      console.warn('Firebase SDK kon nie gelaai word nie. Gebruik CDN alternatief.');
-      onLoad(); // Continue counting even on error
-    };
-    document.head.appendChild(s);
-  });
-})();
+// Firebase SDK loaded statically above
+window._firebaseSDKLoaded = true;
 </script>
 </head>
 <body>
@@ -1854,6 +1830,26 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
                 </div>
                 <span class="admin-badge">Admin</span>
               </div>
+
+              <!-- Column guide -->
+              <div class="settings-card" style="background:var(--cream);border:1px solid #E2D5B8;margin-bottom:12px">
+                <div style="font-size:12px;font-weight:600;color:var(--deep);margin-bottom:8px" data-en="Expected Columns (order doesn't matter)" data-af="Verwagte Kolomme (volgorde maak nie saak nie)">Verwagte Kolomme</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;font-size:11px;color:var(--muted)">
+                  <div>👤 <b>Full Name</b> / Naam <span style="color:var(--gold)">*</span></div>
+                  <div>✉️ <b>Email</b> / E-pos</div>
+                  <div>📱 <b>Phone</b> / Foon / Tel</div>
+                  <div>🎂 <b>Date of Birth</b> / Geboortedatum</div>
+                  <div>🏷️ <b>Role</b> / Rol (lid/diaken/ouderling)</div>
+                  <div>👥 <b>Small Group</b> / Selgroep</div>
+                  <div>🏠 <b>Address</b> / Adres</div>
+                  <div>📅 <b>Joined Date</b> / Aansluitdatum</div>
+                </div>
+                <div style="font-size:11px;color:var(--muted);margin-top:8px;border-top:1px solid #E2D5B8;padding-top:6px">
+                  <span style="color:var(--gold)">*</span> <span data-en="Required field" data-af="Verpligte veld">Verpligte veld</span> ·
+                  <span data-en="Duplicate emails are automatically skipped" data-af="Duplikaat e-posse word outomaties oorgeslaan">Duplikaat e-posse word outomaties oorgeslaan</span> ·
+                  <span data-en="Supports CSV and Excel (.xlsx/.xls)" data-af="Ondersteun CSV en Excel (.xlsx/.xls)">Ondersteun CSV en Excel (.xlsx/.xls)</span>
+                </div>
+              </div>
               <div class="settings-card">
                 <div class="settings-card-title" data-en="Upload File" data-af="Laai Lêer Op">Laai Lêer Op</div>
                 <button class="btn btn-ghost" style="margin-bottom:14px;font-size:12px" onclick="downloadTemplate()" data-en="Download Template (CSV)" data-af="Laai Sjabloon Af (CSV)">Laai Sjabloon Af (CSV)</button>
@@ -2328,7 +2324,7 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 <!-- LEGAL FOOTER BAR - fixed position, always visible -->
 <div id="legalFooter" style="position:fixed;bottom:0;left:0;right:0;z-index:150;background:white;border-top:1px solid #E2D5B8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:6px 32px;font-size:11px;color:#7A6A4F;box-shadow:0 -2px 12px rgba(0,0,0,0.06)">
   <div style="display:flex;flex-direction:column;gap:1px">
-    <span style="color:#7A6A4F">&copy; 2026 MyKerk / MyChurch &middot; <a id="footerDevEmail" href="mailto:info@coetzeedataconsultants.co.za" style="color:#7A6A4F">info@coetzeedataconsultants.co.za</a></span>
+    <span style="color:#7A6A4F">&copy; 2026 MyKerk / MyChurch &middot; <a id="footerDevEmail" href="/cdn-cgi/l/email-protection#d8b1b6beb798bbb7bdaca2bdbdbcb9acb9bbb7b6abadb4acb9b6acabf6bbb7f6a2b9" style="color:#7A6A4F"><span class="__cf_email__" data-cfemail="93fafdf5fcd3f0fcf6e7e9f6f6f7f2e7f2f0fcfde0e6ffe7f2fde7e0bdf0fcbde9f2">[email&#160;protected]</span></a></span>
     
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
     <button id="footerTermsBtn" style="background:none;border:none;font-size:11px;color:#C9A84C;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;padding:0">&#128209; Diensvoorwaardes</button>
@@ -2486,7 +2482,7 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ═══════════════════════════════════════════════════════════
 // FIREBASE KONFIGURASIEE & INITIALISASIE
 // ═══════════════════════════════════════════════════════════
@@ -2538,18 +2534,23 @@ function initFirebase() {
       firebase.initializeApp(FIREBASE_CONFIG);
     }
     db = firebase.firestore();
-    db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
+    db.enablePersistence({ synchronizeTabs: true }).catch(function() {});
 
     // Listen for auth state changes
     firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
+      if (user && !user.isAnonymous) {
+        // Real signed-in user
         currentFirebaseUser = user;
         currentGemeenteId = user.uid;
         firebaseReady = true;
         setFirebaseStatus('connected');
         console.log('Firebase verbind ✅ | UID:', user.uid);
         onUserSignedIn(user);
+      } else if (user && user.isAnonymous) {
+        // Anonymous user - sign out and show auth gate
+        firebase.auth().signOut();
       } else {
+        // No user - show auth gate
         currentFirebaseUser = null;
         currentGemeenteId = null;
         firebaseReady = false;
@@ -3537,24 +3538,46 @@ function handleFileDrop(e) {
 function handleFileSelect(input) { if (input.files[0]) processImportFile(input.files[0]); }
 
 function processImportFile(file) {
-  const af = currentLang === 'af';
-  const ext = file.name.split('.').pop().toLowerCase();
+  var af = currentLang === 'af';
+  var ext = file.name.split('.').pop().toLowerCase();
   if (!['csv','xlsx','xls'].includes(ext)) {
-    showToast(af ? 'Ongeldige leer. Gebruik CSV.' : 'Invalid file. Use CSV.');
+    showToast(af ? 'Ongeldige lêer. Gebruik CSV of Excel.' : 'Invalid file. Use CSV or Excel.');
     return;
   }
-  const reader = new FileReader();
+  var reader = new FileReader();
   if (ext === 'csv') {
-    reader.onload = e => {
-      const rows = parseCSV(e.target.result);
-      if (rows.length < 2) { showToast(af?'Leë CSV':'Empty CSV'); return; }
-      importHeaders = rows[0];
-      importedData = rows.slice(1).filter(r => r.some(c => c.trim()));
+    reader.onload = function(e) {
+      var rows = parseCSV(e.target.result);
+      if (rows.length < 2) { showToast(af ? 'Leë CSV lêer.' : 'Empty CSV file.'); return; }
+      importHeaders = rows[0].map(function(h) { return h.trim(); });
+      importedData  = rows.slice(1).filter(function(r) { return r.some(function(c) { return c.trim(); }); });
       showImportPreview(file.name, af);
     };
     reader.readAsText(file, 'UTF-8');
   } else {
-    showToast(af ? 'Excel oplaai ontvang (simulasie)' : 'Excel upload received (simulation)');
+    // Excel — load SheetJS dynamically if not yet loaded
+    reader.onload = function(e) {
+      function parseExcel(data) {
+        var wb   = XLSX.read(data, { type: 'array' });
+        var ws   = wb.Sheets[wb.SheetNames[0]];
+        var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+        if (!rows || rows.length < 2) { showToast(af ? 'Leë Excel lêer.' : 'Empty Excel file.'); return; }
+        importHeaders = rows[0].map(function(h) { return String(h).trim(); });
+        importedData  = rows.slice(1).filter(function(r) { return r.some(function(c) { return String(c).trim(); }); });
+        showImportPreview(file.name, af);
+      }
+      var arrayBuf = e.target.result;
+      if (typeof XLSX !== 'undefined') {
+        parseExcel(arrayBuf);
+      } else {
+        var s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+        s.onload = function() { parseExcel(arrayBuf); };
+        s.onerror = function() { showToast(af ? 'Kon SheetJS nie laai nie.' : 'Could not load SheetJS.'); };
+        document.head.appendChild(s);
+      }
+    };
+    reader.readAsArrayBuffer(file);
   }
 }
 
@@ -3573,16 +3596,56 @@ function parseCSV(text) {
 }
 
 function showImportPreview(filename, af) {
-  const preview = document.getElementById('importPreview');
-  const table = document.getElementById('importTable');
-  const msg = document.getElementById('importPreviewMsg');
+  var preview = document.getElementById('importPreview');
+  var table   = document.getElementById('importTable');
+  var msg     = document.getElementById('importPreviewMsg');
+
   preview.classList.add('visible');
-  msg.textContent = (af?'Eerste 10 rye van ':'First 10 rows of ') + filename;
-  const displayRows = importedData.slice(0, 10);
-  let html = '<thead><tr>' + importHeaders.map(h=>'<th>'+h+'</th>').join('') + '</tr></thead><tbody>';
-  displayRows.forEach(r => { html += '<tr>' + importHeaders.map((_,i)=>'<td>'+(r[i]||'')+'</td>').join('') + '</tr>'; });
+
+  // Show file stats
+  var total = importedData.length;
+  msg.innerHTML =
+    '<span style="color:var(--deep);font-size:13px;font-weight:600">' +
+    (af ? 'Lêer: ' : 'File: ') + filename + '</span>' +
+    '<br><span style="font-size:12px;color:var(--muted)">' +
+    (af ? total + ' rye gevind' : total + ' rows found') + ' · ' +
+    (af ? 'Eerste 10 wys' : 'Showing first 10') + '</span>';
+
+  // Column mapping hints
+  var knownCols = {
+    'full name': '👤', 'naam': '👤', 'name': '👤',
+    'email': '✉️', 'e-pos': '✉️',
+    'phone': '📱', 'tel': '📱', 'foon': '📱', 'mobiel': '📱', 'cell': '📱',
+    'role': '🏷️', 'rol': '🏷️',
+    'small group': '👥', 'selgroep': '👥', 'groep': '👥',
+    'date of birth': '🎂', 'geboortedatum': '🎂', 'dob': '🎂',
+    'address': '🏠', 'adres': '🏠',
+    'joined date': '📅', 'joined': '📅', 'aansluitdatum': '📅',
+  };
+
+  // Build table
+  var displayRows = importedData.slice(0, 10);
+  var html = '<thead><tr>' +
+    importHeaders.map(function(h) {
+      var icon = knownCols[h.toLowerCase()] || '·';
+      return '<th style="white-space:nowrap">' + icon + ' ' + h + '</th>';
+    }).join('') +
+    '</tr></thead><tbody>';
+  displayRows.forEach(function(r) {
+    html += '<tr>' + importHeaders.map(function(_, i) {
+      return '<td>' + (r[i] || '') + '</td>';
+    }).join('') + '</tr>';
+  });
   table.innerHTML = html + '</tbody>';
-  const actions = document.getElementById('importActions');
+
+  // Show action buttons
+  var actions  = document.getElementById('importActions');
+  var readyMsg = document.getElementById('importReadyMsg');
+  actions.classList.add('visible');
+  readyMsg.textContent = af
+    ? total + ' lede gereed om in te voer'
+    : total + ' members ready to import';
+}tById('importActions');
   actions.classList.add('visible');
   document.getElementById('importReadyMsg').textContent = importedData.length + (af?' lede gereed':' members ready');
   document.getElementById('importConfirmBtn').textContent = (af?'Voer ':'Import ') + importedData.length + (af?' Lede In':' Members');
@@ -3597,34 +3660,154 @@ function resetImport() {
 }
 
 function runImport() {
-  const af = currentLang === 'af';
+  var af = currentLang === 'af';
+  if (!importedData || importedData.length === 0) {
+    showToast(af ? 'Geen data om in te voer nie.' : 'No data to import.');
+    return;
+  }
+  if (!db || !currentGemeenteId) {
+    showToast(af ? 'Geen Firebase-verbinding nie.' : 'No Firebase connection.');
+    return;
+  }
+
   document.getElementById('importActions').classList.remove('visible');
-  const prog = document.getElementById('importProgress');
+  var prog    = document.getElementById('importProgress');
+  var fill    = document.getElementById('progressFill');
+  var progMsg = document.getElementById('importProgressMsg');
   prog.classList.add('visible');
-  const fill = document.getElementById('progressFill');
-  const progMsg = document.getElementById('importProgressMsg');
-  let pct = 0;
-  const interval = setInterval(() => {
-    pct += 10;
-    fill.style.width = pct + '%';
-    if (pct >= 100) {
-      clearInterval(interval);
-      progMsg.textContent = af ? 'Invoer voltooi!' : 'Import complete!';
-      showToast((af?'Invoer van ':'Imported ') + importedData.length + (af?' lede voltooi!'  :' members!'));
-      setTimeout(() => resetImport(), 2000);
+
+  // ── Column mapping — try to match known header names ──
+  function colIdx(candidates) {
+    var lower = importHeaders.map(function(h) { return h.toLowerCase(); });
+    for (var i = 0; i < candidates.length; i++) {
+      var idx = lower.indexOf(candidates[i].toLowerCase());
+      if (idx !== -1) return idx;
     }
-  }, 120);
+    return -1;
+  }
+
+  var COL = {
+    name:    colIdx(['full name','naam','name','full_name','volle naam']),
+    email:   colIdx(['email','e-pos','e-posadres','email address']),
+    phone:   colIdx(['phone','tel','foon','phone number','telefoon','mobiel','cell']),
+    dob:     colIdx(['date of birth','geboortedatum','dob','date_of_birth','geboorte']),
+    role:    colIdx(['role','rol','position','posisie']),
+    group:   colIdx(['small group','selgroep','groep','group','kleingroep']),
+    address: colIdx(['address','adres']),
+    joined:  colIdx(['joined date','datum aangesluit','joined','aansluitdatum','date joined']),
+  };
+
+  function cellVal(row, idx) {
+    if (idx < 0 || idx >= row.length) return '';
+    return String(row[idx] || '').trim();
+  }
+
+  var total   = importedData.length;
+  var done    = 0;
+  var skipped = 0;
+  var errors  = 0;
+  var col     = db.collection('gemeentes').doc(currentGemeenteId).collection('lede');
+
+  progMsg.textContent = (af ? 'Besig: 0 / ' : 'Busy: 0 / ') + total;
+  fill.style.width = '0%';
+
+  // Fetch existing emails to detect duplicates
+  col.get().then(function(snap) {
+    var existingEmails = {};
+    snap.forEach(function(d) {
+      var e = (d.data().email || '').toLowerCase();
+      if (e) existingEmails[e] = true;
+    });
+
+    function importNext(i) {
+      if (i >= total) {
+        fill.style.width = '100%';
+        var msg = af
+          ? 'Invoer voltooi! ' + (total - skipped - errors) + ' lede bygevoeg, ' + skipped + ' oorgeslaan, ' + errors + ' foute.'
+          : 'Import complete! ' + (total - skipped - errors) + ' members added, ' + skipped + ' skipped, ' + errors + ' errors.';
+        progMsg.textContent = msg;
+        showToast(msg);
+        // Refresh members list
+        loadMembersFromFirestore();
+        setTimeout(function() { resetImport(); }, 3500);
+        return;
+      }
+
+      var row   = importedData[i];
+      var name  = cellVal(row, COL.name);
+      var email = cellVal(row, COL.email).toLowerCase();
+
+      // Skip blank rows
+      if (!name && !email) { skipped++; importNext(i + 1); return; }
+
+      // Skip duplicates
+      if (email && existingEmails[email]) {
+        skipped++;
+        done++;
+        fill.style.width = Math.round((done / total) * 100) + '%';
+        progMsg.textContent = (af ? 'Besig: ' : 'Busy: ') + done + ' / ' + total +
+          (af ? ' (' + skipped + ' oorgeslaan)' : ' (' + skipped + ' skipped)');
+        importNext(i + 1);
+        return;
+      }
+
+      var lid = {
+        naam:          name || (af ? 'Onbekend' : 'Unknown'),
+        email:         email || '',
+        telefoon:      cellVal(row, COL.phone),
+        geboortedatum: cellVal(row, COL.dob),
+        rol:           cellVal(row, COL.role) || 'lid',
+        selgroep:      cellVal(row, COL.group),
+        adres:         cellVal(row, COL.address),
+        aansluitdatum: cellVal(row, COL.joined),
+        gemeenteId:    currentGemeenteId,
+        bron:          'invoer',
+        ingevoerOp:    firebase.firestore.FieldValue.serverTimestamp(),
+        status:        'aktief'
+      };
+
+      if (email) existingEmails[email] = true;
+
+      col.add(lid).then(function() {
+        done++;
+        fill.style.width = Math.round((done / total) * 100) + '%';
+        progMsg.textContent = (af ? 'Besig: ' : 'Busy: ') + done + ' / ' + total;
+        // Small delay to avoid Firestore rate limits
+        setTimeout(function() { importNext(i + 1); }, 80);
+      }).catch(function(err) {
+        errors++;
+        done++;
+        fill.style.width = Math.round((done / total) * 100) + '%';
+        console.warn('Import error for row', i, err);
+        setTimeout(function() { importNext(i + 1); }, 80);
+      });
+    }
+
+    importNext(0);
+  }).catch(function(err) {
+    progMsg.textContent = af ? 'Fout: ' + err.message : 'Error: ' + err.message;
+    showToast(af ? 'Invoer gefaal: ' + err.message : 'Import failed: ' + err.message);
+  });
 }
 
 function downloadTemplate() {
-  const af = currentLang === 'af';
-  const headers = 'Full Name,Email,Phone,Date of Birth,Role,Small Group,Address,Joined Date';
-  const sample = 'Jan van der Berg,jan@email.com,082 123 4567,1980-05-15,member,Hoop Selgroep,Kerkstraat 5 Bellville,2020-01-12';
-  const blob = new Blob([headers+'\n'+sample], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a');
+  var af = currentLang === 'af';
+  // Headers in both languages for clarity
+  var headers = 'Full Name,Email,Phone,Date of Birth,Role,Small Group,Address,Joined Date';
+  var samples = [
+    'Jan van der Berg,jan@email.com,082 123 4567,1980-05-15,lid,Hoop Selgroep,Kerkstraat 5 Bellville,2020-01-12',
+    'Maria Fourie,maria@email.com,073 234 5678,1992-11-30,diaken,Lofprysing Bediening,Rosestraat 12 Paarl,2021-06-01',
+    'Pieter Nortje,pieter@email.com,084 987 6543,1975-03-22,ouderling,,Dennelaan 8 Stellenbosch,2018-03-15',
+  ];
+  // Add Afrikaans header hints row
+  var hints = '# Naam,E-pos,Foon,Geboortedatum,Rol (lid/diaken/ouderling),Selgroep,Adres,Aansluitdatum';
+  var content = headers + '\n' + hints + '\n' + samples.join('\n');
+  var blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = af ? 'mykerk-lede-sjabloon.csv' : 'mychurch-members-template.csv';
   a.click();
+  showToast(af ? 'Sjabloon afgelaai!' : 'Template downloaded!');
 }
 
 // ── LANGUAGE ──
@@ -4489,16 +4672,4 @@ document.addEventListener('DOMContentLoaded', function() {
   var sdkCheckInterval = setInterval(function() {
     sdkCheckCount++;
     if (window._firebaseSDKLoaded || typeof firebase !== 'undefined') {
-      clearInterval(sdkCheckInterval);
-      initFirebase();
-    } else if (sdkCheckCount > 30) { // 3 sekondes gewag
-      clearInterval(sdkCheckInterval);
-      console.warn('Firebase SDK nie gelaai nie - offline modus');
-      setFirebaseStatus('demo');
-    }
-  }, 100);
-});
-
-</script>
-</body>
-</html>
+      clearInterval(sdkCheckInter
