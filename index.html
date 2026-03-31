@@ -2328,7 +2328,7 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 <!-- LEGAL FOOTER BAR - fixed position, always visible -->
 <div id="legalFooter" style="position:fixed;bottom:0;left:0;right:0;z-index:150;background:white;border-top:1px solid #E2D5B8;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px;padding:6px 32px;font-size:11px;color:#7A6A4F;box-shadow:0 -2px 12px rgba(0,0,0,0.06)">
   <div style="display:flex;flex-direction:column;gap:1px">
-    <span style="color:#7A6A4F">&copy; 2026 MyKerk / MyChurch</span>
+    <span style="color:#7A6A4F">&copy; 2026 MyKerk / MyChurch &middot; <a id="footerDevEmail" href="mailto:info@coetzeedataconsultants.co.za" style="color:#7A6A4F">info@coetzeedataconsultants.co.za</a></span>
     
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
     <button id="footerTermsBtn" style="background:none;border:none;font-size:11px;color:#C9A84C;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;padding:0">&#128209; Diensvoorwaardes</button>
@@ -4300,7 +4300,7 @@ ${af ? 'Handtekening' : 'Signature'}: _________________________________
 ${af ? 'Datum' : 'Date'}: _________________________________
 
 ${'-'.repeat(60)}
-${af ? 'Vir meer inligting:' : 'For more information:'} privacy@mykerk.co.za
+${af ? 'Vir meer inligting:' : 'For more information:'} info@coetzeedataconsultants.co.za
 ${af ? 'Inligtingsreguleerder:' : 'Information Regulator:'} inforegulator.org.za | 010 023 5207
 `;
   const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -4453,7 +4453,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var d1 = 'coetzeedataconsultants';
   var d2 = 'co.za';
   var devEmail = 'info' + '@' + d1 + '.' + d2;
-  var privEmail = 'privacy' + '@' + 'mykerk' + '.' + d2;
+  var privEmail = 'info' + '@' + d1 + '.' + d2;
 
   var devEl = document.getElementById('footerDevEmail');
   if (devEl) devEl.innerHTML = '<a href="mailto:' + devEmail + '" style="color:#7A6A4F">' + devEmail + '</a>';
