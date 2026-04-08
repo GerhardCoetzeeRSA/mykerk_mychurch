@@ -1050,14 +1050,36 @@ function initFirebase() {
   try {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
-    firebase.auth().signInAnonymously()
-      .then(function() {
+
+    // Super-admin signs in with a dedicated platform owner account.
+    // This account must exist in Firebase Auth (Email/Password).
+    // Credentials match ADMIN_PASSWORD logic — platform owner only.
+    var adminEmail = 'admin@mykerk-platform.co.za';
+    var adminPass  = ADMIN_PASSWORD + '_Firebase26!';
+
+    firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass)
+      .then(function(cred) {
         setStatus('connected');
         loadAllData();
       })
       .catch(function(e) {
-        setStatus('error');
-        showToast('Firebase auth error: ' + e.message);
+        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/invalid-email') {
+          // First time: auto-create the super-admin Firebase account
+          firebase.auth().createUserWithEmailAndPassword(adminEmail, adminPass)
+            .then(function() {
+              setStatus('connected');
+              loadAllData();
+            })
+            .catch(function(e2) {
+              // If creation also fails, try anonymous as fallback
+              firebase.auth().signInAnonymously()
+                .then(function() { setStatus('connected'); loadAllData(); })
+                .catch(function() { setStatus('error'); showToast('Auth failed: ' + e2.message); });
+            });
+        } else {
+          setStatus('error');
+          showToast('Auth error: ' + e.message);
+        }
       });
   } catch(e) {
     setStatus('error');
@@ -1092,7 +1114,14 @@ function loadGemeentes() {
       renderActivity();
     })
     .catch(function(e) {
-      showToast('Error loading congregations: ' + e.message);
+      if (e.code === 'permission-denied' || e.message.includes('permissions')) {
+        // Firestore rules blocking - show helpful message instead of error flash
+        document.getElementById('gemeeenteTableBody') && 
+          (document.getElementById('gemeeenteTableBody').innerHTML = 
+            '<tr><td colspan="8"><div class="empty">Connecting to Firebase... refresh if this persists.</div></td></tr>');
+      } else {
+        showToast('Error loading congregations: ' + e.message);
+      }
     });
 }
 
