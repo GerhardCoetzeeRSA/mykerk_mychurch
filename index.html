@@ -3377,7 +3377,7 @@ function showToast(msg) {
   t.textContent = msg;
   t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function() { t.classList.remove('show'), 3000);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3000);
 }
 
 // ── FORM ACTIONS ──
@@ -4443,15 +4443,13 @@ function openLegalModal(doc) {
 }
 
 function printLegalModal() {
-  const body = document.getElementById('legalModalBody');
-  const title = document.getElementById('legalModalTitle').textContent;
-  const w = window.open('', '_blank');
-  w.document.write('<html><head><title>' + title + '</' + '/title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:17px;margin:20px 0 8px;border-top:1px solid #eee;padding-top:12px}h2:first-child{border-top:none}p,li{font-size:13px;color:#555;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}.legal-highlight{background:#F5EDD6;border-left:3px solid #C9A84C;padding:10px 14px;margin:10px 0}.legal-updated{font-size:11px;color:#888;padding-bottom:10px;border-bottom:1px solid #eee;margin-bottom:14px}.info-reg{background:#EBF5FB;border:1px solid #AED6F1;border-radius:8px;padding:12px;font-size:12px;margin:12px 0}.legal-toc{background:#F5EDD6;border-radius:8px;padding:12px 16px;margin:12px 0}.legal-toc a{display:block;font-size:12px;color:#C9A84C;text-decoration:none;padding:2px 0}@media print{a{color:#000}}</' + '/style></' + '/head><body>\n');;
-  w.document.write('<h1 style="font-family:Georgia,serif;font-size:22px;border-bottom:2px solid #C9A84C;padding-bottom:8px">' + title + '</h1>');
-  w.document.write(body.innerHTML);
-  w.document.write('</' + '/body></' + '/html>');
-  w.document.close();
-  w.print();
+  var te=document.getElementById('legalModalTitle');
+  var be=document.getElementById('legalModalBody');
+  var t=te?te.textContent:'Legal'; var b=be?be.innerHTML:'';
+  var p=['<!DOCTYPE html><html><head><ti','tle>',t,'<','/ti','tle>','<sty','le>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px}<','/sty','le>','<','/head><body><h2>',t,'</h2>',b,'<','/body>','<','/html>'];
+  var bl=new Blob([p.join('')],{type:'text/html'});
+  var u=URL.createObjectURL(bl); window.open(u,'_blank');
+  setTimeout(function(){URL.revokeObjectURL(u);},5000);
 }
 
 function downloadLegalModal() {
@@ -4467,15 +4465,12 @@ function downloadLegalModal() {
 }
 
 // ── LEGAL HELPERS (for settings panels) ──
-function printLegal(contentId) {
-  const content = document.getElementById(contentId);
-  if (!content) return;
-  const w = window.open('', '_blank');
-  w.document.write('<html><head><title>MyKerk Legal</' + '/title><style>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px;line-height:1.7;color:#1A1208}h2{font-size:18px;margin:20px 0 8px;border-bottom:1px solid #eee;padding-bottom:6px}h3{font-size:15px;margin:14px 0 6px}p,li{font-size:13px;color:#444;margin-bottom:8px}ul{padding-left:20px}a{color:#C9A84C}@media print{a{color:#000}}</' + '/style></' + '/head><body>\n');;
-  w.document.write(content.innerHTML);
-  w.document.write('</' + '/body></' + '/html>');
-  w.document.close();
-  w.print();
+function printLegal(cid) {
+  var el=document.getElementById(cid); var b=el?el.innerHTML:'';
+  var p=['<!DOCTYPE html><html><head><ti','tle>MyKerk Legal<','/ti','tle>','<sty','le>body{font-family:Georgia,serif;max-width:800px;margin:40px auto;padding:20px}<','/sty','le>','<','/head><body>',b,'<','/body>','<','/html>'];
+  var bl=new Blob([p.join('')],{type:'text/html'});
+  var u=URL.createObjectURL(bl); window.open(u,'_blank');
+  setTimeout(function(){URL.revokeObjectURL(u);},5000);
 }
 
 function downloadLegal(contentId, filename) {
