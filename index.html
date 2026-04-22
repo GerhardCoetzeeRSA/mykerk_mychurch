@@ -4704,7 +4704,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var sdkCheckInterval = setInterval(function() {
     sdkCheckCount++;
     if (window._firebaseSDKLoaded || typeof firebase !== 'undefined') {
-      clearInterval(sdkCheckInter
       clearInterval(sdkCheckInterval);
       initFirebase();
     } else if (sdkCheckCount > 20) {
