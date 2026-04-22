@@ -2955,7 +2955,7 @@ function saveNewMemberToFirestore(memberData) {
 function deleteMemberFromFirestore(firestoreId, localId) {
   if (db && firestoreId) {
     gemeentePath('lede').doc(firestoreId).delete()
-      .then(function() { return  showToast(currentLang==='af' ? 'Lid uitgevee ✓' : 'Member deleted ✓'))
+      .then(function() { showToast(currentLang==='af' ? 'Lid uitgevee ✓' : 'Member deleted ✓'); })
       .catch(function(err) { console.error('Uitvee fout:', err); });
   } else {
     members = members.filter(function(m) { return  m.id !== localId);
@@ -3071,7 +3071,7 @@ function prayForRequest(firestoreId) {
   if (!db || !firestoreId) return;
   gemeentePath('gebede').doc(firestoreId).update({
     prayerCount: firebase.firestore.FieldValue.increment(1)
-  }).then(function() { return  showToast(currentLang==='af' ? '🙏 Jy bid saam!' : '🙏 You are praying!'))
+  }).then(function() {  showToast(currentLang==='af' ? '🙏 Jy bid saam!' : '🙏 You are praying!'); })
   .catch(function(err) { console.error(err); });
 }
 
