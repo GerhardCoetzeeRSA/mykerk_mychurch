@@ -2912,7 +2912,7 @@ function loadMembersFromFirestore() {
   // Realtime listener - herlaai outomaties wanneer data verander
   const unsub = gemeentePath('lede')
     .orderBy('joinYear', 'asc')
-    .onSnapshot(snapshot => {
+    .onSnapshot(function(snapshot) {
       if (snapshot.empty) {
         // Geen data in Firestore nie - gebruik plaaslike seed data
         console.log('Geen lede in Firestore, gebruik plaaslike data');
@@ -2926,7 +2926,7 @@ function loadMembersFromFirestore() {
       renderMembers();
       updateDashboardStats();
       console.log('Lede herlaai:', members.length);
-    }, err => {
+    }, function(err) {
       console.warn('Lede laai fout:', err.message);
     });
   firestoreListeners.push(unsub);
@@ -2945,10 +2945,10 @@ function saveNewMemberToFirestore(memberData) {
     ...memberData,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(docRef => {
+  }).then(function(docRef) {
     console.log('Lid gestoor:', docRef.id);
     showToast(currentLang==='af' ? '✅ Lid gestoor in Firebase!' : '✅ Member saved to Firebase!');
-  }).catch(err => {
+  }).catch(function(err) {
     console.error('Lid stoor fout:', err);
     showToast(currentLang==='af' ? '❌ Fout: ' + err.message : '❌ Error: ' + err.message);
   });
@@ -2976,7 +2976,7 @@ function loadEventsFromFirestore() {
   const unsub = gemeentePath('gebeure')
     .orderBy('date', 'asc')
     .limit(50)
-    .onSnapshot(snapshot => {
+    .onSnapshot(function(snapshot) {
       eventsData = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
       renderEventsFromData();
       console.log('Gebeure herlaai:', eventsData.length);
@@ -2992,9 +2992,9 @@ function saveEventToFirestore(eventData) {
   return gemeentePath('gebeure').add({
     ...eventData,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  }).then(() => {
+  }).then(function() {
     showToast(currentLang==='af' ? '✅ Geleentheid gestoor!' : '✅ Event saved!');
-  }).catch(err => {
+  }).catch(function(err) {
     showToast('❌ ' + err.message);
   });
 }
@@ -3025,7 +3025,7 @@ function loadPrayersFromFirestore() {
   const unsub = gemeentePath('gebede')
     .orderBy('createdAt', 'desc')
     .limit(20)
-    .onSnapshot(snapshot => {
+    .onSnapshot(function(snapshot) {
       prayersData = snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
       renderPrayersFromData();
       console.log('Gebede herlaai:', prayersData.length);
@@ -3042,9 +3042,9 @@ function savePrayerToFirestore(prayerData) {
     ...prayerData,
     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
     prayerCount: 0
-  }).then(() => {
+  }).then(function() {
     showToast(currentLang==='af' ? '🙏 Gebed gestoor in Firebase!' : '🙏 Prayer saved to Firebase!');
-  }).catch(err => {
+  }).catch(function(err) {
     showToast('❌ ' + err.message);
   });
 }
@@ -3235,7 +3235,7 @@ function renderMembers(list) {
     return;
   }
 
-  el.innerHTML = privacyBanner + visible.map(m => {
+  el.innerHTML = privacyBanner + visible.map(function(m) {
     const isSelf = m.id === currentMemberId;
     const isFamily = m.familyId === (members[currentMemberId]?.familyId) && !isSelf;
     const tag = isSelf ? `<span style="font-size:10px;background:var(--gold);color:var(--white);border-radius:4px;padding:1px 6px;margin-left:6px">${af?'Ek':'Me'}</span>`
@@ -3331,7 +3331,7 @@ function doLogout() {
 
 function resetAutoLock() {
   clearTimeout(autoLockTimer);
-  autoLockTimer = setTimeout(() => {
+  autoLockTimer = setTimeout(function() {
     if (isAuthenticated) {
       doLogout();
       showToast(currentLang==='af'?'Sessie verstryk – teken asseblief weer in':'Session expired – please sign in again');
@@ -3502,7 +3502,7 @@ function addEvent() {
   };
   saveEventToFirestore(eventData);
   // Reset form
-  ['newEventTitle','newEventDate','newEventTime','newEventLocation','newEventDesc'].forEach(id => {
+  ['newEventTitle','newEventDate','newEventTime','newEventLocation','newEventDesc'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -3816,11 +3816,11 @@ function downloadTemplate() {
 function setLang(lang) {
   currentLang = lang;
   // Sync all lang toggle buttons (sidebar + drawer)
-  ['langAF','drawerLangAF'].forEach(id => {
+  ['langAF','drawerLangAF'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('active', lang === 'af');
   });
-  ['langEN','drawerLangEN'].forEach(id => {
+  ['langEN','drawerLangEN'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) el.classList.toggle('active', lang === 'en');
   });
@@ -3880,7 +3880,7 @@ function setLang(lang) {
   const mobChurch = document.getElementById('mobileChurchName');
   if (mobChurch) mobChurch.textContent = document.getElementById('churchName').textContent;
   // Re-render members
-  renderMembers(members.filter(m => {
+  renderMembers(members.filter(function(m) {
     const q = document.getElementById('memberSearch')?.value?.toLowerCase() || '';
     return !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q);
   }));
@@ -4600,12 +4600,12 @@ function testFirebaseConnection() {
   }
   // Try a simple read
   gemeentePath('lede').limit(1).get()
-    .then(snap => {
+    .then(function(snap) {
       showToast(currentLang==='af'
         ? '✅ Firebase verbinding werk! (' + snap.size + ' dokument gelees)'
         : '✅ Firebase connection works! (' + snap.size + ' document read)');
     })
-    .catch(err => {
+    .catch(function(err) {
       showToast('❌ Fout: ' + err.message);
     });
 }
@@ -4635,7 +4635,7 @@ function loadFirebaseStats() {
     if (largeStatus) largeStatus.innerHTML = '<span style="color:#27AE60">🟢 Firebase verbind</span>';
     const gemeenteIdEl = document.getElementById('fbGemeenteId');
     if (gemeenteIdEl) gemeenteIdEl.textContent = 'Gemeente: ' + GEMEENTE_ID;
-  }).catch(err => {
+  }).catch(function(err) {
     if (statsEl) statsEl.textContent = 'Fout: ' + err.message;
   });
 }
