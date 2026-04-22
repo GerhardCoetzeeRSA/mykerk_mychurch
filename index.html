@@ -3648,12 +3648,7 @@ function showImportPreview(filename, af) {
   readyMsg.textContent = af
     ? total + ' lede gereed om in te voer'
     : total + ' members ready to import';
-}tById('importActions');
-  actions.classList.add('visible');
-  document.getElementById('importReadyMsg').textContent = importedData.length + (af?' lede gereed':' members ready');
-  document.getElementById('importConfirmBtn').textContent = (af?'Voer ':'Import ') + importedData.length + (af?' Lede In':' Members');
 }
-
 function resetImport() {
   importedData = []; importHeaders = [];
   ['importPreview','importActions','importProgress'].forEach(id => document.getElementById(id).classList.remove('visible'));
