@@ -4697,12 +4697,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }, 1500);
   // As SDK reeds gelaai is (bv. herlaai), begin dadelik
-  // Anders wag die SDK se onload callback vir initFirebase()
-  var sdkCheckCount = 0;
-  var sdkCheckInterval = setInterval(function() {
-    sdkCheckCount++;
-    if (window._firebaseSDKLoaded || typeof firebase !== 'undefined') {
-            clearInterval(sdkCheckInterval);
-</script>
-</body>
-</html>
+  if (typeof firebase !== 'undefined') { initFirebase(); } else {
+    setTimeout(function() { if (typeof firebase !== 'undefined') initFirebase(); }, 300); }
+
+
+
+
+
+
+
