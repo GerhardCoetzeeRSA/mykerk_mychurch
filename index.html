@@ -2482,9 +2482,7 @@ window._firebaseSDKLoaded = true;
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-
-</script><script>
+<script>
 // ═══════════════════════════════════════════════════════════
 // FIREBASE KONFIGURASIEE & INITIALISASIE
 // ═══════════════════════════════════════════════════════════
@@ -2958,7 +2956,7 @@ function deleteMemberFromFirestore(firestoreId, localId) {
   if (db && firestoreId) {
     gemeentePath('lede').doc(firestoreId).delete()
       .then(function() { return  showToast(currentLang==='af' ? 'Lid uitgevee ✓' : 'Member deleted ✓'))
-      .catch(err => console.error('Uitvee fout:', err));
+      .catch(function(err) { console.error('Uitvee fout:', err); });
   } else {
     members = members.filter(function(m) { return  m.id !== localId);
     renderMembers();
@@ -2980,7 +2978,7 @@ function loadEventsFromFirestore() {
       eventsData = snapshot.docs.map(function(doc) { return  ({ firestoreId: doc.id, ...doc.data() }));
       renderEventsFromData();
       console.log('Gebeure herlaai:', eventsData.length);
-    }, err => console.warn('Gebeure fout:', err.message));
+    }, function(err) { console.warn('Gebeure fout:', err.message); });
   firestoreListeners.push(unsub);
 }
 
@@ -3029,7 +3027,7 @@ function loadPrayersFromFirestore() {
       prayersData = snapshot.docs.map(function(doc) { return  ({ firestoreId: doc.id, ...doc.data() }));
       renderPrayersFromData();
       console.log('Gebede herlaai:', prayersData.length);
-    }, err => console.warn('Gebede fout:', err.message));
+    }, function(err) { console.warn('Gebede fout:', err.message); });
   firestoreListeners.push(unsub);
 }
 
@@ -3074,7 +3072,7 @@ function prayForRequest(firestoreId) {
   gemeentePath('gebede').doc(firestoreId).update({
     prayerCount: firebase.firestore.FieldValue.increment(1)
   }).then(function() { return  showToast(currentLang==='af' ? '🙏 Jy bid saam!' : '🙏 You are praying!'))
-  .catch(err => console.error(err));
+  .catch(function(err) { console.error(err); });
 }
 
 function timeAgo(date) {
@@ -3358,7 +3356,7 @@ function logAudit(type, msg) {
 
 // ── SETTINGS TABS ──
 function switchSettingsTab(tabId, navEl) {
-  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.settings-panel').forEach(function(p) { p.classList.remove('active'; }));
   document.querySelectorAll('.settings-nav-item').forEach(function(n) { n.classList.remove('active'));
   const panel = document.getElementById(tabId);
   if (panel) panel.classList.add('active');
@@ -3471,7 +3469,7 @@ function addMember() {
   saveNewMemberToFirestore(newMember);
 
   // Stoor gesinslede
-  gesinslede.forEach(geslid => saveNewMemberToFirestore(geslid));
+  gesinslede.forEach(function(geslid) { saveNewMemberToFirestore(geslid); });
 
   const famCount = gesinslede.length;
   const msg = famCount > 0
@@ -3655,7 +3653,7 @@ function showImportPreview(filename, af) {
 
 function resetImport() {
   importedData = []; importHeaders = [];
-  ['importPreview','importActions','importProgress'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  ['importPreview','importActions','importProgress'].forEach(function(id) { document.getElementById(id; }).classList.remove('visible'));
   document.getElementById('importFileInput').value = '';
   const af = currentLang === 'af';
   document.getElementById('importDropZone').innerHTML = '<div class="import-drop-icon">📁</div><div class="import-drop-title">'+(af?'Sleep CSV / Excel lêer hier':'Drop CSV / Excel file here')+'</div><div class="import-drop-sub">'+(af?'of klik om te soek':'or click to browse')+'</div><input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" style="display:none" onchange="handleFileSelect(this)">';
@@ -4552,7 +4550,7 @@ function setMobileNav(id) {
 
 // ── SETTINGS TAB SELECT (mobile) ──
 function switchSettingsTabById(tabId) {
-  document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.settings-panel').forEach(function(p) { p.classList.remove('active'; }));
   document.querySelectorAll('.settings-nav-item').forEach(function(n) { n.classList.remove('active'));
   const panel = document.getElementById(tabId);
   if (panel) panel.classList.add('active');
@@ -4622,7 +4620,7 @@ function loadFirebaseStats() {
     gemeentePath('lede').get(),
     gemeentePath('gebeure').get(),
     gemeentePath('gebede').get()
-  ]).then(([lede, gebeure, gebede]) => {
+  ]).then((results) { var lede=results[0],gebeure=results[1],gebede=results[2]; {
     statsEl.innerHTML = [
       '👥 Lede: <strong>' + lede.size + '</strong>',
       '📅 Gebeure: <strong>' + gebeure.size + '</strong>',
@@ -4647,7 +4645,7 @@ function switchSettingsPanel(panel, el) {
     origSwitchSettingsPanel(panel, el);
   } else {
     // Fallback
-    document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.settings-panel').forEach(function(p) { p.classList.remove('active'; }));
     document.querySelectorAll('.settings-nav-item').forEach(function(n) { n.classList.remove('active'));
     const targetPanel = document.getElementById('panel-' + panel);
     if (targetPanel) targetPanel.classList.add('active');
