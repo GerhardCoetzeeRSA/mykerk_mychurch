@@ -2917,10 +2917,10 @@ function loadMembersFromFirestore() {
         return;
       }
       // Vervang plaaslike lede-array met Firestore data
-      members = snapshot.docs.map(function(doc) { return  ({
-        firestoreId: doc.id,
-        ...doc.data()
-      }));
+      members = snapshot.docs.map(function(doc) { var d=doc.data(); d.firestoreId=doc.id; return d; });
+
+
+
       renderMembers();
       updateDashboardStats();
       console.log('Lede herlaai:', members.length);
@@ -2975,10 +2975,10 @@ function loadEventsFromFirestore() {
     .orderBy('date', 'asc')
     .limit(50)
     .onSnapshot(function(snapshot) {
-      eventsData = snapshot.docs.map(function(doc) { return  ({ firestoreId: doc.id, ...doc.data() }));
-      renderEventsFromData();
-      console.log('Gebeure herlaai:', eventsData.length);
-    }, function(err) { console.warn('Gebeure fout:', err.message); });
+      eventsData = snapshot.docs.map(function(doc) { var d=doc.data(); d.firestoreId=doc.id; return d; });
+
+
+
   firestoreListeners.push(unsub);
 }
 
@@ -3024,10 +3024,10 @@ function loadPrayersFromFirestore() {
     .orderBy('createdAt', 'desc')
     .limit(20)
     .onSnapshot(function(snapshot) {
-      prayersData = snapshot.docs.map(function(doc) { return  ({ firestoreId: doc.id, ...doc.data() }));
-      renderPrayersFromData();
-      console.log('Gebede herlaai:', prayersData.length);
-    }, function(err) { console.warn('Gebede fout:', err.message); });
+      prayersData = snapshot.docs.map(function(doc) { var d=doc.data(); d.firestoreId=doc.id; return d; });
+
+
+
   firestoreListeners.push(unsub);
 }
 
