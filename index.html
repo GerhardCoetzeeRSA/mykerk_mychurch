@@ -3913,16 +3913,18 @@ window._setLang = function(lang) {
     }
   });
   // Update page titles
-  const activeNavItem = document.querySelector('.nav-item.active');
+  var activeNavItem = document.querySelector('.nav-item.active');
+  var currentScreen = 'dashboard'; // default
   if (activeNavItem) {
-    const onclick = activeNavItem.getAttribute('onclick') || '';
-    const match = onclick.match(/showScreen\('([^']+)'/);
-    if (match && screenTitles[lang] && screenTitles[lang][match[1]]) {
-      const title = screenTitles[lang][match[1]];
-      document.getElementById('pageTitle').textContent = title;
-      const mob = document.getElementById('mobilePageTitle');
-      if (mob) mob.textContent = title;
-    }
+    var onclickAttr = activeNavItem.getAttribute('onclick') || '';
+    var screenMatch = onclickAttr.match(/showScreen\('([^']+)'/);
+    if (screenMatch) currentScreen = screenMatch[1];
+  }
+  if (screenTitles[lang] && screenTitles[lang][currentScreen]) {
+    var title = screenTitles[lang][currentScreen];
+    document.getElementById('pageTitle').textContent = title;
+    var mob = document.getElementById('mobilePageTitle');
+    if (mob) mob.textContent = title;
   }
   // Sync church name on mobile topbar
   const mobChurch = document.getElementById('mobileChurchName');
