@@ -2495,9 +2495,60 @@ window._firebaseSDKLoaded = true;
       el.textContent = lang === 'af' ? el.dataset.af : el.dataset.en;
     });
   }
-  function showScreen(id, navEl) {
-    if (window._showScreen) window._showScreen(id, navEl);
+  function showScreen(id, navEl) { if (window._showScreen) window._showScreen(id, navEl); }
+  function openDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.add('open');
+    if (o) o.classList.add('open');
+    document.body.style.overflow = 'hidden';
   }
+  function closeDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.remove('open');
+    if (o) o.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  function showModal(id) { var el = document.getElementById(id); if (el) el.classList.add('open'); }
+  function closeModal(id) { var el = document.getElementById(id); if (el) el.classList.remove('open'); }
+  function showToast(msg) { if (window._showToast) window._showToast(msg); }
+  function setMobileNav(id) { if (window._setMobileNav) window._setMobileNav(id); }
+  function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
+  function switchSettingsTab(id, el) { if (window._switchSettingsTab) window._switchSettingsTab(id, el); }
+  function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
+  function dismissWelcome() { if (window._dismissWelcome) window._dismissWelcome(); }
+  function startWelcomeRegister() { if (window._startWelcomeRegister) window._startWelcomeRegister(); }
+  function startWelcomeSignin() { if (window._startWelcomeSignin) window._startWelcomeSignin(); }
+  window._doFirebaseLogin = function() { if (window._doFirebaseLogin) window._doFirebaseLogin(); }
+  window._doRegister = function() { if (window._doRegister) window._doRegister(); }
+  window._doLogout = function() { if (window._doLogout) window._doLogout(); }
+  window._doForgotPassword = function() { if (window._doForgotPassword) window._doForgotPassword(); }
+  function switchAuthTab(t) { if (window._switchAuthTab) window._switchAuthTab(t); }
+  window._addMember = function() { if (window._addMember) window._addMember(); }
+  window._addEvent = function() { if (window._addEvent) window._addEvent(); }
+  window._submitPrayer = function() { if (window._submitPrayer) window._submitPrayer(); }
+  function prayForRequest(id) { if (window._prayForRequest) window._prayForRequest(id); }
+  function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
+  function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
+  window._doMemberRegister = function() { if (window._doMemberRegister) window._doMemberRegister(); }
+  window._copyGemeenteCode = function() { if (window._copyGemeenteCode) window._copyGemeenteCode(); }
+  window._openZapperPayment = function() { if (window._openZapperPayment) window._openZapperPayment(); }
+  window._applyFirebaseConfig = function() { if (window._applyFirebaseConfig) window._applyFirebaseConfig(); }
+  window._testFirebaseConnection = function() { if (window._testFirebaseConnection) window._testFirebaseConnection(); }
+  window._loadFirebaseStats = function() { if (window._loadFirebaseStats) window._loadFirebaseStats(); }
+  window._loadSeedDataIfEmpty = function() { if (window._loadSeedDataIfEmpty) window._loadSeedDataIfEmpty(); }
+  window._resetImport = function() { if (window._resetImport) window._resetImport(); }
+  window._runImport = function() { if (window._runImport) window._runImport(); }
+  window._downloadTemplate = function() { if (window._downloadTemplate) window._downloadTemplate(); }
+  function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
+  function printLegal(id) { if (window._printLegal) window._printLegal(id); }
+  window._downloadPOPIATemplate = function() { if (window._downloadPOPIATemplate) window._downloadPOPIATemplate(); }
+  function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
+  window._printLegalModal = function() { if (window._printLegalModal) window._printLegalModal(); }
+  window._downloadLegalModal = function() { if (window._downloadLegalModal) window._downloadLegalModal(); }
+  window._addFamilyRow = function() { if (window._addFamilyRow) window._addFamilyRow(); }
+  function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
 
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -2544,9 +2595,7 @@ var currentGemeenteId = null;
 function initFirebase() {
   try {
     if (typeof firebase === 'undefined') {
-      console.warn('Firebase SDK nie gelaai nie - offline modus');
-      setFirebaseStatus('offline');
-      return;
+      return; // SDK not ready yet, interval will retry
     }
     if (!firebase.apps.length) {
       firebase.initializeApp(FIREBASE_CONFIG);
@@ -2761,7 +2810,7 @@ function hideAuthGate() {
 
 // ── AUTH FUNCTIONS ──
 
-function switchAuthTab(tab) {
+window._switchAuthTab = function(tab) {
   var tabs = ['signin','register','forgot'];
   tabs.forEach(function(t) {
     var btn = document.getElementById('tabSignin') || document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
@@ -3085,7 +3134,7 @@ function renderPrayersFromData() {
   }).join('');
 }
 
-function prayForRequest(firestoreId) {
+window._prayForRequest = function(firestoreId) {
   if (!db || !firestoreId) return;
   gemeentePath('gebede').doc(firestoreId).update({
     prayerCount: firebase.firestore.FieldValue.increment(1)
@@ -3373,7 +3422,7 @@ function logAudit(type, msg) {
 }
 
 // ── SETTINGS TABS ──
-function switchSettingsTab(tabId, navEl) {
+window._switchSettingsTab = function(tabId, navEl) {
   document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
   const panel = document.getElementById(tabId);
@@ -3382,8 +3431,8 @@ function switchSettingsTab(tabId, navEl) {
 }
 
 // ── MODALS ──
-function showModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+window._showModal = function(id) { document.getElementById(id).classList.add('open'); };
+window._closeModal = function(id) { document.getElementById(id).classList.remove('open'); };
 document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
@@ -3553,7 +3602,7 @@ function handleFileDrop(e) {
   const f = e.dataTransfer.files[0];
   if (f) processImportFile(f);
 }
-function handleFileSelect(input) { if (input.files[0]) processImportFile(input.files[0]); }
+window._handleFileSelect = function(input) { if (input.files[0]) processImportFile(input.files[0]); };
 
 function processImportFile(file) {
   var af = currentLang === 'af';
@@ -3934,7 +3983,7 @@ var welcomeText = {
   }
 };
 
-function setWelcomeLang(lang) {
+window._setWelcomeLang = function(lang) {
   welcomeLang = lang;
   var t = welcomeText[lang];
   var set = function(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; };
@@ -4053,7 +4102,7 @@ function copyGemeenteCode() {
   }
 }
 
-function selectRegRole(role) {
+window._selectRegRole = function(role) {
   var adminCard = document.getElementById('roleAdminCard');
   var memberCard = document.getElementById('roleMemberCard');
   var adminFields = document.getElementById('regAdminFields');
@@ -4383,7 +4432,7 @@ function activateSubscription(plan) {
   logAudit('info', 'Subscription activated: ' + plan + ' until ' + paidUntil.toISOString());
 }
 
-function selectPlan(plan) {
+window._selectPlan = function(plan) {
   selectedPlan = plan;
   document.getElementById('planMonthly').classList.toggle('selected', plan === 'monthly');
   document.getElementById('planAnnual').classList.toggle('selected', plan === 'annual');
@@ -4445,7 +4494,7 @@ function openZapperPayment() {
 }
 
 
-function openLegalModal(doc) {
+window._openLegalModal = function(doc) {
   currentLegalDoc = doc;
   const af = currentLang === 'af';
   const data = LEGAL_CONTENT[doc];
@@ -4480,7 +4529,7 @@ function downloadLegalModal() {
 }
 
 // ── LEGAL HELPERS (for settings panels) ──
-function printLegal(contentId) {
+window._printLegal = function(contentId) {
   const content = document.getElementById(contentId);
   if (!content) return;
   const w = window.open('', '_blank');
@@ -4491,7 +4540,7 @@ function printLegal(contentId) {
   w.print();
 }
 
-function downloadLegal(contentId, filename) {
+window._downloadLegal = function(contentId, filename) {
   const content = document.getElementById(contentId);
   if (!content) return;
   // Strip HTML tags for plain text download
@@ -4653,7 +4702,7 @@ function loadFirebaseStats() {
 
 // Auto-load stats when Firebase panel opened
 const origSwitchSettingsPanel = window.switchSettingsPanel;
-function switchSettingsPanel(panel, el) {
+window._switchSettingsPanel = function(panel, el) {
   if (typeof origSwitchSettingsPanel === 'function') {
     origSwitchSettingsPanel(panel, el);
   } else {
