@@ -726,7 +726,7 @@ window._firebaseSDKLoaded = true;
     <nav>
       <div class="nav-section">
         <div class="nav-label" data-en="Main" data-af="Hoof">Hoof</div>
-        <div class="nav-item drawer-nav active" onclick="showScreen('dashboard',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128202;</span><span data-en="Dashboard" data-af="Dashboard">Paneelbord</span></div>
+        <div class="nav-item drawer-nav active" onclick="showScreen('dashboard',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128202;</span><span data-en="Dashboard" data-af="Paneelbord">Paneelbord</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('members',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128101;</span><span data-en="Members" data-af="Lede">Lede</span><span class="nav-badge">247</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('events',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128197;</span><span data-en="Events &amp; Services" data-af="Geleenthede &amp; Dienste">Geleenthede &amp; Dienste</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('ministries',event.currentTarget);closeDrawer()"><span class="nav-icon">&#10013;&#65039;</span><span data-en="Ministries" data-af="Bedieninge">Bedieninge</span></div>
@@ -4167,7 +4167,7 @@ function applyRoleToUI(role) {
       if (codeEl && currentGemeenteCode) {
         codeEl.textContent = currentGemeenteCode;
       }
-    }, 500);
+    }, 300);
   }
   // Wys/versteek lid welkom banner
   var banner = document.getElementById('memberWelcomeBanner');
@@ -4714,16 +4714,24 @@ function switchSettingsPanel(panel, el) {
   }, 1500);
   // As SDK reeds gelaai is (bv. herlaai), begin dadelik
   // Anders wag die SDK se onload callback vir initFirebase()
-  var sdkCheckCount = 0;
-  var sdkCheckInterval = setInterval(function() {
-    sdkCheckCount++;
-    if (window._firebaseSDKLoaded || typeof firebase !== 'undefined') {
-      clearInterval(sdkCheckInterval);
-      initFirebase();
-    } else if (sdkCheckCount > 20) {
-      clearInterval(sdkCheckInterval);
-    }
-  }, 500);
+  // Firebase is loaded statically in <head>, call initFirebase directly
+  if (typeof firebase !== 'undefined') {
+    initFirebase();
+  } else {
+    // Fallback: poll in case of slow load
+    var sdkCheckCount = 0;
+    var sdkCheckInterval = setInterval(function() {
+      sdkCheckCount++;
+      if (typeof firebase !== 'undefined') {
+        clearInterval(sdkCheckInterval);
+        initFirebase();
+      } else if (sdkCheckCount > 40) {
+        clearInterval(sdkCheckInterval);
+        console.warn('Firebase SDK nie gelaai nie - offline modus');
+        setFirebaseStatus('offline');
+      }
+    }, 300);
+  }
 
   }); // end DOMContentLoaded
 </script>
