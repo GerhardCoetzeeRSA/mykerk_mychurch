@@ -726,7 +726,7 @@ window._firebaseSDKLoaded = true;
     <nav>
       <div class="nav-section">
         <div class="nav-label" data-en="Main" data-af="Hoof">Hoof</div>
-        <div class="nav-item drawer-nav active" onclick="showScreen('dashboard',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128202;</span><span data-en="Dashboard" data-af="Paneelbord">Paneelbord</span></div>
+        <div class="nav-item drawer-nav active" onclick="showScreen('dashboard',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128202;</span><span data-en="Dashboard" data-af="Dashboard">Paneelbord</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('members',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128101;</span><span data-en="Members" data-af="Lede">Lede</span><span class="nav-badge">247</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('events',event.currentTarget);closeDrawer()"><span class="nav-icon">&#128197;</span><span data-en="Events &amp; Services" data-af="Geleenthede &amp; Dienste">Geleenthede &amp; Dienste</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('ministries',event.currentTarget);closeDrawer()"><span class="nav-icon">&#10013;&#65039;</span><span data-en="Ministries" data-af="Bedieninge">Bedieninge</span></div>
@@ -768,7 +768,7 @@ window._firebaseSDKLoaded = true;
       <button class="lang-btn" id="langEN" onclick="setLang('en')">🇬🇧 English</button>
     </div>
 
-    <nav>
+    <nav>setLang
       <div class="nav-section">
         <div class="nav-label" data-en="Main" data-af="Hoof">Hoof</div>
         <div class="nav-item active" onclick="showScreen('dashboard', event.currentTarget)">
@@ -3507,7 +3507,7 @@ function addMember() {
 }
 function addEvent() {
   const title = document.getElementById('newEventTitle')?.value?.trim();
-  if (!title) { showToast(currentLang==='af'?'Voer geleentheidsnaam in':'Enter event title'); return; }
+  if (!title) { showToast(currentLang==='af'?'Voer beskrywing van die geleentheid in':'Enter event title'); return; }
   const eventData = {
     title: title,
     date: document.getElementById('newEventDate')?.value || '',
