@@ -4757,6 +4757,40 @@ window._switchSettingsPanel = function(panel, el) {
     }
   }, 300);
 
+
+  // Expose all functions globally so onclick handlers can find them
+  window.doRegister = doRegister;
+  window.doFirebaseLogin = doFirebaseLogin;
+  window.doForgotPassword = doForgotPassword;
+  window.doLogin = doLogin;
+  window.doLogout = doLogout;
+  window.showToast = showToast;
+  window.addMember = addMember;
+  window.addEvent = addEvent;
+  window.submitPrayer = submitPrayer;
+  window.addFamilyRow = addFamilyRow;
+  window.resetImport = resetImport;
+  window.runImport = runImport;
+  window.downloadTemplate = downloadTemplate;
+  window.copyGemeenteCode = copyGemeenteCode;
+  window.doMemberRegister = doMemberRegister;
+  window.openZapperPayment = openZapperPayment;
+  window.printLegalModal = printLegalModal;
+  window.downloadLegalModal = downloadLegalModal;
+  window.downloadPOPIATemplate = downloadPOPIATemplate;
+  window.openDrawer = openDrawer;
+  window.closeDrawer = closeDrawer;
+  window.setMobileNav = setMobileNav;
+  window.applyFirebaseConfig = applyFirebaseConfig;
+  window.testFirebaseConnection = testFirebaseConnection;
+  window.loadFirebaseStats = loadFirebaseStats;
+  window.loadSeedDataIfEmpty = typeof loadSeedDataIfEmpty !== 'undefined' ? loadSeedDataIfEmpty : function(){};
+  window.startWelcomeRegister = startWelcomeRegister;
+  window.startWelcomeSignin = startWelcomeSignin;
+  window.dismissWelcome = dismissWelcome;
+  window.showAuthGate = showAuthGate;
+  window.hideAuthGate = hideAuthGate;
+
   }); // end DOMContentLoaded
 </script>
 <script>
