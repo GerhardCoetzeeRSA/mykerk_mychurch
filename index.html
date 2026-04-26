@@ -2507,6 +2507,19 @@ window._firebaseSDKLoaded = true;
     }
   }
   function showScreen(id, navEl) { if (window._showScreen) window._showScreen(id, navEl); }
+  function switchAuthTab(t) { if (window._switchAuthTab) window._switchAuthTab(t); }
+  function prayForRequest(id) { if (window._prayForRequest) window._prayForRequest(id); }
+  function switchSettingsTab(id, el) { if (window._switchSettingsTab) window._switchSettingsTab(id, el); }
+  function showModal(id) { if (window._showModal) window._showModal(id); else { var el=document.getElementById(id); if(el) el.classList.add('open'); } }
+  function closeModal(id) { if (window._closeModal) window._closeModal(id); else { var el=document.getElementById(id); if(el) el.classList.remove('open'); } }
+  function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
+  function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
+  function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
+  function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
+  function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
+  function printLegal(id) { if (window._printLegal) window._printLegal(id); }
+  function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
+  function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
 
 
   document.addEventListener('DOMContentLoaded', function() {
