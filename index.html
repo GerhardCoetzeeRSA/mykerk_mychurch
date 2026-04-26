@@ -2523,42 +2523,42 @@ window._firebaseSDKLoaded = true;
   }
   function showModal(id) { if (window._showModal) window._showModal(id); else document.getElementById(id).classList.add('open'); }
   function closeModal(id) { if (window._closeModal) window._closeModal(id); else document.getElementById(id).classList.remove('open'); }
-    function showToast(msg) { if (window._showToast) window._showToast(msg); }
-    function setMobileNav(id) { if (window._setMobileNav) window._setMobileNav(id); }
+
+
   function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
   function switchSettingsTab(id, el) { if (window._switchSettingsTab) window._switchSettingsTab(id, el); }
   function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
-    function dismissWelcome() { if (window._dismissWelcome) window._dismissWelcome(); }
-    function startWelcomeRegister() { if (window._startWelcomeRegister) window._startWelcomeRegister(); }
-    function startWelcomeSignin() { if (window._startWelcomeSignin) window._startWelcomeSignin(); }
-    function doFirebaseLogin() { if (window._doFirebaseLogin) window._doFirebaseLogin(); }
-    function doRegister() { if (window._doRegister) window._doRegister(); }
-    function doLogout() { if (window._doLogout) window._doLogout(); }
-    function doForgotPassword() { if (window._doForgotPassword) window._doForgotPassword(); }
+
+
+
+
+
+
+
   function switchAuthTab(t) { if (window._switchAuthTab) window._switchAuthTab(t); }
-    function addMember() { if (window._addMember) window._addMember(); }
-    function addEvent() { if (window._addEvent) window._addEvent(); }
-    function submitPrayer() { if (window._submitPrayer) window._submitPrayer(); }
+
+
+
   function prayForRequest(id) { if (window._prayForRequest) window._prayForRequest(id); }
   function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
   function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
-    function doMemberRegister() { if (window._doMemberRegister) window._doMemberRegister(); }
-    function copyGemeenteCode() { if (window._copyGemeenteCode) window._copyGemeenteCode(); }
-    function openZapperPayment() { if (window._openZapperPayment) window._openZapperPayment(); }
-    function applyFirebaseConfig() { if (window._applyFirebaseConfig) window._applyFirebaseConfig(); }
-    function testFirebaseConnection() { if (window._testFirebaseConnection) window._testFirebaseConnection(); }
-    function loadFirebaseStats() { if (window._loadFirebaseStats) window._loadFirebaseStats(); }
-    function loadSeedDataIfEmpty() { if (window._loadSeedDataIfEmpty) window._loadSeedDataIfEmpty(); }
-    function resetImport() { if (window._resetImport) window._resetImport(); }
-    function runImport() { if (window._runImport) window._runImport(); }
-    function downloadTemplate() { if (window._downloadTemplate) window._downloadTemplate(); }
+
+
+
+
+
+
+
+
+
+
   function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
   function printLegal(id) { if (window._printLegal) window._printLegal(id); }
-    function downloadPOPIATemplate() { if (window._downloadPOPIATemplate) window._downloadPOPIATemplate(); }
+
   function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
-    function printLegalModal() { if (window._printLegalModal) window._printLegalModal(); }
-    function downloadLegalModal() { if (window._downloadLegalModal) window._downloadLegalModal(); }
-    function addFamilyRow() { if (window._addFamilyRow) window._addFamilyRow(); }
+
+
+
   function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
 
 
@@ -2893,11 +2893,6 @@ function doRegister() {
   if (!name || !church || !email || !pass) { showAuthError(af ? 'Vul asseblief alle velde in.' : 'Please fill in all fields.'); return; }
   if (pass.length < 6) { showAuthError(af ? 'Wagwoord moet minstens 6 karakters wees.' : 'Password must be at least 6 characters.'); return; }
   if (pass !== pass2) { showAuthError(af ? 'Wagwoorde stem nie ooreen nie.' : 'Passwords do not match.'); return; }
-
-  if (typeof firebase === 'undefined' || !firebase.auth) {
-    showAuthError(af ? 'Firebase nie verbind nie. Herlaai die bladsy.' : 'Firebase not connected. Please reload the page.');
-    return;
-  }
 
   setAuthLoading('btnRegister', true, af);
 
