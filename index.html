@@ -3339,16 +3339,17 @@ function doLogout() {
       currentUserRole = 'member';
       clearTimeout(autoLockTimer);
       showToast(af ? 'Uitgeteken' : 'Signed out');
-      renderMembers(members);
+      setTimeout(function() { window.location.reload(); }, 800);
+    }).catch(function(err) {
+      console.error('Sign out error:', err);
+      window.location.reload();
     });
   } else {
     isAuthenticated = false;
     currentUserRole = 'member';
-    document.getElementById('loginGate').style.display = 'flex';
-    document.getElementById('settingsShell').classList.remove('visible');
     clearTimeout(autoLockTimer);
     showToast(af ? 'Uitgeteken' : 'Signed out');
-    renderMembers(members);
+    setTimeout(function() { window.location.reload(); }, 800);
   }
 }
 
