@@ -2507,46 +2507,58 @@ window._firebaseSDKLoaded = true;
     }
   }
   function showScreen(id, navEl) { if (window._showScreen) window._showScreen(id, navEl); }
-  window._openDrawer = function() { if (window._openDrawer) window._openDrawer(); }
-  window._closeDrawer = function() { if (window._closeDrawer) window._closeDrawer(); }
+  function openDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.add('open');
+    if (o) o.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.remove('open');
+    if (o) o.classList.remove('open');
+    document.body.style.overflow = '';
+  }
   function showModal(id) { if (window._showModal) window._showModal(id); else document.getElementById(id).classList.add('open'); }
   function closeModal(id) { if (window._closeModal) window._closeModal(id); else document.getElementById(id).classList.remove('open'); }
-  window._showToast = function(msg) { if (window._showToast) window._showToast(msg); }
-  window._setMobileNav = function(id) { if (window._setMobileNav) window._setMobileNav(id); }
+    function showToast(msg) { if (window._showToast) window._showToast(msg); }
+    function setMobileNav(id) { if (window._setMobileNav) window._setMobileNav(id); }
   function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
   function switchSettingsTab(id, el) { if (window._switchSettingsTab) window._switchSettingsTab(id, el); }
   function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
-  window._dismissWelcome = function() { if (window._dismissWelcome) window._dismissWelcome(); }
-  window._startWelcomeRegister = function() { if (window._startWelcomeRegister) window._startWelcomeRegister(); }
-  window._startWelcomeSignin = function() { if (window._startWelcomeSignin) window._startWelcomeSignin(); }
-  window._doFirebaseLogin = function() { if (window._doFirebaseLogin) window._doFirebaseLogin(); }
-  window._doRegister = function() { if (window._doRegister) window._doRegister(); }
-  window._doLogout = function() { if (window._doLogout) window._doLogout(); }
-  window._doForgotPassword = function() { if (window._doForgotPassword) window._doForgotPassword(); }
+    function dismissWelcome() { if (window._dismissWelcome) window._dismissWelcome(); }
+    function startWelcomeRegister() { if (window._startWelcomeRegister) window._startWelcomeRegister(); }
+    function startWelcomeSignin() { if (window._startWelcomeSignin) window._startWelcomeSignin(); }
+    function doFirebaseLogin() { if (window._doFirebaseLogin) window._doFirebaseLogin(); }
+    function doRegister() { if (window._doRegister) window._doRegister(); }
+    function doLogout() { if (window._doLogout) window._doLogout(); }
+    function doForgotPassword() { if (window._doForgotPassword) window._doForgotPassword(); }
   function switchAuthTab(t) { if (window._switchAuthTab) window._switchAuthTab(t); }
-  window._addMember = function() { if (window._addMember) window._addMember(); }
-  window._addEvent = function() { if (window._addEvent) window._addEvent(); }
-  window._submitPrayer = function() { if (window._submitPrayer) window._submitPrayer(); }
+    function addMember() { if (window._addMember) window._addMember(); }
+    function addEvent() { if (window._addEvent) window._addEvent(); }
+    function submitPrayer() { if (window._submitPrayer) window._submitPrayer(); }
   function prayForRequest(id) { if (window._prayForRequest) window._prayForRequest(id); }
   function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
   function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
-  window._doMemberRegister = function() { if (window._doMemberRegister) window._doMemberRegister(); }
-  window._copyGemeenteCode = function() { if (window._copyGemeenteCode) window._copyGemeenteCode(); }
-  window._openZapperPayment = function() { if (window._openZapperPayment) window._openZapperPayment(); }
-  window._applyFirebaseConfig = function() { if (window._applyFirebaseConfig) window._applyFirebaseConfig(); }
-  window._testFirebaseConnection = function() { if (window._testFirebaseConnection) window._testFirebaseConnection(); }
-  window._loadFirebaseStats = function() { if (window._loadFirebaseStats) window._loadFirebaseStats(); }
-  window._loadSeedDataIfEmpty = function() { if (window._loadSeedDataIfEmpty) window._loadSeedDataIfEmpty(); }
-  window._resetImport = function() { if (window._resetImport) window._resetImport(); }
-  window._runImport = function() { if (window._runImport) window._runImport(); }
-  window._downloadTemplate = function() { if (window._downloadTemplate) window._downloadTemplate(); }
+    function doMemberRegister() { if (window._doMemberRegister) window._doMemberRegister(); }
+    function copyGemeenteCode() { if (window._copyGemeenteCode) window._copyGemeenteCode(); }
+    function openZapperPayment() { if (window._openZapperPayment) window._openZapperPayment(); }
+    function applyFirebaseConfig() { if (window._applyFirebaseConfig) window._applyFirebaseConfig(); }
+    function testFirebaseConnection() { if (window._testFirebaseConnection) window._testFirebaseConnection(); }
+    function loadFirebaseStats() { if (window._loadFirebaseStats) window._loadFirebaseStats(); }
+    function loadSeedDataIfEmpty() { if (window._loadSeedDataIfEmpty) window._loadSeedDataIfEmpty(); }
+    function resetImport() { if (window._resetImport) window._resetImport(); }
+    function runImport() { if (window._runImport) window._runImport(); }
+    function downloadTemplate() { if (window._downloadTemplate) window._downloadTemplate(); }
   function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
   function printLegal(id) { if (window._printLegal) window._printLegal(id); }
-  window._downloadPOPIATemplate = function() { if (window._downloadPOPIATemplate) window._downloadPOPIATemplate(); }
+    function downloadPOPIATemplate() { if (window._downloadPOPIATemplate) window._downloadPOPIATemplate(); }
   function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
-  window._printLegalModal = function() { if (window._printLegalModal) window._printLegalModal(); }
-  window._downloadLegalModal = function() { if (window._downloadLegalModal) window._downloadLegalModal(); }
-  window._addFamilyRow = function() { if (window._addFamilyRow) window._addFamilyRow(); }
+    function printLegalModal() { if (window._printLegalModal) window._printLegalModal(); }
+    function downloadLegalModal() { if (window._downloadLegalModal) window._downloadLegalModal(); }
+    function addFamilyRow() { if (window._addFamilyRow) window._addFamilyRow(); }
   function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
 
 
