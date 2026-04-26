@@ -2523,42 +2523,42 @@ window._firebaseSDKLoaded = true;
   }
   function showModal(id) { if (window._showModal) window._showModal(id); else document.getElementById(id).classList.add('open'); }
   function closeModal(id) { if (window._closeModal) window._closeModal(id); else document.getElementById(id).classList.remove('open'); }
-
-
+    function showToast(msg) { if (window._showToast) window._showToast(msg); }
+    function setMobileNav(id) { if (window._setMobileNav) window._setMobileNav(id); }
   function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
   function switchSettingsTab(id, el) { if (window._switchSettingsTab) window._switchSettingsTab(id, el); }
   function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
-
-
-
-
-
-
-
+    function dismissWelcome() { if (window._dismissWelcome) window._dismissWelcome(); }
+    function startWelcomeRegister() { if (window._startWelcomeRegister) window._startWelcomeRegister(); }
+    function startWelcomeSignin() { if (window._startWelcomeSignin) window._startWelcomeSignin(); }
+    function doFirebaseLogin() { if (window._doFirebaseLogin) window._doFirebaseLogin(); }
+    function doRegister() { if (window._doRegister) window._doRegister(); }
+    function doLogout() { if (window._doLogout) window._doLogout(); }
+    function doForgotPassword() { if (window._doForgotPassword) window._doForgotPassword(); }
   function switchAuthTab(t) { if (window._switchAuthTab) window._switchAuthTab(t); }
-
-
-
+    function addMember() { if (window._addMember) window._addMember(); }
+    function addEvent() { if (window._addEvent) window._addEvent(); }
+    function submitPrayer() { if (window._submitPrayer) window._submitPrayer(); }
   function prayForRequest(id) { if (window._prayForRequest) window._prayForRequest(id); }
   function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
   function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
-
-
-
-
-
-
-
-
-
-
+    function doMemberRegister() { if (window._doMemberRegister) window._doMemberRegister(); }
+    function copyGemeenteCode() { if (window._copyGemeenteCode) window._copyGemeenteCode(); }
+    function openZapperPayment() { if (window._openZapperPayment) window._openZapperPayment(); }
+    function applyFirebaseConfig() { if (window._applyFirebaseConfig) window._applyFirebaseConfig(); }
+    function testFirebaseConnection() { if (window._testFirebaseConnection) window._testFirebaseConnection(); }
+    function loadFirebaseStats() { if (window._loadFirebaseStats) window._loadFirebaseStats(); }
+    function loadSeedDataIfEmpty() { if (window._loadSeedDataIfEmpty) window._loadSeedDataIfEmpty(); }
+    function resetImport() { if (window._resetImport) window._resetImport(); }
+    function runImport() { if (window._runImport) window._runImport(); }
+    function downloadTemplate() { if (window._downloadTemplate) window._downloadTemplate(); }
   function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
   function printLegal(id) { if (window._printLegal) window._printLegal(id); }
-
+    function downloadPOPIATemplate() { if (window._downloadPOPIATemplate) window._downloadPOPIATemplate(); }
   function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
-
-
-
+    function printLegalModal() { if (window._printLegalModal) window._printLegalModal(); }
+    function downloadLegalModal() { if (window._downloadLegalModal) window._downloadLegalModal(); }
+    function addFamilyRow() { if (window._addFamilyRow) window._addFamilyRow(); }
   function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
 
 
@@ -2899,28 +2899,35 @@ function doRegister() {
   firebase.auth().createUserWithEmailAndPassword(email, pass)
     .then(function(cred) {
       var user = cred.user;
-      // Update display name
-      return user.updateProfile({ displayName: name }).then(function() {
-        // Create gemeente profile in Firestore
-        var trialEnd = new Date();
-        trialEnd.setDate(trialEnd.getDate() + 30);
-        var code = generateGemeenteCode(church);
-        return db.collection('gemeentes').doc(user.uid).set({
-          adminName: name,
-          adminEmail: email,
-          churchName: church,
-          gemeenteCode: code,
-          adminUid: user.uid,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          subscription: {
-            status: 'trial',
-            trialStart: new Date().toISOString(),
-            trialEnd: trialEnd.toISOString(),
-            plan: null,
-            paidUntil: null
-          }
-        }).then(function() {
-          // Stoor ook gebruiker profiel
+      var trialEnd = new Date();
+      trialEnd.setDate(trialEnd.getDate() + 30);
+      var code = generateGemeenteCode(church);
+      // Update display name first
+      return user.updateProfile({ displayName: name })
+        .then(function() {
+          // Get fresh token to ensure auth is ready for Firestore writes
+          return user.getIdToken(true);
+        })
+        .then(function() {
+          // Write gemeente profile
+          return db.collection('gemeentes').doc(user.uid).set({
+            adminName: name,
+            adminEmail: email,
+            churchName: church,
+            gemeenteCode: code,
+            adminUid: user.uid,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            subscription: {
+              status: 'trial',
+              trialStart: new Date().toISOString(),
+              trialEnd: trialEnd.toISOString(),
+              plan: null,
+              paidUntil: null
+            }
+          });
+        })
+        .then(function() {
+          // Write user profile
           return db.collection('gebruikers').doc(user.uid).set({
             naam: name,
             email: email,
@@ -2930,18 +2937,20 @@ function doRegister() {
             gemeenteCode: code
           });
         });
-      });
     })
     .then(function() {
       showAuthSuccess(af ? '🎉 Welkom! Jou 30-dag gratis proeftydperk het begin.' : '🎉 Welcome! Your 30-day free trial has started.');
       setAuthLoading('btnRegister', false, af);
-      // onAuthStateChanged fires and loads app
+      setTimeout(function() { window.location.reload(); }, 1500);
     })
     .catch(function(err) {
       setAuthLoading('btnRegister', false, af);
-      var msg = af ? 'Registrasie gefaal.' : 'Registration failed.';
+      console.error('Registration error:', err);
+      var msg = af ? 'Registrasie gefaal: ' : 'Registration failed: ';
       if (err.code === 'auth/email-already-in-use') msg = af ? 'Hierdie e-pos is al geregistreer. Teken in.' : 'This email is already registered. Sign in instead.';
-      if (err.code === 'auth/invalid-email') msg = af ? 'Ongeldige e-posadres.' : 'Invalid email address.';
+      else if (err.code === 'auth/invalid-email') msg = af ? 'Ongeldige e-posadres.' : 'Invalid email address.';
+      else if (err.code === 'auth/weak-password') msg = af ? 'Wagwoord te swak. Gebruik minstens 6 karakters.' : 'Password too weak. Use at least 6 characters.';
+      else msg += err.message;
       showAuthError(msg);
     });
 }
