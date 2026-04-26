@@ -3232,6 +3232,7 @@ function getVisibleMembers(list) {
 }
 
 function renderMembers(list) {
+  if (!list) list = members;
   const el = document.getElementById('membersList');
   const labels = roleLabelsLang[currentLang] || roleLabelsLang.af;
   const visible = getVisibleMembers(list);
@@ -3339,17 +3340,16 @@ function doLogout() {
       currentUserRole = 'member';
       clearTimeout(autoLockTimer);
       showToast(af ? 'Uitgeteken' : 'Signed out');
-      setTimeout(function() { window.location.reload(); }, 800);
-    }).catch(function(err) {
-      console.error('Sign out error:', err);
-      window.location.reload();
+      renderMembers(members);
     });
   } else {
     isAuthenticated = false;
     currentUserRole = 'member';
+    document.getElementById('loginGate').style.display = 'flex';
+    document.getElementById('settingsShell').classList.remove('visible');
     clearTimeout(autoLockTimer);
     showToast(af ? 'Uitgeteken' : 'Signed out');
-    setTimeout(function() { window.location.reload(); }, 800);
+    renderMembers(members);
   }
 }
 
@@ -4745,6 +4745,20 @@ window._switchSettingsPanel = function(panel, el) {
   }, 300);
 
   }); // end DOMContentLoaded
+</script>
+<script>
+// Guaranteed global fallback for doLogout
+if (typeof doLogout === 'undefined') {
+  function doLogout() {
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      firebase.auth().signOut().then(function() {
+        setTimeout(function() { window.location.reload(); }, 500);
+      });
+    } else {
+      window.location.reload();
+    }
+  }
+}
 </script>
 </body>
 </html>
