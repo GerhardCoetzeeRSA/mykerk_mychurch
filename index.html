@@ -5020,12 +5020,9 @@ function loadFirebaseStats() {
 }
 
 // Auto-load stats when Firebase panel opened
-const origSwitchSettingsPanel = window.switchSettingsPanel;
 window._switchSettingsPanel = function(panel, el) {
-  if (typeof origSwitchSettingsPanel === 'function') {
-    origSwitchSettingsPanel(panel, el);
-  } else {
-    // Fallback
+  {
+    // Direct implementation - no recursion
     document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.settings-nav-item').forEach(n => n.classList.remove('active'));
     const targetPanel = document.getElementById('panel-' + panel);
