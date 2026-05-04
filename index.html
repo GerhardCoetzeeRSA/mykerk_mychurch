@@ -740,6 +740,10 @@ window._firebaseSDKLoaded = true;
       <div class="nav-section">
         <div class="nav-label" data-en="Leadership" data-af="Leierskap">Leierskap</div>
         <div class="nav-item drawer-nav" onclick="showScreen('kerkraad',event.currentTarget);closeDrawer()"><span class="nav-icon">&#127963;&#65039;</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('attendance',event.currentTarget);closeDrawer()"><span class="nav-icon">✅</span><span data-en="Attendance" data-af="Bywoning">Bywoning</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('donations',event.currentTarget);closeDrawer()"><span class="nav-icon">💰</span><span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('checkin',event.currentTarget);closeDrawer()"><span class="nav-icon">👶</span><span data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('volunteers',event.currentTarget);closeDrawer()"><span class="nav-icon">🙋</span><span data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('settings',event.currentTarget);closeDrawer()"><span class="nav-icon">&#9881;&#65039;</span><span data-en="Settings &amp; Admin" data-af="Instellings &amp; Admin">Instellings &amp; Admin</span></div>
       </div>
     </nav>
@@ -803,7 +807,23 @@ window._firebaseSDKLoaded = true;
         <div class="nav-item" onclick="showScreen('kerkraad', event.currentTarget)">
           <span class="nav-icon">🏛️</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span>
         </div>
-        <div class="nav-item" onclick="showScreen('settings', event.currentTarget)">
+        <div class="nav-item" onclick="showScreen('attendance', event.currentTarget)">
+          <span class="nav-icon">✅</span>
+          <span data-en="Attendance" data-af="Bywoning">Bywoning</span>
+        </div>
+        <div class="nav-item" onclick="showScreen('donations', event.currentTarget)">
+          <span class="nav-icon">💰</span>
+          <span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span>
+        </div>
+        <div class="nav-item" onclick="showScreen('checkin', event.currentTarget)">
+          <span class="nav-icon">👶</span>
+          <span data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</span>
+        </div>
+        <div class="nav-item" onclick="showScreen('volunteers', event.currentTarget)">
+          <span class="nav-icon">🙋</span>
+          <span data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</span>
+        </div>
+                <div class="nav-item" onclick="showScreen('settings', event.currentTarget)">
           <span class="nav-icon">⚙️</span><span data-en="Settings &amp; Admin" data-af="Instellings &amp; Admin">Instellings &amp; Admin</span>
         </div>
       </div>
@@ -2314,7 +2334,323 @@ window._firebaseSDKLoaded = true;
 </div>
 
 </div><!-- end settings-shell -->
-      </div><!-- end screen-settings -->
+      
+</div><!-- end screen-settings -->
+
+      <!-- ══════════════════ ATTENDANCE SCREEN ══════════════════ -->
+      <div class="screen" id="screen-attendance">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="page-title" id="attendanceTitle" data-en="Attendance" data-af="Bywoning">Bywoning</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="Track service & event attendance" data-af="Volg diens- en geleentheidsbywoning">Volg diens- en geleentheidsbywoning</div>
+          </div>
+          <button class="btn btn-primary" onclick="openAttendanceSession()" data-en="+ New Session" data-af="+ Nuwe Sessie">+ Nuwe Sessie</button>
+        </div>
+        <div style="padding:20px 28px">
+          <!-- Summary Cards -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:var(--deep)" id="attTotalSessions">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Total Sessions" data-af="Totale Sessies">Totale Sessies</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:var(--gold)" id="attAvgAttendance">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Avg Attendance" data-af="Gem. Bywoning">Gem. Bywoning</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#27AE60" id="attLastCount">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Last Session" data-af="Laaste Sessie">Laaste Sessie</div>
+            </div>
+          </div>
+          <!-- Sessions list -->
+          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
+            <div style="padding:14px 20px;border-bottom:1px solid #eee;font-weight:600;font-size:14px" data-en="Recent Sessions" data-af="Onlangse Sessies">Onlangse Sessies</div>
+            <div id="attendanceList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No sessions recorded yet." data-af="Geen sessies aangeteken nie.">Geen sessies aangeteken nie.</div>
+          </div>
+        </div>
+        <!-- New Session Modal -->
+        <div id="attendanceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px">
+            <h3 style="margin-bottom:20px" data-en="Record Attendance" data-af="Teken Bywoning Aan">Teken Bywoning Aan</h3>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Session Name" data-af="Sessienaam">Sessienaam</label>
+              <input class="form-input" id="attSessionName" data-en-placeholder="e.g. Sunday Service" data-af-placeholder="bv. Sondagdiens" placeholder="bv. Sondagdiens">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Date" data-af="Datum">Datum</label>
+              <input class="form-input" type="date" id="attSessionDate">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Number Present" data-af="Aantal Teenwoordig">Aantal Teenwoordig</label>
+              <input class="form-input" type="number" id="attSessionCount" min="0" placeholder="0">
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="form-label" data-en="Notes" data-af="Notas">Notas</label>
+              <textarea class="form-input" id="attSessionNotes" rows="2"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-ghost" onclick="closeAttendanceModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveAttendanceSession()" data-en="Save" data-af="Stoor">Stoor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════ DONATIONS SCREEN ══════════════════ -->
+      <div class="screen" id="screen-donations">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="page-title" data-en="Donations & Tithes" data-af="Skenkings & Tiendes">Skenkings &amp; Tiendes</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="Track congregation giving" data-af="Volg gemeenteskenkings">Volg gemeenteskenkings</div>
+          </div>
+          <button class="btn btn-primary" onclick="openDonationModal()" data-en="+ Record Donation" data-af="+ Skenking Aanteken">+ Skenking Aanteken</button>
+        </div>
+        <div style="padding:20px 28px">
+          <!-- Summary Cards -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:22px;font-weight:700;color:var(--gold)" id="donTotalMonth">R 0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="This Month" data-af="Hierdie Maand">Hierdie Maand</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:22px;font-weight:700;color:var(--deep)" id="donTotalYear">R 0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="This Year" data-af="Hierdie Jaar">Hierdie Jaar</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:22px;font-weight:700;color:#27AE60" id="donCount">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Total Donations" data-af="Totale Skenkings">Totale Skenkings</div>
+            </div>
+          </div>
+          <!-- Filter -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <select class="form-input" id="donFilterType" onchange="renderDonations()" style="max-width:180px;padding:8px 12px">
+              <option value="" data-en="All Types" data-af="Alle Tipes">Alle Tipes</option>
+              <option value="tithe" data-en="Tithe" data-af="Tiendes">Tiendes</option>
+              <option value="offering" data-en="Offering" data-af="Offergawe">Offergawe</option>
+              <option value="special" data-en="Special" data-af="Spesiaal">Spesiaal</option>
+              <option value="building" data-en="Building Fund" data-af="Boufonds">Boufonds</option>
+            </select>
+            <select class="form-input" id="donFilterMonth" onchange="renderDonations()" style="max-width:180px;padding:8px 12px">
+              <option value="" data-en="All Months" data-af="Alle Maande">Alle Maande</option>
+            </select>
+          </div>
+          <!-- Donations list -->
+          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
+            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:8px;padding:12px 20px;background:var(--gold-pale);font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted)">
+              <span data-en="Member / Description" data-af="Lid / Beskrywing">Lid / Beskrywing</span>
+              <span data-en="Type" data-af="Tipe">Tipe</span>
+              <span data-en="Date" data-af="Datum">Datum</span>
+              <span data-en="Amount" data-af="Bedrag">Bedrag</span>
+            </div>
+            <div id="donationsList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No donations recorded yet." data-af="Geen skenkings aangeteken nie.">Geen skenkings aangeteken nie.</div>
+          </div>
+        </div>
+        <!-- Donation Modal -->
+        <div id="donationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px">
+            <h3 style="margin-bottom:20px" data-en="Record Donation" data-af="Skenking Aanteken">Skenking Aanteken</h3>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Member Name (optional)" data-af="Lidnaam (opsioneel)">Lidnaam (opsioneel)</label>
+              <input class="form-input" id="donMember" data-en-placeholder="Anonymous" data-af-placeholder="Anoniem" placeholder="Anoniem">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Type" data-af="Tipe">Tipe</label>
+              <select class="form-input" id="donType">
+                <option value="tithe" data-en="Tithe" data-af="Tiendes">Tiendes</option>
+                <option value="offering" data-en="Offering" data-af="Offergawe">Offergawe</option>
+                <option value="special" data-en="Special" data-af="Spesiaal">Spesiaal</option>
+                <option value="building" data-en="Building Fund" data-af="Boufonds">Boufonds</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Amount (R)" data-af="Bedrag (R)">Bedrag (R)</label>
+              <input class="form-input" type="number" id="donAmount" min="0" step="0.01" placeholder="0.00">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Date" data-af="Datum">Datum</label>
+              <input class="form-input" type="date" id="donDate">
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="form-label" data-en="Notes" data-af="Notas">Notas</label>
+              <input class="form-input" id="donNotes" data-en-placeholder="Optional note" data-af-placeholder="Opsionele nota" placeholder="Opsionele nota">
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-ghost" onclick="closeDonationModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveDonation()" data-en="Save" data-af="Stoor">Stoor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════ CHILD CHECK-IN SCREEN ══════════════════ -->
+      <div class="screen" id="screen-checkin">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="page-title" data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="Safe & secure child attendance" data-af="Veilige kinderbywoning">Veilige kinderbywoning</div>
+          </div>
+          <button class="btn btn-primary" onclick="openCheckinModal()" data-en="+ Check In Child" data-af="+ Kind Inteken">+ Kind Inteken</button>
+        </div>
+        <div style="padding:20px 28px">
+          <!-- Summary -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:var(--gold)" id="checkinToday">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Checked In Today" data-af="Vandag Ingeteken">Vandag Ingeteken</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#27AE60" id="checkinTotal">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Total This Month" data-af="Totaal Hierdie Maand">Totaal Hierdie Maand</div>
+            </div>
+          </div>
+          <!-- Checked in list -->
+          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
+            <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 80px;gap:8px;padding:12px 20px;background:var(--gold-pale);font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted)">
+              <span data-en="Child Name" data-af="Kindernaam">Kindernaam</span>
+              <span data-en="Parent / Guardian" data-af="Ouer / Voog">Ouer / Voog</span>
+              <span data-en="Class" data-af="Klas">Klas</span>
+              <span data-en="Time" data-af="Tyd">Tyd</span>
+              <span data-en="Status" data-af="Status">Status</span>
+            </div>
+            <div id="checkinList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No children checked in yet." data-af="Geen kinders ingeteken nie.">Geen kinders ingeteken nie.</div>
+          </div>
+        </div>
+        <!-- Check-In Modal -->
+        <div id="checkinModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px">
+            <h3 style="margin-bottom:20px" data-en="Child Check-In" data-af="Kind Inteken">Kind Inteken</h3>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Child's Full Name" data-af="Kind se Volle Naam">Kind se Volle Naam</label>
+              <input class="form-input" id="ciChildName" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Age" data-af="Ouderdom">Ouderdom</label>
+              <input class="form-input" type="number" id="ciChildAge" min="0" max="17" placeholder="0">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Parent / Guardian Name" data-af="Ouer / Voog Naam">Ouer / Voog Naam</label>
+              <input class="form-input" id="ciParentName" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Parent Cell Number" data-af="Ouer Selfoon">Ouer Selfoon</label>
+              <input class="form-input" type="tel" id="ciParentCell" placeholder="082 000 0000">
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="form-label" data-en="Class / Group" data-af="Klas / Groep">Klas / Groep</label>
+              <select class="form-input" id="ciClass">
+                <option value="babies" data-en="Babies (0-2)" data-af="Babas (0-2)">Babas (0-2)</option>
+                <option value="toddlers" data-en="Toddlers (3-5)" data-af="Kleuters (3-5)">Kleuters (3-5)</option>
+                <option value="junior" data-en="Junior (6-9)" data-af="Junior (6-9)">Junior (6-9)</option>
+                <option value="senior" data-en="Senior (10-13)" data-af="Senior (10-13)">Senior (10-13)</option>
+                <option value="youth" data-en="Youth (14-17)" data-af="Jeug (14-17)">Jeug (14-17)</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-ghost" onclick="closeCheckinModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveCheckin()" data-en="Check In" data-af="Inteken">Inteken</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════ VOLUNTEERS SCREEN ══════════════════ -->
+      <div class="screen" id="screen-volunteers">
+        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="page-title" data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="Manage your ministry volunteers" data-af="Bestuur jou bediening se vrywilligers">Bestuur jou bediening se vrywilligers</div>
+          </div>
+          <button class="btn btn-primary" onclick="openVolunteerModal()" data-en="+ Add Volunteer" data-af="+ Voeg Vrywilliger By">+ Voeg Vrywilliger By</button>
+        </div>
+        <div style="padding:20px 28px">
+          <!-- Summary -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:var(--gold)" id="volTotal">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Total Volunteers" data-af="Totale Vrywilligers">Totale Vrywilligers</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:#27AE60" id="volActive">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Active This Month" data-af="Aktief Hierdie Maand">Aktief Hierdie Maand</div>
+            </div>
+            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
+              <div style="font-size:28px;font-weight:700;color:var(--deep)" id="volRoles">0</div>
+              <div style="font-size:12px;color:var(--muted)" data-en="Roles Filled" data-af="Rolle Gevul">Rolle Gevul</div>
+            </div>
+          </div>
+          <!-- Filter by role -->
+          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+            <select class="form-input" id="volFilterRole" onchange="renderVolunteers()" style="max-width:200px;padding:8px 12px">
+              <option value="" data-en="All Roles" data-af="Alle Rolle">Alle Rolle</option>
+              <option value="worship" data-en="Worship Team" data-af="Aanbiddingspan">Aanbiddingspan</option>
+              <option value="children" data-en="Children's Ministry" data-af="Kinderbediening">Kinderbediening</option>
+              <option value="hospitality" data-en="Hospitality" data-af="Gasvryheid">Gasvryheid</option>
+              <option value="tech" data-en="Tech / AV" data-af="Tegnies / KV">Tegnies / KV</option>
+              <option value="security" data-en="Security / Parking" data-af="Sekuriteit / Parkering">Sekuriteit / Parkering</option>
+              <option value="outreach" data-en="Outreach" data-af="Uitreik">Uitreik</option>
+              <option value="other" data-en="Other" data-af="Ander">Ander</option>
+            </select>
+          </div>
+          <!-- Volunteers list -->
+          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
+            <div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr 1fr 80px;gap:8px;padding:12px 20px;background:var(--gold-pale);font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted)">
+              <span data-en="Name" data-af="Naam">Naam</span>
+              <span data-en="Role" data-af="Rol">Rol</span>
+              <span data-en="Contact" data-af="Kontak">Kontak</span>
+              <span data-en="Status" data-af="Status">Status</span>
+              <span></span>
+            </div>
+            <div id="volunteersList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No volunteers added yet." data-af="Geen vrywilligers bygevoeg nie.">Geen vrywilligers bygevoeg nie.</div>
+          </div>
+        </div>
+        <!-- Volunteer Modal -->
+        <div id="volunteerModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto">
+            <h3 style="margin-bottom:20px" data-en="Add Volunteer" data-af="Voeg Vrywilliger By">Voeg Vrywilliger By</h3>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Full Name" data-af="Volle Naam">Volle Naam</label>
+              <input class="form-input" id="volName" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Cell Number" data-af="Selfoon">Selfoon</label>
+              <input class="form-input" type="tel" id="volCell" placeholder="082 000 0000">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Email" data-af="E-pos">E-pos</label>
+              <input class="form-input" type="email" id="volEmail" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Role / Ministry Area" data-af="Rol / Bedieningsarea">Rol / Bedieningsarea</label>
+              <select class="form-input" id="volRole">
+                <option value="worship" data-en="Worship Team" data-af="Aanbiddingspan">Aanbiddingspan</option>
+                <option value="children" data-en="Children's Ministry" data-af="Kinderbediening">Kinderbediening</option>
+                <option value="hospitality" data-en="Hospitality" data-af="Gasvryheid">Gasvryheid</option>
+                <option value="tech" data-en="Tech / AV" data-af="Tegnies / KV">Tegnies / KV</option>
+                <option value="security" data-en="Security / Parking" data-af="Sekuriteit / Parkering">Sekuriteit / Parkering</option>
+                <option value="outreach" data-en="Outreach" data-af="Uitreik">Uitreik</option>
+                <option value="other" data-en="Other" data-af="Ander">Ander</option>
+              </select>
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Availability" data-af="Beskikbaarheid">Beskikbaarheid</label>
+              <select class="form-input" id="volAvailability">
+                <option value="weekly" data-en="Every Sunday" data-af="Elke Sondag">Elke Sondag</option>
+                <option value="alternate" data-en="Alternate Sundays" data-af="Afwisselende Sondae">Afwisselende Sondae</option>
+                <option value="monthly" data-en="Once a Month" data-af="Eens per Maand">Eens per Maand</option>
+                <option value="asneeded" data-en="As Needed" data-af="Soos Benodig">Soos Benodig</option>
+              </select>
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="form-label" data-en="Notes" data-af="Notas">Notas</label>
+              <textarea class="form-input" id="volNotes" rows="2"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-ghost" onclick="closeVolunteerModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveVolunteer()" data-en="Save" data-af="Stoor">Stoor</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     </div><!-- end content-area -->
 
@@ -2520,6 +2856,20 @@ window._firebaseSDKLoaded = true;
   function printLegal(id) { if (window._printLegal) window._printLegal(id); }
   function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
   function switchSettingsPanel(p, el) { if (window._switchSettingsPanel) window._switchSettingsPanel(p, el); }
+  function openDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.add('open');
+    if (o) o.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    var d = document.getElementById('sidebarDrawer');
+    var o = document.getElementById('drawerOverlay');
+    if (d) d.classList.remove('open');
+    if (o) o.classList.remove('open');
+    document.body.style.overflow = '';
+  }
 
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -3206,8 +3556,8 @@ const ADMIN_PASS = 'mykerk2024';
 
 // ── TRANSLATIONS ──
 const screenTitles = {
-  af: { dashboard:'Paneelbord', members:'Lede', events:'Geleenthede & Dienste', ministries:'Bedieninge', prayer:'Gebedsmuur', groups:'Kleingroepe', sermons:'Preke', kerkraad:'Kerkraad', settings:'Instellings & Admin' },
-  en: { dashboard:'Dashboard', members:'Members', events:'Events & Services', ministries:'Ministries', prayer:'Prayer Wall', groups:'Small Groups', sermons:'Sermons', kerkraad:'Church Board', settings:'Settings & Admin' }
+  af: { dashboard:'Paneelbord', members:'Lede', events:'Geleenthede & Dienste', ministries:'Bedieninge', prayer:'Gebedsmuur', groups:'Kleingroepe', sermons:'Preke', kerkraad:'Kerkraad', settings:'Instellings & Admin', attendance:'Bywoning', donations:'Skenkings & Tiendes', checkin:'Kinders Inteken', volunteers:'Vrywilligers' },
+  en: { dashboard:'Dashboard', members:'Members', events:'Events & Services', ministries:'Ministries', prayer:'Prayer Wall', groups:'Small Groups', sermons:'Sermons', kerkraad:'Church Board', settings:'Settings & Admin', attendance:'Attendance', donations:'Donations & Tithes', checkin:'Child Check-In', volunteers:'Volunteers' }
 };
 
 const roleLabelsLang = {
@@ -3918,6 +4268,11 @@ window._setLang = function(lang) {
     const q = document.getElementById('memberSearch')?.value?.toLowerCase() || '';
     return !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q);
   }));
+  // Render new module screens
+  if (id === 'attendance' && typeof renderAttendance === 'function') setTimeout(renderAttendance, 100);
+  if (id === 'donations' && typeof renderDonations === 'function') setTimeout(renderDonations, 100);
+  if (id === 'checkin' && typeof renderCheckin === 'function') setTimeout(renderCheckin, 100);
+  if (id === 'volunteers' && typeof renderVolunteers === 'function') setTimeout(renderVolunteers, 100);
 }
 
 // ── SUBSCRIPTION ──
@@ -4564,17 +4919,7 @@ ${af ? 'Inligtingsreguleerder:' : 'Information Regulator:'} inforegulator.org.za
   showToast(af ? 'POPIA toestemmingsvorm afgelaai!' : 'POPIA consent form downloaded!');
 }
 
-// ── MOBILE DRAWER ──
-function openDrawer() {
-  document.getElementById('sidebarDrawer').classList.add('open');
-  document.getElementById('drawerOverlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeDrawer() {
-  document.getElementById('sidebarDrawer').classList.remove('open');
-  document.getElementById('drawerOverlay').classList.remove('open');
-  document.body.style.overflow = '';
-}
+// ── MOBILE DRAWER — defined globally above ──
 
 // ── MOBILE BOTTOM NAV ──
 const mobileNavScreens = ['dashboard','members','prayer','events'];
@@ -4790,6 +5135,424 @@ window._switchSettingsPanel = function(panel, el) {
   window.dismissWelcome = dismissWelcome;
   window.showAuthGate = showAuthGate;
   window.hideAuthGate = hideAuthGate;
+
+
+  // ═══════════════════════════════════════════════════════════
+  // ATTENDANCE MODULE
+  // ═══════════════════════════════════════════════════════════
+  var attendanceSessions = JSON.parse(localStorage.getItem('mykerk_attendance') || '[]');
+
+  function openAttendanceModal() {
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('attSessionDate').value = today;
+    document.getElementById('attSessionName').value = '';
+    document.getElementById('attSessionCount').value = '';
+    document.getElementById('attSessionNotes').value = '';
+    document.getElementById('attendanceModal').style.display = 'flex';
+  }
+  window.openAttendanceSession = openAttendanceModal;
+
+  function closeAttendanceModal() {
+    document.getElementById('attendanceModal').style.display = 'none';
+  }
+  window.closeAttendanceModal = closeAttendanceModal;
+
+  function saveAttendanceSession() {
+    var af = currentLang === 'af';
+    var name = document.getElementById('attSessionName').value.trim();
+    var date = document.getElementById('attSessionDate').value;
+    var count = parseInt(document.getElementById('attSessionCount').value) || 0;
+    var notes = document.getElementById('attSessionNotes').value.trim();
+    if (!name || !date) {
+      showToast(af ? 'Vul asseblief naam en datum in.' : 'Please fill in name and date.');
+      return;
+    }
+    var session = { id: Date.now(), name: name, date: date, count: count, notes: notes };
+    attendanceSessions.unshift(session);
+    localStorage.setItem('mykerk_attendance', JSON.stringify(attendanceSessions));
+
+    // Save to Firebase if connected
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('bywoning').doc(String(session.id)).set(session).catch(function(){});
+    }
+
+    closeAttendanceModal();
+    renderAttendance();
+    showToast(af ? '✅ Bywoning gestoor!' : '✅ Attendance saved!');
+  }
+  window.saveAttendanceSession = saveAttendanceSession;
+
+  function deleteAttendance(id) {
+    var af = currentLang === 'af';
+    attendanceSessions = attendanceSessions.filter(function(s) { return s.id !== id; });
+    localStorage.setItem('mykerk_attendance', JSON.stringify(attendanceSessions));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('bywoning').doc(String(id)).delete().catch(function(){});
+    }
+    renderAttendance();
+    showToast(af ? 'Verwyder.' : 'Deleted.');
+  }
+  window.deleteAttendance = deleteAttendance;
+
+  function renderAttendance() {
+    var af = currentLang === 'af';
+    var list = document.getElementById('attendanceList');
+    if (!list) return;
+    document.getElementById('attTotalSessions').textContent = attendanceSessions.length;
+    var avg = attendanceSessions.length ? Math.round(attendanceSessions.reduce(function(a,s){return a+s.count;},0)/attendanceSessions.length) : 0;
+    document.getElementById('attAvgAttendance').textContent = avg;
+    document.getElementById('attLastCount').textContent = attendanceSessions.length ? attendanceSessions[0].count : 0;
+    if (!attendanceSessions.length) {
+      list.innerHTML = '<div style="padding:12px 0;color:var(--muted)">' + (af ? 'Geen sessies aangeteken nie.' : 'No sessions recorded yet.') + '</div>';
+      return;
+    }
+    list.innerHTML = attendanceSessions.map(function(s) {
+      return '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 60px;gap:8px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center">' +
+        '<div><div style="font-weight:600;font-size:14px">' + s.name + '</div>' +
+        (s.notes ? '<div style="font-size:12px;color:var(--muted)">' + s.notes + '</div>' : '') + '</div>' +
+        '<div style="font-size:13px;color:var(--muted)">' + s.date + '</div>' +
+        '<div style="font-size:20px;font-weight:700;color:var(--gold)">' + s.count + '</div>' +
+        '<button onclick="deleteAttendance(' + s.id + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px">🗑</button>' +
+        '</div>';
+    }).join('');
+  }
+  window.renderAttendance = renderAttendance;
+
+  // Load from Firebase on init
+  if (db && GEMEENTE_ID !== 'demo') {
+    gemeentePath('bywoning').orderBy('date','desc').get().then(function(snap) {
+      if (!snap.empty) {
+        attendanceSessions = snap.docs.map(function(d){return d.data();});
+        localStorage.setItem('mykerk_attendance', JSON.stringify(attendanceSessions));
+        renderAttendance();
+      }
+    }).catch(function(){});
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // DONATIONS MODULE
+  // ═══════════════════════════════════════════════════════════
+  var donationsData = JSON.parse(localStorage.getItem('mykerk_donations') || '[]');
+
+  function openDonationModal() {
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById('donDate').value = today;
+    document.getElementById('donMember').value = '';
+    document.getElementById('donAmount').value = '';
+    document.getElementById('donNotes').value = '';
+    document.getElementById('donationModal').style.display = 'flex';
+  }
+  window.openDonationModal = openDonationModal;
+
+  function closeDonationModal() {
+    document.getElementById('donationModal').style.display = 'none';
+  }
+  window.closeDonationModal = closeDonationModal;
+
+  function saveDonation() {
+    var af = currentLang === 'af';
+    var amount = parseFloat(document.getElementById('donAmount').value) || 0;
+    var date = document.getElementById('donDate').value;
+    if (!amount || !date) {
+      showToast(af ? 'Vul bedrag en datum in.' : 'Please fill in amount and date.');
+      return;
+    }
+    var don = {
+      id: Date.now(),
+      member: document.getElementById('donMember').value.trim() || (af ? 'Anoniem' : 'Anonymous'),
+      type: document.getElementById('donType').value,
+      amount: amount,
+      date: date,
+      notes: document.getElementById('donNotes').value.trim()
+    };
+    donationsData.unshift(don);
+    localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('skenkings').doc(String(don.id)).set(don).catch(function(){});
+    }
+    closeDonationModal();
+    renderDonations();
+    showToast(af ? '✅ Skenking gestoor!' : '✅ Donation saved!');
+  }
+  window.saveDonation = saveDonation;
+
+  function deleteDonation(id) {
+    var af = currentLang === 'af';
+    donationsData = donationsData.filter(function(d){ return d.id !== id; });
+    localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('skenkings').doc(String(id)).delete().catch(function(){});
+    }
+    renderDonations();
+    showToast(af ? 'Verwyder.' : 'Deleted.');
+  }
+  window.deleteDonation = deleteDonation;
+
+  function renderDonations() {
+    var af = currentLang === 'af';
+    var list = document.getElementById('donationsList');
+    if (!list) return;
+    var filterType = (document.getElementById('donFilterType') || {}).value || '';
+    var filterMonth = (document.getElementById('donFilterMonth') || {}).value || '';
+    var filtered = donationsData.filter(function(d) {
+      if (filterType && d.type !== filterType) return false;
+      if (filterMonth && !d.date.startsWith(filterMonth)) return false;
+      return true;
+    });
+    var now = new Date();
+    var thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
+    var thisYear = String(now.getFullYear());
+    var monthTotal = donationsData.filter(function(d){return d.date.startsWith(thisMonth);}).reduce(function(a,d){return a+d.amount;},0);
+    var yearTotal = donationsData.filter(function(d){return d.date.startsWith(thisYear);}).reduce(function(a,d){return a+d.amount;},0);
+    document.getElementById('donTotalMonth').textContent = 'R ' + monthTotal.toFixed(2);
+    document.getElementById('donTotalYear').textContent = 'R ' + yearTotal.toFixed(2);
+    document.getElementById('donCount').textContent = donationsData.length;
+
+    // Populate month filter
+    var months = [...new Set(donationsData.map(function(d){return d.date.substring(0,7);}))].sort().reverse();
+    var mf = document.getElementById('donFilterMonth');
+    if (mf) {
+      var cur = mf.value;
+      mf.innerHTML = '<option value="">' + (af ? 'Alle Maande' : 'All Months') + '</option>' +
+        months.map(function(m){return '<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>';}).join('');
+    }
+
+    var typeLabels = { tithe: af?'Tiendes':'Tithe', offering: af?'Offergawe':'Offering', special: af?'Spesiaal':'Special', building: af?'Boufonds':'Building Fund' };
+    if (!filtered.length) {
+      list.innerHTML = '<div style="padding:12px 0;color:var(--muted)">' + (af ? 'Geen skenkings nie.' : 'No donations found.') + '</div>';
+      return;
+    }
+    list.innerHTML = filtered.map(function(d) {
+      return '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 60px;gap:8px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center;font-size:13px">' +
+        '<div><div style="font-weight:600">' + d.member + '</div>' +
+        (d.notes ? '<div style="font-size:11px;color:var(--muted)">' + d.notes + '</div>' : '') + '</div>' +
+        '<div style="color:var(--muted)">' + (typeLabels[d.type]||d.type) + '</div>' +
+        '<div style="color:var(--muted)">' + d.date + '</div>' +
+        '<div style="font-weight:700;color:var(--gold)">R ' + d.amount.toFixed(2) + '</div>' +
+        '<button onclick="deleteDonation(' + d.id + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px">🗑</button>' +
+        '</div>';
+    }).join('');
+  }
+  window.renderDonations = renderDonations;
+
+  if (db && GEMEENTE_ID !== 'demo') {
+    gemeentePath('skenkings').orderBy('date','desc').get().then(function(snap) {
+      if (!snap.empty) {
+        donationsData = snap.docs.map(function(d){return d.data();});
+        localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
+        renderDonations();
+      }
+    }).catch(function(){});
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // CHILD CHECK-IN MODULE
+  // ═══════════════════════════════════════════════════════════
+  var checkinData = JSON.parse(localStorage.getItem('mykerk_checkin') || '[]');
+
+  function openCheckinModal() {
+    document.getElementById('ciChildName').value = '';
+    document.getElementById('ciChildAge').value = '';
+    document.getElementById('ciParentName').value = '';
+    document.getElementById('ciParentCell').value = '';
+    document.getElementById('checkinModal').style.display = 'flex';
+  }
+  window.openCheckinModal = openCheckinModal;
+
+  function closeCheckinModal() {
+    document.getElementById('checkinModal').style.display = 'none';
+  }
+  window.closeCheckinModal = closeCheckinModal;
+
+  function saveCheckin() {
+    var af = currentLang === 'af';
+    var childName = document.getElementById('ciChildName').value.trim();
+    var parentName = document.getElementById('ciParentName').value.trim();
+    if (!childName || !parentName) {
+      showToast(af ? 'Vul kind en ouer se naam in.' : 'Please fill in child and parent name.');
+      return;
+    }
+    var now = new Date();
+    var entry = {
+      id: Date.now(),
+      childName: childName,
+      childAge: document.getElementById('ciChildAge').value,
+      parentName: parentName,
+      parentCell: document.getElementById('ciParentCell').value.trim(),
+      class: document.getElementById('ciClass').value,
+      date: now.toISOString().split('T')[0],
+      time: now.toTimeString().substring(0,5),
+      checkedOut: false
+    };
+    checkinData.unshift(entry);
+    localStorage.setItem('mykerk_checkin', JSON.stringify(checkinData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('checkin').doc(String(entry.id)).set(entry).catch(function(){});
+    }
+    closeCheckinModal();
+    renderCheckin();
+    showToast(af ? '✅ ' + childName + ' ingeteken!' : '✅ ' + childName + ' checked in!');
+  }
+  window.saveCheckin = saveCheckin;
+
+  function checkoutChild(id) {
+    var af = currentLang === 'af';
+    checkinData = checkinData.map(function(c) {
+      if (c.id === id) c.checkedOut = true;
+      return c;
+    });
+    localStorage.setItem('mykerk_checkin', JSON.stringify(checkinData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('checkin').doc(String(id)).update({checkedOut:true}).catch(function(){});
+    }
+    renderCheckin();
+    showToast(af ? 'Kind uitgeteken.' : 'Child checked out.');
+  }
+  window.checkoutChild = checkoutChild;
+
+  function renderCheckin() {
+    var af = currentLang === 'af';
+    var list = document.getElementById('checkinList');
+    if (!list) return;
+    var today = new Date().toISOString().split('T')[0];
+    var todayEntries = checkinData.filter(function(c){return c.date === today;});
+    document.getElementById('checkinToday').textContent = todayEntries.filter(function(c){return !c.checkedOut;}).length;
+    var thisMonth = new Date().toISOString().substring(0,7);
+    document.getElementById('checkinTotal').textContent = checkinData.filter(function(c){return c.date.startsWith(thisMonth);}).length;
+    if (!checkinData.length) {
+      list.innerHTML = '<div style="padding:12px 0;color:var(--muted)">' + (af ? 'Geen kinders ingeteken nie.' : 'No children checked in yet.') + '</div>';
+      return;
+    }
+    var classLabels = { babies: af?'Babas':'Babies', toddlers: af?'Kleuters':'Toddlers', junior:'Junior', senior:'Senior', youth: af?'Jeug':'Youth' };
+    list.innerHTML = checkinData.map(function(c) {
+      var statusColor = c.checkedOut ? '#e74c3c' : '#27AE60';
+      var statusText = c.checkedOut ? (af?'Uitgeteken':'Checked Out') : (af?'Ingeteken':'Checked In');
+      return '<div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 80px;gap:8px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center;font-size:13px">' +
+        '<div><div style="font-weight:600">' + c.childName + '</div><div style="font-size:11px;color:var(--muted)">' + (af?'Ouderdom':'Age') + ': ' + (c.childAge||'-') + '</div></div>' +
+        '<div><div>' + c.parentName + '</div><div style="font-size:11px;color:var(--muted)">' + (c.parentCell||'') + '</div></div>' +
+        '<div style="color:var(--muted)">' + (classLabels[c.class]||c.class) + '</div>' +
+        '<div style="color:var(--muted)">' + c.date + ' ' + c.time + '</div>' +
+        '<button onclick="checkoutChild(' + c.id + ')" style="background:none;border:1px solid '+statusColor+';color:'+statusColor+';cursor:pointer;font-size:10px;padding:3px 6px;border-radius:4px;white-space:nowrap"' + (c.checkedOut?' disabled':'') + '>' + statusText + '</button>' +
+        '</div>';
+    }).join('');
+  }
+  window.renderCheckin = renderCheckin;
+
+  // ═══════════════════════════════════════════════════════════
+  // VOLUNTEERS MODULE
+  // ═══════════════════════════════════════════════════════════
+  var volunteersData = JSON.parse(localStorage.getItem('mykerk_volunteers') || '[]');
+
+  function openVolunteerModal() {
+    document.getElementById('volName').value = '';
+    document.getElementById('volCell').value = '';
+    document.getElementById('volEmail').value = '';
+    document.getElementById('volNotes').value = '';
+    document.getElementById('volunteerModal').style.display = 'flex';
+  }
+  window.openVolunteerModal = openVolunteerModal;
+
+  function closeVolunteerModal() {
+    document.getElementById('volunteerModal').style.display = 'none';
+  }
+  window.closeVolunteerModal = closeVolunteerModal;
+
+  function saveVolunteer() {
+    var af = currentLang === 'af';
+    var name = document.getElementById('volName').value.trim();
+    if (!name) {
+      showToast(af ? "Voer asseblief 'n naam in." : "Please enter a name.");
+      return;
+    }
+    var vol = {
+      id: Date.now(),
+      name: name,
+      cell: document.getElementById('volCell').value.trim(),
+      email: document.getElementById('volEmail').value.trim(),
+      role: document.getElementById('volRole').value,
+      availability: document.getElementById('volAvailability').value,
+      notes: document.getElementById('volNotes').value.trim(),
+      active: true
+    };
+    volunteersData.unshift(vol);
+    localStorage.setItem('mykerk_volunteers', JSON.stringify(volunteersData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('vrywilligers').doc(String(vol.id)).set(vol).catch(function(){});
+    }
+    closeVolunteerModal();
+    renderVolunteers();
+    showToast(af ? '✅ Vrywilliger bygevoeg!' : '✅ Volunteer added!');
+  }
+  window.saveVolunteer = saveVolunteer;
+
+  function deleteVolunteer(id) {
+    var af = currentLang === 'af';
+    volunteersData = volunteersData.filter(function(v){ return v.id !== id; });
+    localStorage.setItem('mykerk_volunteers', JSON.stringify(volunteersData));
+    if (db && GEMEENTE_ID !== 'demo') {
+      gemeentePath('vrywilligers').doc(String(id)).delete().catch(function(){});
+    }
+    renderVolunteers();
+    showToast(af ? 'Verwyder.' : 'Deleted.');
+  }
+  window.deleteVolunteer = deleteVolunteer;
+
+  function renderVolunteers() {
+    var af = currentLang === 'af';
+    var list = document.getElementById('volunteersList');
+    if (!list) return;
+    var filterRole = (document.getElementById('volFilterRole')||{}).value || '';
+    var filtered = volunteersData.filter(function(v){
+      return !filterRole || v.role === filterRole;
+    });
+    document.getElementById('volTotal').textContent = volunteersData.length;
+    document.getElementById('volActive').textContent = volunteersData.filter(function(v){return v.active;}).length;
+    var roles = [...new Set(volunteersData.map(function(v){return v.role;}))];
+    document.getElementById('volRoles').textContent = roles.length;
+
+    var roleLabels = {
+      worship: af?'Aanbiddingspan':'Worship Team',
+      children: af?'Kinderbediening':"Children's Ministry",
+      hospitality: af?'Gasvryheid':'Hospitality',
+      tech: af?'Tegnies/KV':'Tech/AV',
+      security: af?'Sekuriteit':'Security/Parking',
+      outreach: af?'Uitreik':'Outreach',
+      other: af?'Ander':'Other'
+    };
+    var availLabels = {
+      weekly: af?'Elke Sondag':'Every Sunday',
+      alternate: af?'Afwisselend':'Alternate Sundays',
+      monthly: af?'Maandeliks':'Monthly',
+      asneeded: af?'Soos benodig':'As needed'
+    };
+
+    if (!filtered.length) {
+      list.innerHTML = '<div style="padding:12px 0;color:var(--muted)">' + (af ? 'Geen vrywilligers gevind nie.' : 'No volunteers found.') + '</div>';
+      return;
+    }
+    list.innerHTML = filtered.map(function(v) {
+      return '<div style="display:grid;grid-template-columns:2fr 1.5fr 1.5fr 1fr 60px;gap:8px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center;font-size:13px">' +
+        '<div><div style="font-weight:600">' + v.name + '</div>' +
+        (v.notes?'<div style="font-size:11px;color:var(--muted)">'+v.notes+'</div>':'') + '</div>' +
+        '<div><div style="color:var(--gold);font-weight:500">' + (roleLabels[v.role]||v.role) + '</div>' +
+        '<div style="font-size:11px;color:var(--muted)">' + (availLabels[v.availability]||v.availability) + '</div></div>' +
+        '<div><div>' + (v.cell||'-') + '</div><div style="font-size:11px;color:var(--muted)">' + (v.email||'') + '</div></div>' +
+        '<div><span style="background:' + (v.active?'#e8f8f0':'#fdecea') + ';color:' + (v.active?'#27AE60':'#e74c3c') + ';padding:2px 8px;border-radius:10px;font-size:11px">' + (v.active?(af?'Aktief':'Active'):(af?'Onaktief':'Inactive')) + '</span></div>' +
+        '<button onclick="deleteVolunteer(' + v.id + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px">🗑</button>' +
+        '</div>';
+    }).join('');
+  }
+  window.renderVolunteers = renderVolunteers;
+
+  if (db && GEMEENTE_ID !== 'demo') {
+    gemeentePath('vrywilligers').get().then(function(snap) {
+      if (!snap.empty) {
+        volunteersData = snap.docs.map(function(d){return d.data();});
+        localStorage.setItem('mykerk_volunteers', JSON.stringify(volunteersData));
+        renderVolunteers();
+      }
+    }).catch(function(){});
+  }
 
   }); // end DOMContentLoaded
 </script>
