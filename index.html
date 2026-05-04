@@ -4268,11 +4268,7 @@ window._setLang = function(lang) {
     const q = document.getElementById('memberSearch')?.value?.toLowerCase() || '';
     return !q || m.name.toLowerCase().includes(q) || m.email.toLowerCase().includes(q);
   }));
-  // Render new module screens
-  if (id === 'attendance' && typeof renderAttendance === 'function') setTimeout(renderAttendance, 100);
-  if (id === 'donations' && typeof renderDonations === 'function') setTimeout(renderDonations, 100);
-  if (id === 'checkin' && typeof renderCheckin === 'function') setTimeout(renderCheckin, 100);
-  if (id === 'volunteers' && typeof renderVolunteers === 'function') setTimeout(renderVolunteers, 100);
+
 }
 
 // ── SUBSCRIPTION ──
