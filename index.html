@@ -1918,7 +1918,7 @@ window._firebaseSDKLoaded = true;
                   </tbody>
                 </table>
                 <div style="margin-top:14px">
-                  <button class="btn btn-ghost" onclick="showToast(currentLang==='af'?'Nuwe gebruiker bygevoeg':'New user added')" data-en="+ Add User" data-af="+ Voeg Gebruiker By">+ Voeg Gebruiker By</button>
+                  <button class="btn btn-primary" onclick="openAddUserModal()" data-en="+ Add User" data-af="+ Voeg Gebruiker By">+ Voeg Gebruiker By</button>
                 </div>
               </div>
             </div>
@@ -5780,6 +5780,74 @@ window._switchSettingsPanel = function(panel, el) {
   }
   window.loadChurchSettings = loadChurchSettings;
 
+
+  // ═══════════════════════════════════════════════════════════
+  // ADD USER MODULE
+  // ═══════════════════════════════════════════════════════════
+  function openAddUserModal() {
+    var af = currentLang === 'af';
+    document.getElementById('addUserName').value = '';
+    document.getElementById('addUserEmail').value = '';
+    document.getElementById('addUserRole').value = 'member';
+    // Show congregation code
+    var codeEl = document.getElementById('addUserCode');
+    if (codeEl) codeEl.textContent = currentGemeenteCode || (af ? 'Nie beskikbaar nie' : 'Not available');
+    var modal = document.getElementById('addUserModal');
+    if (modal) modal.style.display = 'flex';
+  }
+  window.openAddUserModal = openAddUserModal;
+
+  function closeAddUserModal() {
+    var modal = document.getElementById('addUserModal');
+    if (modal) modal.style.display = 'none';
+  }
+  window.closeAddUserModal = closeAddUserModal;
+
+  function addUserToFirestore() {
+    var af = currentLang === 'af';
+    var name = (document.getElementById('addUserName') || {}).value.trim();
+    var email = (document.getElementById('addUserEmail') || {}).value.trim();
+    var role = (document.getElementById('addUserRole') || {}).value;
+
+    if (!name || !email) {
+      showToast(af ? 'Vul naam en e-pos in.' : 'Please fill in name and email.');
+      return;
+    }
+    if (!email.includes('@')) {
+      showToast(af ? "Voer 'n geldige e-posadres in." : "Please enter a valid email address.");
+      return;
+    }
+
+    if (!db || !currentGemeenteId || currentGemeenteId === 'demo') {
+      showToast(af ? '❌ Firebase nie verbind nie.' : '❌ Firebase not connected.');
+      return;
+    }
+
+    // Add member record to Firestore
+    var memberData = {
+      name: name,
+      email: email,
+      rol: role,
+      role: role,
+      gemeenteId: currentGemeenteId,
+      gemeenteCode: currentGemeenteCode || '',
+      status: 'active',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      invitedByAdmin: true
+    };
+
+    gemeentePath('lede').add(memberData)
+      .then(function() {
+        closeAddUserModal();
+        showToast(af ? '✅ ' + name + ' bygevoeg! Deel die gemeentekode: ' + (currentGemeenteCode || '') : '✅ ' + name + ' added! Share the congregation code: ' + (currentGemeenteCode || ''));
+        loadMembersFromFirestore();
+      })
+      .catch(function(err) {
+        showToast(af ? '❌ Fout: ' + err.message : '❌ Error: ' + err.message);
+      });
+  }
+  window.addUserToFirestore = addUserToFirestore;
+
   }); // end DOMContentLoaded
 </script>
 <script>
@@ -5796,5 +5864,39 @@ if (typeof doLogout === 'undefined') {
   }
 }
 </script>
+
+<!-- ADD USER MODAL -->
+<div id="addUserModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:460px">
+    <h3 style="margin-bottom:6px" data-en="Add User" data-af="Voeg Gebruiker By">Voeg Gebruiker By</h3>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px" data-en="Send an invitation to join your congregation." data-af="Stuur 'n uitnodiging om by jou gemeente aan te sluit.">Stuur 'n uitnodiging om by jou gemeente aan te sluit.</p>
+    <div style="margin-bottom:14px">
+      <label class="form-label" data-en="Full Name" data-af="Volle Naam">Volle Naam</label>
+      <input class="form-input" id="addUserName" placeholder="">
+    </div>
+    <div style="margin-bottom:14px">
+      <label class="form-label" data-en="Email Address" data-af="E-posadres">E-posadres</label>
+      <input class="form-input" type="email" id="addUserEmail" placeholder="">
+    </div>
+    <div style="margin-bottom:20px">
+      <label class="form-label" data-en="Role" data-af="Rol">Rol</label>
+      <select class="form-input" id="addUserRole">
+        <option value="member" data-en="Member" data-af="Lid">Lid</option>
+        <option value="elder" data-en="Elder" data-af="Ouderling">Ouderling</option>
+        <option value="deacon" data-en="Deacon" data-af="Diaken">Diaken</option>
+        <option value="minister" data-en="Minister" data-af="Predikant">Predikant</option>
+      </select>
+    </div>
+    <div style="background:var(--gold-pale);border-radius:8px;padding:12px;margin-bottom:20px;font-size:13px;color:var(--muted)">
+      <strong data-en="Congregation Code:" data-af="Gemeentekode:">Gemeentekode:</strong>
+      <span id="addUserCode" style="font-weight:700;color:var(--gold);margin-left:6px">—</span><br>
+      <span data-en="Share this code with the member so they can register themselves." data-af="Deel hierdie kode met die lid sodat hulle self kan registreer.">Deel hierdie kode met die lid sodat hulle self kan registreer.</span>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" onclick="closeAddUserModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+      <button class="btn btn-primary" onclick="addUserToFirestore()" data-en="Add Member" data-af="Voeg Lid By">Voeg Lid By</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
