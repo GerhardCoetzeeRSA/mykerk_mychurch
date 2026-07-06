@@ -4965,7 +4965,7 @@ function openZapperPayment() {
   const qrImg = document.getElementById('zapperQRImg');
   const qrPlaceholder = document.getElementById('zapperQRPlaceholder');
   if (qrImg) {
-    qrImg.src = `https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=${qrData}`;
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
     qrImg.style.display = 'block';
     if (qrPlaceholder) qrPlaceholder.style.display = 'none';
     qrImg.onerror = () => { qrImg.style.display='none'; if(qrPlaceholder) qrPlaceholder.style.display='flex'; };
