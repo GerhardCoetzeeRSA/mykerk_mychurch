@@ -613,6 +613,9 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 // Firebase SDK loaded statically above
 window._firebaseSDKLoaded = true;
 </script>
+
+<!-- Zapper Web SDK - real client-side QR/payment widget (no server auth needed) -->
+<script src="https://zapper-ecommerce.s3-eu-west-1.amazonaws.com/releases/zapper.ecommerce-2.2.0.min.js"></script>
 </head>
 <body>
 
@@ -2229,36 +2232,28 @@ window._firebaseSDKLoaded = true;
                 <div class="settings-card-title" data-en="Pay via Zapper" data-af="Betaal via Zapper">Betaal via Zapper</div>
 
                 <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
-                  <!-- QR Code display -->
+                  <!-- QR Code display — rendered live by the Zapper Web SDK, no server auth required -->
                   <div style="flex-shrink:0;text-align:center">
                     <div id="zapperQR" style="width:160px;height:160px;background:#fff;border:2px solid #27AE60;border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden">
-                      <img id="zapperQRImg" src="" alt="Zapper QR" style="width:150px;height:150px;display:none">
-                      <div id="zapperQRPlaceholder" style="text-align:center;padding:8px">
-                        <div style="font-size:32px">📱</div>
-                        <div style="font-size:10px;color:var(--muted)">Kies 'n plan om QR te wys</div>
-                      </div>
+                      <div id="zapperCodeContainer" style="width:150px;height:150px"></div>
                     </div>
                     <div class="zapper-logo" style="margin-top:8px;justify-content:center;background:#27AE60"><div class="zapper-logo-dot"></div>Zapper</div>
+                    <div id="zapperPaymentStatus" style="font-size:11px;color:var(--muted);margin-top:6px;min-height:14px"></div>
                   </div>
 
                   <div style="flex:1;min-width:200px">
                     <div style="font-size:13px;font-weight:600;margin-bottom:10px" data-en="How to pay:" data-af="Hoe om te betaal:">Hoe om te betaal:</div>
                     <div style="display:flex;flex-direction:column;gap:8px">
-                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</div><span data-en="Klik 'Betaal met Zapper'" data-af="Click 'Pay with Zapper'">Klik 'Betaal met Zapper' hieronder</span></div>
-                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</div><span data-en="Open Zapper app on your phone" data-af="Maak Zapper app oop op jou foon">Maak die Zapper-app oop op jou foon</span></div>
-                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</div><span data-en="Scan the QR code or tap the payment link" data-af="Skandeer die QR-kode of tik die betaalskakel">Skandeer die QR-kode of tik die betaalskakel</span></div>
-                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</div><span data-en="Confirm payment and receive confirmation" data-af="Bevestig betaling en ontvang bevestiging">Bevestig betaling en ontvang bevestiging</span></div>
+                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</div><span data-en="Open the Zapper app on your phone" data-af="Maak die Zapper-app oop op jou foon">Maak die Zapper-app oop op jou foon</span></div>
+                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</div><span data-en="Scan the QR code shown alongside" data-af="Skandeer die QR-kode hier langsaan">Skandeer die QR-kode hier langsaan</span></div>
+                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</div><span data-en="Confirm the amount in the Zapper app" data-af="Bevestig die bedrag in die Zapper-app">Bevestig die bedrag in die Zapper-app</span></div>
+                      <div style="display:flex;gap:10px;align-items:flex-start;font-size:12px;color:var(--muted)"><div style="width:22px;height:22px;border-radius:50%;background:var(--gold);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">4</div><span data-en="Your subscription activates automatically" data-af="Jou intekening aktiveer outomaties">Jou intekening aktiveer outomaties</span></div>
                     </div>
 
                     <div id="selectedPlanSummary" style="margin-top:14px;padding:12px;background:var(--gold-pale);border-radius:8px;font-size:12px">
                       <strong data-en="Selected: Standard Plan – R649/month" data-af="Gekies: Standaard Plan – R649/maand">Gekies: Standaard Plan – R649/maand</strong>
                     </div>
-
-                    <!-- PAY BUTTON — now active with real Zapper link -->
-                    <button class="btn btn-primary" id="zapperPayBtn" onclick="openZapperPayment()" style="margin-top:12px;width:100%;background:#27AE60;border-color:#27AE60;font-size:15px;padding:12px">
-                      💚 Betaal R649/maand met Zapper
-                    </button>
-                    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px" data-en="Secure payment via Zapper. You will be redirected to Zapper." data-af="Veilige betaling via Zapper. Jy sal na Zapper herlei word.">Veilige betaling via Zapper</div>
+                    <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px" data-en="Secure payment via Zapper. Scan with the Zapper app to pay." data-af="Veilige betaling via Zapper. Skandeer met die Zapper-app om te betaal.">Veilige betaling via Zapper. Skandeer met die Zapper-app om te betaal.</div>
                   </div>
                 </div>
               </div>
@@ -4907,13 +4902,12 @@ function updateSelectedPlanSummary() {
   const price = tier[selectedBilling];
   const tierName = af ? tier.nameAf : tier.nameEn;
   const summary = document.getElementById('selectedPlanSummary');
-  const btn = document.getElementById('zapperPayBtn');
   const priceStr = 'R' + price.toLocaleString();
   const per = selectedBilling === 'annual' ? (af ? '/jaar' : '/year') : (af ? '/maand' : '/month');
   if (summary) {
     summary.innerHTML = '<strong>' + (af ? 'Gekies: ' + tierName + ' Plan – ' + priceStr + per : 'Selected: ' + tierName + ' Plan – ' + priceStr + per) + '</strong>';
   }
-  if (btn) btn.textContent = '💚 ' + (af ? 'Betaal ' + priceStr + per + ' met Zapper' : 'Pay ' + priceStr + per + ' with Zapper');
+  updateZapperCode();
 }
 
 window._selectTier = function(t) {
@@ -4940,48 +4934,56 @@ window._setBilling = function(b) {
   updateSelectedPlanSummary();
 }
 
-function activateZapper() {
-  // Legacy function - now handled by openZapperPayment
-  openZapperPayment();
-}
+// ── ZAPPER WEB SDK ──
+// Real client-side integration using Zapper's official JS library (loaded in <head>).
+// Docs: https://zapper.gitbook.io/integrations/web/payment-widget/zapper-code
+// This renders a live, scannable Zapper Code — no server-side API key needed for this widget.
+const ZAPPER_MERCHANT_ID = 76032;
+const ZAPPER_SITE_IDS = { monthly: 96013, annual: 96037 }; // billing-frequency sites, amount is dynamic
+let zapperCodeWidget = null;
 
-function openZapperPayment() {
+function updateZapperCode() {
   const af = currentLang === 'af';
-  const isMonthly = selectedBilling === 'monthly';
   const tier = PLAN_TIERS[selectedTier];
-  const tierName = af ? tier.nameAf : tier.nameEn;
+  const amount = tier[selectedBilling];
+  const siteId = ZAPPER_SITE_IDS[selectedBilling];
+  const reference = (currentGemeenteId || 'mykerk') + '-' + selectedTier + '-' + selectedBilling;
+  const statusEl = document.getElementById('zapperPaymentStatus');
 
-  // Zapper merchant details
-  const MERCHANT_ID = '76032';
-  const SITE_ID = isMonthly ? '96013' : '96037'; // Monthly vs Annual billing site
-  const AMOUNT = String(tier[selectedBilling] * 100); // in cents
-  const DESCRIPTION = 'MyKerk ' + tierName + ' — ' + (isMonthly ? (af ? 'Maandelikse Intekening' : 'Monthly Subscription') : (af ? 'Jaarlikse Intekening' : 'Annual Subscription'));
-
-  // Zapper payment URL — direct link to pay page
-  const zapperUrl = `https://api.zapper.com/business/pay?merchantId=${MERCHANT_ID}&siteId=${SITE_ID}&amount=${AMOUNT}&description=${encodeURIComponent(DESCRIPTION)}`;
-
-  // Also generate QR image via Google Charts API as fallback visual
-  const qrData = encodeURIComponent(zapperUrl);
-  const qrImg = document.getElementById('zapperQRImg');
-  const qrPlaceholder = document.getElementById('zapperQRPlaceholder');
-  if (qrImg) {
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${qrData}`;
-    qrImg.style.display = 'block';
-    if (qrPlaceholder) qrPlaceholder.style.display = 'none';
-    qrImg.onerror = () => { qrImg.style.display='none'; if(qrPlaceholder) qrPlaceholder.style.display='flex'; };
+  if (typeof zapper === 'undefined' || !zapper.payments) {
+    // SDK failed to load (e.g. blocked network) — show a clear message instead of a silently broken box
+    if (statusEl) statusEl.textContent = af ? '⚠️ Zapper kon nie laai nie. Herlaai die bladsy.' : '⚠️ Zapper failed to load. Please refresh the page.';
+    return;
   }
 
-  // Open Zapper payment page
-  window.open(zapperUrl, '_blank');
-  showToast(af ? '💚 Zapper betaalbladsy oopgemaak!' : '💚 Zapper payment page opened!');
-  // Note: in production, Zapper webhook would call activateSubscription()
-  // For demo: activate after user confirms payment
-  setTimeout(function() {
-    if (confirm(af ? 'Het jy die betaling via Zapper voltooi? Klik OK om jou intekening te aktiveer.' : 'Did you complete the payment via Zapper? Click OK to activate your subscription.')) {
-      activateSubscription(selectedTier, isMonthly ? 'monthly' : 'annual');
+  try {
+    if (!zapperCodeWidget) {
+      zapperCodeWidget = new zapper.payments.ZapperCode('#zapperCodeContainer', {
+        merchantId: ZAPPER_MERCHANT_ID,
+        siteId: siteId,
+        amount: amount,
+        size: 150,
+        reference: reference
+      });
+      zapperCodeWidget.on('payment', function(result) {
+        const af2 = currentLang === 'af';
+        if (result.status === 2) {
+          if (statusEl) statusEl.textContent = af2 ? '✅ Betaling ontvang!' : '✅ Payment received!';
+          activateSubscription(selectedTier, selectedBilling);
+        } else if (result.status === 5) {
+          if (statusEl) statusEl.textContent = af2 ? '❌ Betaling geweier. Probeer weer.' : '❌ Payment declined. Please try again.';
+        } else if (result.status === 7) {
+          if (statusEl) statusEl.textContent = af2 ? '⏳ Betaling word verwerk…' : '⏳ Payment processing…';
+        }
+      });
+    } else {
+      zapperCodeWidget.update({ amount: amount, siteId: siteId, reference: reference });
     }
-  }, 3000);
-  logAudit('info', 'Zapper payment initiated: ' + tierName + ' ' + (isMonthly ? 'Monthly' : 'Annual') + ' R' + tier[selectedBilling]);
+    if (statusEl) statusEl.textContent = af ? 'Wag vir betaling…' : 'Waiting for payment…';
+  } catch (e) {
+    console.warn('Zapper Code error:', e);
+    if (statusEl) statusEl.textContent = af ? '⚠️ Kon nie Zapper-kode wys nie.' : '⚠️ Could not display Zapper code.';
+  }
 }
 
 
@@ -5283,7 +5285,7 @@ window._switchSettingsPanel = function(panel, el) {
   window.downloadTemplate = downloadTemplate;
   window.copyGemeenteCode = copyGemeenteCode;
   window.doMemberRegister = doMemberRegister;
-  window.openZapperPayment = openZapperPayment;
+  window.updateZapperCode = updateZapperCode;
   window.printLegalModal = printLegalModal;
   window.downloadLegalModal = downloadLegalModal;
   window.downloadPOPIATemplate = downloadPOPIATemplate;
