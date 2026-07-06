@@ -929,12 +929,12 @@ body {
         <div class="stat-card blue">
           <div class="stat-label">Monthly Plans</div>
           <div class="stat-value blue" id="revMonthlyCount">—</div>
-          <div class="stat-sub">@ R500/mo</div>
+          <div class="stat-sub">R349–R999/mo by tier</div>
         </div>
         <div class="stat-card amber">
           <div class="stat-label">Annual Plans</div>
           <div class="stat-value amber" id="revAnnualCount">—</div>
-          <div class="stat-sub">@ R5 400/yr</div>
+          <div class="stat-sub">R3,490–R9,990/yr by tier</div>
         </div>
       </div>
       <div class="panel">
@@ -1298,26 +1298,36 @@ function filterMembers() { renderMembers(); }
 // ════════════════════════════════════════════════════
 // RENDER — REVENUE
 // ════════════════════════════════════════════════════
+// Pricing must stay in sync with mykerk-landing.html and the app's subscription tab.
+const PLAN_TIERS = {
+  starter:  { name: 'Starter',  monthly: 349, annual: 3490 },
+  standard: { name: 'Standard', monthly: 649, annual: 6490 },
+  premium:  { name: 'Premium',  monthly: 999, annual: 9990 }
+};
+
 function renderRevenue() {
   let monthlyCount = 0, annualCount = 0;
+  let monthlyRev = 0, annualRevEquiv = 0;
   const subRows = [];
 
   allGemeentes.forEach(function(g) {
     const sub = g.subscription || {};
     if (getSubStatus(g) !== 'active') return;
     const plan = sub.plan || 'monthly';
-    if (plan === 'annual') annualCount++;
-    else monthlyCount++;
+    const tierKey = sub.tier && PLAN_TIERS[sub.tier] ? sub.tier : 'standard'; // legacy subs default to Standard
+    const tier = PLAN_TIERS[tierKey];
+    if (plan === 'annual') { annualCount++; annualRevEquiv += tier.annual; }
+    else { monthlyCount++; monthlyRev += tier.monthly; }
     subRows.push({
       name: g.churchName || '—',
       email: g.adminEmail || '—',
       plan: plan,
+      tierName: tier.name,
+      revMo: plan === 'annual' ? Math.round(tier.annual / 12) : tier.monthly,
       paidUntil: sub.paidUntil ? fmtDate(new Date(sub.paidUntil)) : '—'
     });
   });
 
-  const monthlyRev = monthlyCount * 500;
-  const annualRevEquiv = annualCount * 5400;
   const totalMonthly = monthlyRev + Math.round(annualRevEquiv / 12);
   const totalAnnual = monthlyRev * 12 + annualRevEquiv;
 
@@ -1333,15 +1343,15 @@ function renderRevenue() {
   }
 
   el.innerHTML = '<table class="g-table"><thead><tr>' +
-    '<th>Congregation</th><th>Email</th><th>Plan</th><th>Revenue (mo.)</th><th>Paid Until</th>' +
+    '<th>Congregation</th><th>Email</th><th>Tier</th><th>Plan</th><th>Revenue (mo.)</th><th>Paid Until</th>' +
     '</tr></thead><tbody>' +
     subRows.map(function(r) {
-      const rev = r.plan === 'annual' ? 'R ' + Math.round(5400/12).toLocaleString() : 'R 500';
       return '<tr>' +
         '<td class="g-name">' + esc(r.name) + '</td>' +
         '<td class="g-email">' + esc(r.email) + '</td>' +
+        '<td>' + esc(r.tierName) + '</td>' +
         '<td><span class="badge ' + (r.plan === 'annual' ? 'badge-active' : 'badge-free') + '">' + r.plan + '</span></td>' +
-        '<td style="font-family:var(--mono);font-size:12px;color:var(--green)">' + rev + '</td>' +
+        '<td style="font-family:var(--mono);font-size:12px;color:var(--green)">R ' + r.revMo.toLocaleString() + '</td>' +
         '<td class="g-date">' + r.paidUntil + '</td>' +
       '</tr>';
     }).join('') +

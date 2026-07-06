@@ -317,11 +317,12 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 .role-viewer { background: var(--gold-pale); color: var(--muted); }
 
 /* SUBSCRIPTION */
-.sub-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+.sub-plans { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 20px; }
 .sub-plan { border: 2px solid var(--border); border-radius: 16px; padding: 24px; cursor: pointer; transition: all 0.2s; position: relative; background: var(--white); }
 .sub-plan:hover { border-color: var(--gold); }
 .sub-plan.selected { border-color: var(--gold); background: var(--gold-pale); }
 .sub-plan-badge { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--gold); color: var(--deep); font-size: 10px; font-weight: 700; padding: 3px 12px; border-radius: 20px; white-space: nowrap; }
+.sub-plan-size { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
 .sub-plan-icon { font-size: 28px; margin-bottom: 10px; }
 .sub-plan-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
 .sub-plan-price { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 700; color: var(--deep); line-height: 1; }
@@ -329,6 +330,9 @@ body { font-family: 'DM Sans', sans-serif; background: #F0EAD6; color: var(--dee
 .sub-plan-features { list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .sub-plan-features li { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 .sub-plan-features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+.billing-toggle { display: inline-flex; border: 1px solid var(--deep); border-radius: 20px; overflow: hidden; margin-bottom: 16px; }
+.billing-toggle button { border: none; background: transparent; padding: 8px 18px; cursor: pointer; font-size: 12px; font-weight: 600; color: var(--deep); font-family: 'DM Sans', sans-serif; }
+.billing-toggle button.active { background: var(--deep); color: var(--white); }
 .sub-status-card { border-radius: 16px; padding: 20px; margin-bottom: 20px; }
 .sub-status-active { background: linear-gradient(135deg, #EAFAF1, #D5F5E3); border: 1px solid #A9DFBF; }
 .sub-status-trial { background: linear-gradient(135deg, #FEF9E7, #FDEBD0); border: 1px solid #F9E4B7; }
@@ -658,7 +662,7 @@ window._firebaseSDKLoaded = true;
         </div>
         <div style="display:flex;gap:12px;align-items:center;font-size:13px;color:rgba(250,246,238,0.85)">
           <span style="color:#C9A84C;font-size:16px">✓</span>
-          <span id="wf5">Na proeftydperk: R500/maand of R5 400/jaar</span>
+          <span id="wf5">Na proeftydperk: planne vanaf R349/maand</span>
         </div>
       </div>
 
@@ -1657,10 +1661,11 @@ window._firebaseSDKLoaded = true;
                 <p>Die App is 'n prototipe wat vir demonstrasiedoeleindes gebruik word. Produksie-weergawe sal op Flutter + Firebase gebou word. / The App is a prototype used for demonstration purposes. The production version will be built on Flutter + Firebase.</p>
 
                 <h2 id="tos-3">3. Intekening en Betaling / Subscription and Payment</h2>
-                <p>Die gebruik van MyKerk / MyChurch vereis 'n aktiewe betaalde intekening een van die volgende planne: / Use of MyKerk / MyChurch requires an active paid subscription on one of the following plans:</p>
+                <p>Die gebruik van MyKerk / MyChurch vereis 'n aktiewe betaalde intekening op een van die volgende planne, geskaal volgens gemeentegrootte: / Use of MyKerk / MyChurch requires an active paid subscription on one of the following plans, scaled to congregation size:</p>
                 <ul>
-                  <li><strong>Maandeliks / Monthly:</strong> R500 per maand / per month</li>
-                  <li><strong>Jaarliks / Annual:</strong> R5 400 per jaar / per year (gelykstaande aan R450/maand / equivalent to R450/month)</li>
+                  <li><strong>Beginner / Starter</strong> (tot 100 lidmate / up to 100 members): R349 per maand / per month, of R3 490 per jaar / or R3,490 per year</li>
+                  <li><strong>Standaard / Standard</strong> (101–300 lidmate / 101–300 members): R649 per maand / per month, of R6 490 per jaar / or R6,490 per year</li>
+                  <li><strong>Premium</strong> (300+ / multi-kampus / multi-campus): R999 per maand / per month, of R9 990 per jaar / or R9,990 per year</li>
                 </ul>
                 <p>Betaling geskied via Zapper. Deur in te teken, magtig jy ons om die geskikte bedrag te debiteer op 'n maandelikse of jaarlikse basis. / Payment is processed via Zapper. By subscribing, you authorise us to debit the appropriate amount on a monthly or annual basis.</p>
                 <p>Intekeninge kan te eniger tyd gekanselleer word. By kansellasie voor die einde van 'n betaalde tydperk sal geen terugbetaling geskied nie, maar toegang sal vir die res van die betaalde periode geldig bly. / Subscriptions may be cancelled at any time. Upon cancellation before the end of a paid period, no refund will be issued, but access will remain valid for the remainder of the paid period.</p>
@@ -2161,37 +2166,60 @@ window._firebaseSDKLoaded = true;
 
 <!-- Plans -->
               <div style="font-size:13px;font-weight:600;margin-bottom:12px" data-en="Choose a Plan" data-af="Kies 'n Plan">Kies 'n Plan</div>
+
+              <!-- Billing frequency toggle -->
+              <div class="billing-toggle">
+                <button type="button" id="billMonthlyBtn" class="active" onclick="setBilling('monthly')" data-en="Monthly" data-af="Maandeliks">Maandeliks</button>
+                <button type="button" id="billAnnualBtn" onclick="setBilling('annual')" data-en="Annual (save ~17%)" data-af="Jaarliks (spaar ~17%)">Jaarliks (spaar ~17%)</button>
+              </div>
+
               <div class="sub-plans">
 
-                <!-- Monthly -->
-                <div class="sub-plan" id="planMonthly" onclick="selectPlan('monthly')">
+                <!-- Starter -->
+                <div class="sub-plan" id="planStarter" onclick="selectTier('starter')">
                   <div class="sub-plan-badge" style="background:#27AE60" data-en="1 Month FREE Trial" data-af="1 Maand GRATIS Probeer">1 Maand GRATIS Probeer</div>
-                  <div class="sub-plan-icon">📅</div>
-                  <div class="sub-plan-name" data-en="Monthly" data-af="Maandeliks">Maandeliks</div>
-                  <div class="sub-plan-price">R500</div>
-                  <div class="sub-plan-period" data-en="per month after free trial" data-af="per maand na gratis probeer">per maand na gratis probeer</div>
+                  <div class="sub-plan-icon">🌱</div>
+                  <div class="sub-plan-name" data-en="Starter" data-af="Beginner">Beginner</div>
+                  <div class="sub-plan-size" data-en="Up to 100 members" data-af="Tot 100 lidmate">Tot 100 lidmate</div>
+                  <div class="sub-plan-price" id="priceStarter">R349</div>
+                  <div class="sub-plan-period" id="periodStarter" data-en="per month" data-af="per maand">per maand</div>
                   <ul class="sub-plan-features">
                     <li style="color:#27AE60;font-weight:600" data-en="✓ First month FREE" data-af="✓ Eerste maand GRATIS">✓ Eerste maand GRATIS</li>
-                    <li data-en="All app features included" data-af="Alle app funksies ingesluit">Alle app funksies ingesluit</li>
-                    <li data-en="Unlimited members" data-af="Onbeperkte lede">Onbeperkte lede</li>
-                    <li data-en="Email support" data-af="E-pos ondersteuning">E-pos ondersteuning</li>
-                    <li data-en="Cancel anytime" data-af="Kanselleer enige tyd">Kanselleer enige tyd</li>
+                    <li data-en="Prayer wall & announcements" data-af="Gebedsmuur & aankondigings">Gebedsmuur & aankondigings</li>
+                    <li data-en="One congregation profile" data-af="Een gemeente-profiel">Een gemeente-profiel</li>
+                    <li data-en="Bilingual interface" data-af="Tweetalige koppelvlak">Tweetalige koppelvlak</li>
                   </ul>
                 </div>
 
-                <!-- Annual -->
-                <div class="sub-plan selected" id="planAnnual" onclick="selectPlan('annual')">
-                  <div class="sub-plan-badge" data-en="Save R600 / year" data-af="Spaar R600 / jaar">Spaar R600 / jaar</div>
-                  <div class="sub-plan-icon">🏆</div>
-                  <div class="sub-plan-name" data-en="Annual" data-af="Jaarliks">Jaarliks</div>
-                  <div class="sub-plan-price">R5 400</div>
-                  <div class="sub-plan-period" data-en="per year · billed annually (R450/mo)" data-af="per jaar · jaarliks gefaktureer (R450/md)">per jaar · jaarliks gefaktureer (R450/md)</div>
+                <!-- Standard -->
+                <div class="sub-plan selected" id="planStandard" onclick="selectTier('standard')">
+                  <div class="sub-plan-badge" data-en="Most Popular" data-af="Gewildste">Gewildste</div>
+                  <div class="sub-plan-icon">⛪</div>
+                  <div class="sub-plan-name" data-en="Standard" data-af="Standaard">Standaard</div>
+                  <div class="sub-plan-size" data-en="101–300 members" data-af="101–300 lidmate">101–300 lidmate</div>
+                  <div class="sub-plan-price" id="priceStandard">R649</div>
+                  <div class="sub-plan-period" id="periodStandard" data-en="per month" data-af="per maand">per maand</div>
                   <ul class="sub-plan-features">
                     <li style="color:#27AE60;font-weight:600" data-en="✓ First month FREE" data-af="✓ Eerste maand GRATIS">✓ Eerste maand GRATIS</li>
-                    <li data-en="All app features included" data-af="Alle app funksies ingesluit">Alle app funksies ingesluit</li>
-                    <li data-en="Unlimited members" data-af="Onbeperkte lede">Onbeperkte lede</li>
-                    <li data-en="Priority support" data-af="Prioriteit ondersteuning">Prioriteit ondersteuning</li>
-                    <li data-en="2 months free vs monthly" data-af="2 maande gratis vs maandeliks">2 maande gratis vs maandeliks</li>
+                    <li data-en="Everything in Starter" data-af="Alles in Beginner">Alles in Beginner</li>
+                    <li data-en="Ministries & small groups" data-af="Bedieninge & kleingroepe">Bedieninge & kleingroepe</li>
+                    <li data-en="Admin dashboard for leaders" data-af="Admin-dashboard vir leiers">Admin-dashboard vir leiers</li>
+                    <li data-en="Bulk communication" data-af="Bulk-kommunikasie">Bulk-kommunikasie</li>
+                  </ul>
+                </div>
+
+                <!-- Premium -->
+                <div class="sub-plan" id="planPremium" onclick="selectTier('premium')">
+                  <div class="sub-plan-icon">👑</div>
+                  <div class="sub-plan-name" data-en="Premium" data-af="Premium">Premium</div>
+                  <div class="sub-plan-size" data-en="300+ / multi-campus" data-af="300+ / multi-kampus">300+ / multi-kampus</div>
+                  <div class="sub-plan-price" id="pricePremium">R999</div>
+                  <div class="sub-plan-period" id="periodPremium" data-en="per month" data-af="per maand">per maand</div>
+                  <ul class="sub-plan-features">
+                    <li style="color:#27AE60;font-weight:600" data-en="✓ First month FREE" data-af="✓ Eerste maand GRATIS">✓ Eerste maand GRATIS</li>
+                    <li data-en="Everything in Standard" data-af="Alles in Standaard">Alles in Standaard</li>
+                    <li data-en="Multiple campus profiles" data-af="Meervoudige kampus-profiele">Meervoudige kampus-profiele</li>
+                    <li data-en="Priority support" data-af="Prioriteit-ondersteuning">Prioriteit-ondersteuning</li>
                   </ul>
                 </div>
               </div>
@@ -2223,12 +2251,12 @@ window._firebaseSDKLoaded = true;
                     </div>
 
                     <div id="selectedPlanSummary" style="margin-top:14px;padding:12px;background:var(--gold-pale);border-radius:8px;font-size:12px">
-                      <strong data-en="Selected: Annual Plan – R5 400/year" data-af="Gekies: Jaarlikse Plan – R5 400/jaar">Gekies: Jaarlikse Plan – R5 400/jaar</strong>
+                      <strong data-en="Selected: Standard Plan – R649/month" data-af="Gekies: Standaard Plan – R649/maand">Gekies: Standaard Plan – R649/maand</strong>
                     </div>
 
                     <!-- PAY BUTTON — now active with real Zapper link -->
                     <button class="btn btn-primary" id="zapperPayBtn" onclick="openZapperPayment()" style="margin-top:12px;width:100%;background:#27AE60;border-color:#27AE60;font-size:15px;padding:12px">
-                      💚 Betaal met Zapper
+                      💚 Betaal R649/maand met Zapper
                     </button>
                     <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px" data-en="Secure payment via Zapper. You will be redirected to Zapper." data-af="Veilige betaling via Zapper. Jy sal na Zapper herlei word.">Veilige betaling via Zapper</div>
                   </div>
@@ -2243,6 +2271,7 @@ window._firebaseSDKLoaded = true;
                   <div><div style="color:var(--muted);margin-bottom:2px">Site: MyChurch MyKerk</div><div style="font-weight:600">Aktief ✓</div></div>
                   <div><div style="color:var(--muted);margin-bottom:2px">Maandeliks Site ID</div><div style="font-weight:600">96013</div></div>
                   <div><div style="color:var(--muted);margin-bottom:2px">Jaarliks Site ID</div><div style="font-weight:600">96037</div></div>
+                  <div style="grid-column:1/-1;font-size:11px;color:var(--muted)" data-en="One site ID per billing frequency — the amount charged is set dynamically per plan (Starter/Standard/Premium)." data-af="Een Site ID per faktureringsfrekwensie — die bedrag word dinamies per plan bepaal (Beginner/Standaard/Premium).">Een Site ID per faktureringsfrekwensie — die bedrag word dinamies per plan bepaal (Beginner/Standaard/Premium).</div>
                 </div>
               </div>
 
@@ -2949,7 +2978,8 @@ window._firebaseSDKLoaded = true;
   function handleFileSelect(i) { if (window._handleFileSelect) window._handleFileSelect(i); }
   function setWelcomeLang(l) { if (window._setWelcomeLang) window._setWelcomeLang(l); }
   function selectRegRole(r) { if (window._selectRegRole) window._selectRegRole(r); }
-  function selectPlan(p) { if (window._selectPlan) window._selectPlan(p); }
+  function selectTier(t) { if (window._selectTier) window._selectTier(t); }
+  function setBilling(b) { if (window._setBilling) window._setBilling(b); }
   function openLegalModal(d) { if (window._openLegalModal) window._openLegalModal(d); }
   function printLegal(id) { if (window._printLegal) window._printLegal(id); }
   function downloadLegal(id, fn) { if (window._downloadLegal) window._downloadLegal(id, fn); }
@@ -3851,6 +3881,7 @@ window._switchSettingsTab = function(tabId, navEl) {
   const panel = document.getElementById(tabId);
   if (panel) panel.classList.add('active');
   if (navEl) navEl.classList.add('active');
+  if (tabId === 'tab-subscription' && typeof updateSelectedPlanSummary === 'function') updateSelectedPlanSummary();
 }
 
 // ── MODALS ──
@@ -4373,7 +4404,14 @@ window._setLang = function(lang) {
 }
 
 // ── SUBSCRIPTION ──
-let selectedPlan = 'annual';
+// Pricing must stay in sync with the mykerk-landing.html marketing page.
+var PLAN_TIERS = {
+  starter:  { nameAf: 'Beginner',  nameEn: 'Starter',  monthly: 349, annual: 3490 },
+  standard: { nameAf: 'Standaard', nameEn: 'Standard', monthly: 649, annual: 6490 },
+  premium:  { nameAf: 'Premium',   nameEn: 'Premium',  monthly: 999, annual: 9990 }
+};
+let selectedTier = 'standard';
+let selectedBilling = 'monthly';
 
 
 // ═══════════════════════════════════════════════════════════════
@@ -4390,7 +4428,7 @@ var welcomeText = {
     f2: "Gebedsmuur — gemeentelede ondersteun mekaar",
     f3: "Preke biblioteek & kerkraad inligting",
     f4: "Tweetalig: Afrikaans & Engels",
-    f5: "Na proeftydperk: R500/maand of R5 400/jaar",
+    f5: "Na proeftydperk: planne vanaf R349/maand",
     btnRegister: "Begin Gratis Registreer",
     btnSignin: "Reeds geregistreer? Teken In",
     btnDemo: "Kyk eers die demo (sonder registrasie)"
@@ -4402,7 +4440,7 @@ var welcomeText = {
     f2: "Prayer Wall — congregation members support each other",
     f3: "Sermon library & church council information",
     f4: "Bilingual: Afrikaans & English",
-    f5: "After trial: R500/month or R5 400/year",
+    f5: "After trial: plans from R349/month",
     btnRegister: "Start Free Registration",
     btnSignin: "Already registered? Sign In",
     btnDemo: "Explore the demo first (no registration)"
@@ -4740,9 +4778,11 @@ function renderSubscriptionCard(sub, af) {
   } else if (sub.status === 'active' && paidUntil) {
     card.className = 'sub-status-card sub-status-active';
     var planLabel = sub.plan === 'annual' ? (af ? 'Jaarliks' : 'Annual') : (af ? 'Maandeliks' : 'Monthly');
+    var tierInfo = PLAN_TIERS[sub.tier || 'standard'];
+    var tierLabel = tierInfo ? (af ? tierInfo.nameAf : tierInfo.nameEn) : '';
     card.innerHTML =
       '<div class="sub-status-label" style="color:#276749">✅ ' + (af ? 'Aktiewe Intekening' : 'Active Subscription') + '</div>' +
-      '<div class="sub-status-title">' + planLabel + ' ' + (af ? 'Plan' : 'Plan') + '</div>' +
+      '<div class="sub-status-title">' + (tierLabel ? tierLabel + ' — ' : '') + planLabel + ' ' + (af ? 'Plan' : 'Plan') + '</div>' +
       '<div class="sub-status-desc">' +
         (af ? 'Geldig tot ' + formatDate(paidUntil) + ' (' + daysLeft + ' dae oor)' :
                'Valid until ' + formatDate(paidUntil) + ' (' + daysLeft + ' days remaining)') +
@@ -4830,7 +4870,9 @@ function formatDate(date) {
 }
 
 // Called after confirmed Zapper payment
-function activateSubscription(plan) {
+function activateSubscription(tier, plan) {
+  // Backward compatible: activateSubscription('monthly') from any old callers still defaults tier
+  if (plan === undefined) { plan = tier; tier = selectedTier || 'standard'; }
   var af = currentLang === 'af';
   var paidUntil = new Date();
   if (plan === 'annual') {
@@ -4842,6 +4884,7 @@ function activateSubscription(plan) {
     status: 'active',
     trialStart: null,
     trialEnd: null,
+    tier: tier,
     plan: plan,
     paidUntil: paidUntil.toISOString(),
     activatedAt: new Date().toISOString()
@@ -4855,25 +4898,47 @@ function activateSubscription(plan) {
   renderSubscriptionCard(sub, af);
   checkRenewalReminder(sub, af);
   showToast(af ? '✅ Intekening aktief tot ' + formatDate(paidUntil) + '!' : '✅ Subscription active until ' + formatDate(paidUntil) + '!');
-  logAudit('info', 'Subscription activated: ' + plan + ' until ' + paidUntil.toISOString());
+  logAudit('info', 'Subscription activated: ' + tier + '/' + plan + ' until ' + paidUntil.toISOString());
 }
 
-window._selectPlan = function(plan) {
-  selectedPlan = plan;
-  document.getElementById('planMonthly').classList.toggle('selected', plan === 'monthly');
-  document.getElementById('planAnnual').classList.toggle('selected', plan === 'annual');
+function updateSelectedPlanSummary() {
   const af = currentLang === 'af';
+  const tier = PLAN_TIERS[selectedTier];
+  const price = tier[selectedBilling];
+  const tierName = af ? tier.nameAf : tier.nameEn;
   const summary = document.getElementById('selectedPlanSummary');
   const btn = document.getElementById('zapperPayBtn');
-  if (plan === 'monthly') {
-    summary.innerHTML = '<strong>' + (af ? 'Gekies: Maandelikse Plan – R500/maand' : 'Selected: Monthly Plan – R500/month') + '</strong>';
-    if (btn) btn.textContent = '💚 Betaal R500/maand met Zapper';
-  } else {
-    summary.innerHTML = '<strong>' + (af ? 'Gekies: Jaarlikse Plan – R5 400/jaar (spaar R600)' : 'Selected: Annual Plan – R5 400/year (save R600)') + '</strong>';
-    if (btn) btn.textContent = '💚 Betaal R5 400/jaar met Zapper';
+  const priceStr = 'R' + price.toLocaleString();
+  const per = selectedBilling === 'annual' ? (af ? '/jaar' : '/year') : (af ? '/maand' : '/month');
+  if (summary) {
+    summary.innerHTML = '<strong>' + (af ? 'Gekies: ' + tierName + ' Plan – ' + priceStr + per : 'Selected: ' + tierName + ' Plan – ' + priceStr + per) + '</strong>';
   }
+  if (btn) btn.textContent = '💚 ' + (af ? 'Betaal ' + priceStr + per + ' met Zapper' : 'Pay ' + priceStr + per + ' with Zapper');
 }
 
+window._selectTier = function(t) {
+  selectedTier = t;
+  ['starter','standard','premium'].forEach(function(k) {
+    var el = document.getElementById('plan' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (el) el.classList.toggle('selected', k === t);
+  });
+  updateSelectedPlanSummary();
+}
+
+window._setBilling = function(b) {
+  selectedBilling = b;
+  document.getElementById('billMonthlyBtn').classList.toggle('active', b === 'monthly');
+  document.getElementById('billAnnualBtn').classList.toggle('active', b === 'annual');
+  const af = currentLang === 'af';
+  ['starter','standard','premium'].forEach(function(k) {
+    var tier = PLAN_TIERS[k];
+    var priceEl = document.getElementById('price' + k.charAt(0).toUpperCase() + k.slice(1));
+    var periodEl = document.getElementById('period' + k.charAt(0).toUpperCase() + k.slice(1));
+    if (priceEl) priceEl.textContent = 'R' + tier[b].toLocaleString();
+    if (periodEl) periodEl.textContent = b === 'annual' ? (af ? 'per jaar' : 'per year') : (af ? 'per maand' : 'per month');
+  });
+  updateSelectedPlanSummary();
+}
 
 function activateZapper() {
   // Legacy function - now handled by openZapperPayment
@@ -4882,15 +4947,15 @@ function activateZapper() {
 
 function openZapperPayment() {
   const af = currentLang === 'af';
-  const isMonthly = selectedPlan === 'monthly';
+  const isMonthly = selectedBilling === 'monthly';
+  const tier = PLAN_TIERS[selectedTier];
+  const tierName = af ? tier.nameAf : tier.nameEn;
 
   // Zapper merchant details
   const MERCHANT_ID = '76032';
-  const SITE_ID = isMonthly ? '96013' : '96037'; // Monthly vs Annual site
-  const AMOUNT = isMonthly ? '50000' : '540000'; // in cents: R500 or R5400
-  const DESCRIPTION = isMonthly
-    ? 'MyKerk Maandelikse Intekening'
-    : 'MyKerk Jaarlikse Intekening';
+  const SITE_ID = isMonthly ? '96013' : '96037'; // Monthly vs Annual billing site
+  const AMOUNT = String(tier[selectedBilling] * 100); // in cents
+  const DESCRIPTION = 'MyKerk ' + tierName + ' — ' + (isMonthly ? (af ? 'Maandelikse Intekening' : 'Monthly Subscription') : (af ? 'Jaarlikse Intekening' : 'Annual Subscription'));
 
   // Zapper payment URL — direct link to pay page
   const zapperUrl = `https://api.zapper.com/business/pay?merchantId=${MERCHANT_ID}&siteId=${SITE_ID}&amount=${AMOUNT}&description=${encodeURIComponent(DESCRIPTION)}`;
@@ -4913,10 +4978,10 @@ function openZapperPayment() {
   // For demo: activate after user confirms payment
   setTimeout(function() {
     if (confirm(af ? 'Het jy die betaling via Zapper voltooi? Klik OK om jou intekening te aktiveer.' : 'Did you complete the payment via Zapper? Click OK to activate your subscription.')) {
-      activateSubscription(isMonthly ? 'monthly' : 'annual');
+      activateSubscription(selectedTier, isMonthly ? 'monthly' : 'annual');
     }
   }, 3000);
-  logAudit('info', 'Zapper payment initiated: ' + (isMonthly ? 'Monthly R500' : 'Annual R5400'));
+  logAudit('info', 'Zapper payment initiated: ' + tierName + ' ' + (isMonthly ? 'Monthly' : 'Annual') + ' R' + tier[selectedBilling]);
 }
 
 
