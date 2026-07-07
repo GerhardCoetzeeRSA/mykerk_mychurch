@@ -774,6 +774,10 @@ body {
     <div class="login-sub">// Restricted access · Platform owner only</div>
     <div class="login-error" id="loginError">Incorrect credentials</div>
     <div class="login-field">
+      <label>Email</label>
+      <input type="email" id="adminEmail" placeholder="you@example.com" onkeydown="if(event.key==='Enter')document.getElementById('adminPass').focus()">
+    </div>
+    <div class="login-field">
       <label>Password</label>
       <input type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
     </div>
@@ -984,10 +988,8 @@ body {
 
 <script>
 // ════════════════════════════════════════════════════
-// CONFIG — verander ADMIN_PASSWORD na jou eie wagwoord
+// CONFIG
 // ════════════════════════════════════════════════════
-const ADMIN_PASSWORD = 'MykerkAdmin2026';
-
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCDMHWV1KeN1_sSc-JG0R-SrOhAC_V5FS4",
   authDomain: "mykerk-ae12c.firebaseapp.com",
@@ -1009,39 +1011,38 @@ let currentSupportId = null;
 // ════════════════════════════════════════════════════
 // AUTH
 // ════════════════════════════════════════════════════
+// Real Firebase Auth — no password lives in this file. Access to admin
+// data is controlled by Firestore security rules keyed to your specific
+// account's UID, not by anything client-side. Create your account once
+// via Firebase Console → Authentication → Add User.
 function doAdminLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
   const pass = document.getElementById('adminPass').value;
   const err = document.getElementById('loginError');
-  if (pass === ADMIN_PASSWORD) {
-    sessionStorage.setItem('mykerk_admin_auth', '1');
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    initFirebase();
-  } else {
+  err.style.display = 'none';
+
+  if (!email || !pass) {
+    err.textContent = 'Enter both email and password.';
     err.style.display = 'block';
-    document.getElementById('adminPass').value = '';
-    document.getElementById('adminPass').focus();
+    return;
   }
+
+  firebase.auth().signInWithEmailAndPassword(email, pass)
+    .catch(function(e) {
+      err.textContent = e.code === 'auth/too-many-requests'
+        ? 'Too many attempts — try again later.'
+        : 'Incorrect credentials.';
+      err.style.display = 'block';
+      document.getElementById('adminPass').value = '';
+      document.getElementById('adminPass').focus();
+    });
+  // On success, onAuthStateChanged (below) shows the dashboard.
 }
 
 function doLogout() {
-  sessionStorage.removeItem('mykerk_admin_auth');
-  location.reload();
+  firebase.auth().signOut();
+  // onAuthStateChanged shows the login screen again.
 }
-
-// Check if already authenticated this session
-window.addEventListener('load', function() {
-  if (sessionStorage.getItem('mykerk_admin_auth') === '1') {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'block';
-    initFirebase();
-  }
-  // Focus password field
-  setTimeout(function() {
-    const p = document.getElementById('adminPass');
-    if (p && document.getElementById('loginScreen').style.display !== 'none') p.focus();
-  }, 100);
-});
 
 // ════════════════════════════════════════════════════
 // FIREBASE
@@ -1051,41 +1052,30 @@ function initFirebase() {
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
 
-    // Super-admin signs in with a dedicated platform owner account.
-    // This account must exist in Firebase Auth (Email/Password).
-    // Credentials match ADMIN_PASSWORD logic — platform owner only.
-    var adminEmail = 'admin@mykerk-platform.co.za';
-    var adminPass  = ADMIN_PASSWORD + '_Firebase26!';
-
-    firebase.auth().signInWithEmailAndPassword(adminEmail, adminPass)
-      .then(function(cred) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
         setStatus('connected');
         loadAllData();
-      })
-      .catch(function(e) {
-        if (e.code === 'auth/user-not-found' || e.code === 'auth/invalid-credential' || e.code === 'auth/invalid-email') {
-          // First time: auto-create the super-admin Firebase account
-          firebase.auth().createUserWithEmailAndPassword(adminEmail, adminPass)
-            .then(function() {
-              setStatus('connected');
-              loadAllData();
-            })
-            .catch(function(e2) {
-              // If creation also fails, try anonymous as fallback
-              firebase.auth().signInAnonymously()
-                .then(function() { setStatus('connected'); loadAllData(); })
-                .catch(function() { setStatus('error'); showToast('Auth failed: ' + e2.message); });
-            });
-        } else {
-          setStatus('error');
-          showToast('Auth error: ' + e.message);
-        }
-      });
+      } else {
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
+        setTimeout(function() {
+          const e = document.getElementById('adminEmail');
+          if (e) e.focus();
+        }, 100);
+      }
+    });
   } catch(e) {
     setStatus('error');
     showToast('Firebase init error: ' + e.message);
   }
 }
+
+// Initialize immediately — Firebase's own persisted session decides
+// whether to show the login screen or the dashboard.
+window.addEventListener('load', initFirebase);
 
 function setStatus(s) {
   const el = document.getElementById('fbStatus');
