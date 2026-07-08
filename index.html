@@ -747,7 +747,7 @@ window._firebaseSDKLoaded = true;
         <div class="nav-label" data-en="Leadership" data-af="Leierskap">Leierskap</div>
         <div class="nav-item drawer-nav" onclick="showScreen('kerkraad',event.currentTarget);closeDrawer()"><span class="nav-icon">&#127963;&#65039;</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('attendance',event.currentTarget);closeDrawer()"><span class="nav-icon">✅</span><span data-en="Attendance" data-af="Bywoning">Bywoning</span></div>
-        <div class="nav-item drawer-nav" onclick="showScreen('donations',event.currentTarget);closeDrawer()" data-admin-only><span class="nav-icon">💰</span><span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('donations',event.currentTarget);closeDrawer()"><span class="nav-icon">💰</span><span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('checkin',event.currentTarget);closeDrawer()"><span class="nav-icon">👶</span><span data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('volunteers',event.currentTarget);closeDrawer()"><span class="nav-icon">🙋</span><span data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('settings',event.currentTarget);closeDrawer()"><span class="nav-icon">&#9881;&#65039;</span><span data-en="Settings &amp; Admin" data-af="Instellings &amp; Admin">Instellings &amp; Admin</span></div>
@@ -817,7 +817,7 @@ window._firebaseSDKLoaded = true;
           <span class="nav-icon">✅</span>
           <span data-en="Attendance" data-af="Bywoning">Bywoning</span>
         </div>
-        <div class="nav-item" onclick="showScreen('donations', event.currentTarget)" data-admin-only>
+        <div class="nav-item" onclick="showScreen('donations', event.currentTarget)">
           <span class="nav-icon">💰</span>
           <span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span>
         </div>
@@ -2429,87 +2429,84 @@ window._firebaseSDKLoaded = true;
       <div class="screen" id="screen-donations">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
           <div>
-            <div class="page-title" data-en="Donations & Tithes" data-af="Skenkings & Tiendes">Skenkings &amp; Tiendes</div>
-            <div style="font-size:13px;color:var(--muted)" data-en="Track congregation giving" data-af="Volg gemeenteskenkings">Volg gemeenteskenkings</div>
+            <div class="page-title" data-en="Donations & Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="Banking details for contributions" data-af="Bankbesonderhede vir bydraes">Bankbesonderhede vir bydraes</div>
           </div>
-          <button class="btn btn-primary" onclick="openDonationModal()" data-en="+ Record Donation" data-af="+ Skenking Aanteken">+ Skenking Aanteken</button>
+          <button class="btn btn-primary" onclick="openBankingModal()" data-en="Edit Banking Details" data-af="Wysig Bankbesonderhede" data-admin-only>Wysig Bankbesonderhede</button>
         </div>
-        <div style="padding:20px 28px">
-          <!-- Summary Cards -->
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
-            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
-              <div style="font-size:22px;font-weight:700;color:var(--gold)" id="donTotalMonth">R 0</div>
-              <div style="font-size:12px;color:var(--muted)" data-en="This Month" data-af="Hierdie Maand">Hierdie Maand</div>
-            </div>
-            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
-              <div style="font-size:22px;font-weight:700;color:var(--deep)" id="donTotalYear">R 0</div>
-              <div style="font-size:12px;color:var(--muted)" data-en="This Year" data-af="Hierdie Jaar">Hierdie Jaar</div>
-            </div>
-            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
-              <div style="font-size:22px;font-weight:700;color:#27AE60" id="donCount">0</div>
-              <div style="font-size:12px;color:var(--muted)" data-en="Total Donations" data-af="Totale Skenkings">Totale Skenkings</div>
-            </div>
+        <div style="padding:20px 28px;max-width:560px">
+          <!-- Empty state -->
+          <div id="bankingEmptyState" style="display:none;background:#fff;border-radius:12px;border:1px solid #eee;padding:32px;text-align:center;color:var(--muted)">
+            <div style="font-size:32px;margin-bottom:10px">🏦</div>
+            <div data-en="Banking details haven't been set up yet." data-af="Bankbesonderhede is nog nie ingestel nie.">Bankbesonderhede is nog nie ingestel nie.</div>
+            <div style="font-size:12px;margin-top:6px" data-en="An admin can add them via 'Edit Banking Details' above." data-af="'n Admin kan dit byvoeg via 'Wysig Bankbesonderhede' hierbo." data-admin-only>'n Admin kan dit byvoeg via 'Wysig Bankbesonderhede' hierbo.</div>
           </div>
-          <!-- Filter -->
-          <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
-            <select class="form-input" id="donFilterType" onchange="renderDonations()" style="max-width:180px;padding:8px 12px">
-              <option value="" data-en="All Types" data-af="Alle Tipes">Alle Tipes</option>
-              <option value="tithe" data-en="Tithe" data-af="Tiendes">Tiendes</option>
-              <option value="offering" data-en="Offering" data-af="Offergawe">Offergawe</option>
-              <option value="special" data-en="Special" data-af="Spesiaal">Spesiaal</option>
-              <option value="building" data-en="Building Fund" data-af="Boufonds">Boufonds</option>
-            </select>
-            <select class="form-input" id="donFilterMonth" onchange="renderDonations()" style="max-width:180px;padding:8px 12px">
-              <option value="" data-en="All Months" data-af="Alle Maande">Alle Maande</option>
-            </select>
-          </div>
-          <!-- Donations list -->
-          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
-            <div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:8px;padding:12px 20px;background:var(--gold-pale);font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted)">
-              <span data-en="Member / Description" data-af="Lid / Beskrywing">Lid / Beskrywing</span>
-              <span data-en="Type" data-af="Tipe">Tipe</span>
-              <span data-en="Date" data-af="Datum">Datum</span>
-              <span data-en="Amount" data-af="Bedrag">Bedrag</span>
+          <!-- Banking details card -->
+          <div id="bankingCard" style="display:none;background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
+            <div style="background:var(--gold-pale);padding:14px 20px;font-size:12px;font-weight:600;text-transform:uppercase;color:var(--muted)" data-en="For EFT / bank deposits" data-af="Vir EFT / bankdeposito's">Vir EFT / bankdeposito's</div>
+            <div style="padding:8px 20px">
+              <div class="bank-row"><span class="bank-label" data-en="Bank" data-af="Bank">Bank</span><span class="bank-value" id="bdBankName">—</span></div>
+              <div class="bank-row"><span class="bank-label" data-en="Account Holder" data-af="Rekeninghouer">Rekeninghouer</span><span class="bank-value" id="bdAccountHolder">—</span></div>
+              <div class="bank-row"><span class="bank-label" data-en="Account Number" data-af="Rekeningnommer">Rekeningnommer</span><span class="bank-value" id="bdAccountNumber">—<button class="btn-copy" onclick="copyBankField('bdAccountNumber')" title="Copy">📋</button></span></div>
+              <div class="bank-row"><span class="bank-label" data-en="Branch Code" data-af="Takkode">Takkode</span><span class="bank-value" id="bdBranchCode">—</span></div>
+              <div class="bank-row"><span class="bank-label" data-en="Account Type" data-af="Rekeningtipe">Rekeningtipe</span><span class="bank-value" id="bdAccountType">—</span></div>
+              <div class="bank-row" id="bdSwiftRow"><span class="bank-label">SWIFT</span><span class="bank-value" id="bdSwift">—</span></div>
             </div>
-            <div id="donationsList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No donations recorded yet." data-af="Geen skenkings aangeteken nie.">Geen skenkings aangeteken nie.</div>
+            <div id="bdReferenceBox" style="margin:8px 20px 20px;padding:12px 14px;background:#FFF8E8;border-radius:8px;font-size:13px;color:var(--deep)"></div>
           </div>
         </div>
-        <!-- Donation Modal -->
-        <div id="donationModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
-          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px">
-            <h3 style="margin-bottom:20px" data-en="Record Donation" data-af="Skenking Aanteken">Skenking Aanteken</h3>
+
+        <!-- Banking Details Edit Modal (admin only) -->
+        <div id="bankingModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px;max-height:85vh;overflow-y:auto">
+            <h3 style="margin-bottom:20px" data-en="Edit Banking Details" data-af="Wysig Bankbesonderhede">Wysig Bankbesonderhede</h3>
             <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Member Name (optional)" data-af="Lidnaam (opsioneel)">Lidnaam (opsioneel)</label>
-              <input class="form-input" id="donMember" data-en-placeholder="Anonymous" data-af-placeholder="Anoniem" placeholder="Anoniem">
+              <label class="form-label" data-en="Bank" data-af="Bank">Bank</label>
+              <input class="form-input" id="bdInputBankName" placeholder="Standard Bank">
             </div>
             <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Type" data-af="Tipe">Tipe</label>
-              <select class="form-input" id="donType">
-                <option value="tithe" data-en="Tithe" data-af="Tiendes">Tiendes</option>
-                <option value="offering" data-en="Offering" data-af="Offergawe">Offergawe</option>
-                <option value="special" data-en="Special" data-af="Spesiaal">Spesiaal</option>
-                <option value="building" data-en="Building Fund" data-af="Boufonds">Boufonds</option>
+              <label class="form-label" data-en="Account Holder" data-af="Rekeninghouer">Rekeninghouer</label>
+              <input class="form-input" id="bdInputAccountHolder" data-en-placeholder="Congregation's official name" data-af-placeholder="Gemeente se amptelike naam" placeholder="Gemeente se amptelike naam">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Account Number" data-af="Rekeningnommer">Rekeningnommer</label>
+              <input class="form-input" id="bdInputAccountNumber" placeholder="0000000000">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Branch Code" data-af="Takkode">Takkode</label>
+              <input class="form-input" id="bdInputBranchCode" placeholder="000000">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Account Type" data-af="Rekeningtipe">Rekeningtipe</label>
+              <select class="form-input" id="bdInputAccountType">
+                <option value="Tjek/Cheque" data-en="Cheque / Current" data-af="Tjek">Tjek</option>
+                <option value="Spaar/Savings" data-en="Savings" data-af="Spaar">Spaar</option>
               </select>
             </div>
             <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Amount (R)" data-af="Bedrag (R)">Bedrag (R)</label>
-              <input class="form-input" type="number" id="donAmount" min="0" step="0.01" placeholder="0.00">
-            </div>
-            <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Date" data-af="Datum">Datum</label>
-              <input class="form-input" type="date" id="donDate">
+              <label class="form-label">SWIFT <span style="font-weight:400;color:var(--muted)" data-en="(optional, for international transfers)" data-af="(opsioneel, vir internasionale oorplasings)">(opsioneel, vir internasionale oorplasings)</span></label>
+              <input class="form-input" id="bdInputSwift" placeholder="SBZAZAJJ">
             </div>
             <div style="margin-bottom:20px">
-              <label class="form-label" data-en="Notes" data-af="Notas">Notas</label>
-              <input class="form-input" id="donNotes" data-en-placeholder="Optional note" data-af-placeholder="Opsionele nota" placeholder="Opsionele nota">
+              <label class="form-label" data-en="Reference Instructions" data-af="Verwysing-instruksies">Verwysing-instruksies</label>
+              <input class="form-input" id="bdInputReference" data-en-placeholder="e.g. Use your surname + 'Tithe' as reference" data-af-placeholder="bv. Gebruik jou van + 'Tiendes' as verwysing" placeholder="bv. Gebruik jou van + 'Tiendes' as verwysing">
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button class="btn btn-ghost" onclick="closeDonationModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
-              <button class="btn btn-primary" onclick="saveDonation()" data-en="Save" data-af="Stoor">Stoor</button>
+              <button class="btn btn-ghost" onclick="closeBankingModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveBankingDetails()" data-en="Save" data-af="Stoor">Stoor</button>
             </div>
           </div>
         </div>
       </div>
+
+      <style>
+        .bank-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f5f5f5; font-size:13px; }
+        .bank-row:last-child { border-bottom:none; }
+        .bank-label { color:var(--muted); }
+        .bank-value { font-weight:600; color:var(--deep); display:flex; align-items:center; gap:6px; }
+        .btn-copy { background:none; border:none; cursor:pointer; font-size:13px; padding:2px; opacity:0.6; }
+        .btn-copy:hover { opacity:1; }
+      </style>
 
       <!-- ══════════════════ CHILD CHECK-IN SCREEN ══════════════════ -->
       <div class="screen" id="screen-checkin">
@@ -5426,120 +5423,118 @@ window._switchSettingsPanel = function(panel, el) {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // DONATIONS MODULE
+  // BANKING DETAILS MODULE (replaces the old per-donation ledger —
+  // congregations use their own bookkeeping software for that; this
+  // screen just publishes the bank account members pay tithes/gifts
+  // into directly. Visible to all members; only admins can edit it.)
   // ═══════════════════════════════════════════════════════════
-  var donationsData = JSON.parse(localStorage.getItem('mykerk_donations') || '[]');
+  var bankingDetailsData = null;
 
-  function openDonationModal() {
-    var today = new Date().toISOString().split('T')[0];
-    document.getElementById('donDate').value = today;
-    document.getElementById('donMember').value = '';
-    document.getElementById('donAmount').value = '';
-    document.getElementById('donNotes').value = '';
-    document.getElementById('donationModal').style.display = 'flex';
+  function openBankingModal() {
+    var d = bankingDetailsData || {};
+    document.getElementById('bdInputBankName').value = d.bankName || '';
+    document.getElementById('bdInputAccountHolder').value = d.accountHolder || '';
+    document.getElementById('bdInputAccountNumber').value = d.accountNumber || '';
+    document.getElementById('bdInputBranchCode').value = d.branchCode || '';
+    document.getElementById('bdInputAccountType').value = d.accountType || 'Tjek/Cheque';
+    document.getElementById('bdInputSwift').value = d.swift || '';
+    document.getElementById('bdInputReference').value = d.reference || '';
+    document.getElementById('bankingModal').style.display = 'flex';
   }
-  window.openDonationModal = openDonationModal;
+  window.openBankingModal = openBankingModal;
 
-  function closeDonationModal() {
-    document.getElementById('donationModal').style.display = 'none';
+  function closeBankingModal() {
+    document.getElementById('bankingModal').style.display = 'none';
   }
-  window.closeDonationModal = closeDonationModal;
+  window.closeBankingModal = closeBankingModal;
 
-  function saveDonation() {
+  function saveBankingDetails() {
     var af = currentLang === 'af';
-    var amount = parseFloat(document.getElementById('donAmount').value) || 0;
-    var date = document.getElementById('donDate').value;
-    if (!amount || !date) {
-      showToast(af ? 'Vul bedrag en datum in.' : 'Please fill in amount and date.');
-      return;
-    }
-    var don = {
-      id: Date.now(),
-      member: document.getElementById('donMember').value.trim() || (af ? 'Anoniem' : 'Anonymous'),
-      type: document.getElementById('donType').value,
-      amount: amount,
-      date: date,
-      notes: document.getElementById('donNotes').value.trim()
+    var d = {
+      bankName: document.getElementById('bdInputBankName').value.trim(),
+      accountHolder: document.getElementById('bdInputAccountHolder').value.trim(),
+      accountNumber: document.getElementById('bdInputAccountNumber').value.trim(),
+      branchCode: document.getElementById('bdInputBranchCode').value.trim(),
+      accountType: document.getElementById('bdInputAccountType').value,
+      swift: document.getElementById('bdInputSwift').value.trim(),
+      reference: document.getElementById('bdInputReference').value.trim(),
+      updatedAt: new Date().toISOString()
     };
-    donationsData.unshift(don);
-    localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
-    if (db && GEMEENTE_ID !== 'demo') {
-      gemeentePath('skenkings').doc(String(don.id)).set(don).catch(function(){});
-    }
-    closeDonationModal();
-    renderDonations();
-    showToast(af ? '✅ Skenking gestoor!' : '✅ Donation saved!');
-  }
-  window.saveDonation = saveDonation;
-
-  function deleteDonation(id) {
-    var af = currentLang === 'af';
-    donationsData = donationsData.filter(function(d){ return d.id !== id; });
-    localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
-    if (db && GEMEENTE_ID !== 'demo') {
-      gemeentePath('skenkings').doc(String(id)).delete().catch(function(){});
-    }
-    renderDonations();
-    showToast(af ? 'Verwyder.' : 'Deleted.');
-  }
-  window.deleteDonation = deleteDonation;
-
-  function renderDonations() {
-    var af = currentLang === 'af';
-    var list = document.getElementById('donationsList');
-    if (!list) return;
-    var filterType = (document.getElementById('donFilterType') || {}).value || '';
-    var filterMonth = (document.getElementById('donFilterMonth') || {}).value || '';
-    var filtered = donationsData.filter(function(d) {
-      if (filterType && d.type !== filterType) return false;
-      if (filterMonth && !d.date.startsWith(filterMonth)) return false;
-      return true;
-    });
-    var now = new Date();
-    var thisMonth = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0');
-    var thisYear = String(now.getFullYear());
-    var monthTotal = donationsData.filter(function(d){return d.date.startsWith(thisMonth);}).reduce(function(a,d){return a+d.amount;},0);
-    var yearTotal = donationsData.filter(function(d){return d.date.startsWith(thisYear);}).reduce(function(a,d){return a+d.amount;},0);
-    document.getElementById('donTotalMonth').textContent = 'R ' + monthTotal.toFixed(2);
-    document.getElementById('donTotalYear').textContent = 'R ' + yearTotal.toFixed(2);
-    document.getElementById('donCount').textContent = donationsData.length;
-
-    // Populate month filter
-    var months = [...new Set(donationsData.map(function(d){return d.date.substring(0,7);}))].sort().reverse();
-    var mf = document.getElementById('donFilterMonth');
-    if (mf) {
-      var cur = mf.value;
-      mf.innerHTML = '<option value="">' + (af ? 'Alle Maande' : 'All Months') + '</option>' +
-        months.map(function(m){return '<option value="'+m+'"'+(m===cur?' selected':'')+'>'+m+'</option>';}).join('');
-    }
-
-    var typeLabels = { tithe: af?'Tiendes':'Tithe', offering: af?'Offergawe':'Offering', special: af?'Spesiaal':'Special', building: af?'Boufonds':'Building Fund' };
-    if (!filtered.length) {
-      list.innerHTML = '<div style="padding:12px 0;color:var(--muted)">' + (af ? 'Geen skenkings nie.' : 'No donations found.') + '</div>';
+    if (!d.bankName || !d.accountHolder || !d.accountNumber) {
+      showToast(af ? 'Vul ten minste bank, rekeninghouer en rekeningnommer in.' : 'Please fill in at least bank, account holder and account number.');
       return;
     }
-    list.innerHTML = filtered.map(function(d) {
-      return '<div style="display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 60px;gap:8px;padding:12px 0;border-bottom:1px solid #f0f0f0;align-items:center;font-size:13px">' +
-        '<div><div style="font-weight:600">' + d.member + '</div>' +
-        (d.notes ? '<div style="font-size:11px;color:var(--muted)">' + d.notes + '</div>' : '') + '</div>' +
-        '<div style="color:var(--muted)">' + (typeLabels[d.type]||d.type) + '</div>' +
-        '<div style="color:var(--muted)">' + d.date + '</div>' +
-        '<div style="font-weight:700;color:var(--gold)">R ' + d.amount.toFixed(2) + '</div>' +
-        '<button onclick="deleteDonation(' + d.id + ')" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:16px">🗑</button>' +
-        '</div>';
-    }).join('');
+    bankingDetailsData = d;
+    renderBankingDetails();
+    closeBankingModal();
+    showToast(af ? '✅ Bankbesonderhede gestoor!' : '✅ Banking details saved!');
+    if (db && (currentGemeenteId || GEMEENTE_ID) !== 'demo') {
+      gemeentePath('instellings').doc('bankbesonderhede').set(d).catch(function(e) {
+        console.warn('Kon nie bankbesonderhede stoor nie:', e);
+      });
+    }
   }
-  window.renderDonations = renderDonations;
+  window.saveBankingDetails = saveBankingDetails;
 
-  if (db && GEMEENTE_ID !== 'demo') {
-    gemeentePath('skenkings').orderBy('date','desc').get().then(function(snap) {
-      if (!snap.empty) {
-        donationsData = snap.docs.map(function(d){return d.data();});
-        localStorage.setItem('mykerk_donations', JSON.stringify(donationsData));
-        renderDonations();
-      }
+  function copyBankField(elId) {
+    var af = currentLang === 'af';
+    var text = (bankingDetailsData && bankingDetailsData.accountNumber) || '';
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(function() {
+      showToast(af ? '📋 Gekopieer!' : '📋 Copied!');
     }).catch(function(){});
   }
+  window.copyBankField = copyBankField;
+
+  function renderBankingDetails() {
+    var af = currentLang === 'af';
+    var empty = document.getElementById('bankingEmptyState');
+    var card = document.getElementById('bankingCard');
+    if (!empty || !card) return;
+    var d = bankingDetailsData;
+    if (!d || !d.bankName) {
+      empty.style.display = 'block';
+      card.style.display = 'none';
+      return;
+    }
+    empty.style.display = 'none';
+    card.style.display = 'block';
+    document.getElementById('bdBankName').textContent = d.bankName || '—';
+    document.getElementById('bdAccountHolder').textContent = d.accountHolder || '—';
+    document.getElementById('bdAccountNumber').childNodes[0].textContent = (d.accountNumber || '—') + ' ';
+    document.getElementById('bdBranchCode').textContent = d.branchCode || '—';
+    var typeLabels = { 'Tjek/Cheque': af ? 'Tjek' : 'Cheque / Current', 'Spaar/Savings': af ? 'Spaar' : 'Savings' };
+    document.getElementById('bdAccountType').textContent = typeLabels[d.accountType] || d.accountType || '—';
+    var swiftRow = document.getElementById('bdSwiftRow');
+    if (d.swift) {
+      swiftRow.style.display = 'flex';
+      document.getElementById('bdSwift').textContent = d.swift;
+    } else {
+      swiftRow.style.display = 'none';
+    }
+    var refBox = document.getElementById('bdReferenceBox');
+    if (d.reference) {
+      refBox.style.display = 'block';
+      refBox.innerHTML = '<strong>' + (af ? 'Verwysing: ' : 'Reference: ') + '</strong>' + d.reference;
+    } else {
+      refBox.style.display = 'none';
+    }
+  }
+  window.renderBankingDetails = renderBankingDetails;
+
+  function loadBankingDetails() {
+    if (db && (currentGemeenteId || GEMEENTE_ID) !== 'demo') {
+      gemeentePath('instellings').doc('bankbesonderhede').get().then(function(doc) {
+        if (doc.exists) {
+          bankingDetailsData = doc.data();
+        }
+        renderBankingDetails();
+      }).catch(function() { renderBankingDetails(); });
+    } else {
+      renderBankingDetails();
+    }
+  }
+  loadBankingDetails();
 
   // ═══════════════════════════════════════════════════════════
   // CHILD CHECK-IN MODULE
