@@ -3716,11 +3716,13 @@ function renderMembers(list) {
   const labels = roleLabelsLang[currentLang] || roleLabelsLang.af;
   const visible = getVisibleMembers(list);
 
-  // Wys/versteek toolbar vir nie-admins
+  // Show filter for all, hide Add Member button for non-admins
   const toolbar = document.querySelector('#screen-members .members-toolbar');
   if (toolbar) {
-    toolbar.querySelector('input')?.style && (toolbar.querySelector('input').style.display = currentUserRole === 'admin' ? '' : 'none');
-    toolbar.querySelector('select')?.style && (toolbar.querySelector('select').style.display = currentUserRole === 'admin' ? '' : 'none');
+    // Search and filter visible to all
+    toolbar.querySelector('input')?.style && (toolbar.querySelector('input').style.display = '');
+    toolbar.querySelector('select')?.style && (toolbar.querySelector('select').style.display = '');
+    // Add Member button only for admin
     toolbar.querySelector('button')?.style && (toolbar.querySelector('button').style.display = currentUserRole === 'admin' ? '' : 'none');
   }
 
@@ -5950,11 +5952,16 @@ window._switchSettingsPanel = function(panel, el) {
     var counts = AGE_GROUPS.map(function() { return 0; });
     var unknown = 0;
 
-    // Use Firebase members if available, fallback to local
+    // Use all available members
     var memberList = members && members.length ? members : [];
+    console.log('Age stats: ' + memberList.length + ' members, sample DOB fields:', 
+      memberList.slice(0,3).map(function(m){ 
+        return {name:m.name, dob:m.dob||m.dateOfBirth||m.geboortedatum||'none'}; 
+      }));
 
     memberList.forEach(function(m) {
-      var age = calcAge(m.dob || m.dateOfBirth || m.geboortedatum);
+      var age = calcAge(m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
+                        m.birth_date || m.dateofbirth || m.DOB || m.geboorteDatum);
       if (age === null) { unknown++; return; }
       for (var i = 0; i < AGE_GROUPS.length; i++) {
         if (age >= AGE_GROUPS[i].min && age <= AGE_GROUPS[i].max) {
