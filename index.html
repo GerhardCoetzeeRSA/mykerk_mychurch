@@ -748,8 +748,8 @@ window._firebaseSDKLoaded = true;
         <div class="nav-item drawer-nav" onclick="showScreen('kerkraad',event.currentTarget);closeDrawer()"><span class="nav-icon">&#127963;&#65039;</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('attendance',event.currentTarget);closeDrawer()"><span class="nav-icon">✅</span><span data-en="Attendance" data-af="Bywoning">Bywoning</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('donations',event.currentTarget);closeDrawer()"><span class="nav-icon">💰</span><span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span></div>
-        <div class="nav-item drawer-nav" onclick="showScreen('checkin',event.currentTarget);closeDrawer()"><span class="nav-icon">👶</span><span data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('volunteers',event.currentTarget);closeDrawer()"><span class="nav-icon">🙋</span><span data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</span></div>
+        <div class="nav-item drawer-nav" onclick="showScreen('agestats',event.currentTarget);closeDrawer()"><span class="nav-icon">📊</span><span data-en="Age Statistics" data-af="Ouderdomstatistieke">Ouderdomstatistieke</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('settings',event.currentTarget);closeDrawer()"><span class="nav-icon">&#9881;&#65039;</span><span data-en="Settings &amp; Admin" data-af="Instellings &amp; Admin">Instellings &amp; Admin</span></div>
       </div>
     </nav>
@@ -821,13 +821,14 @@ window._firebaseSDKLoaded = true;
           <span class="nav-icon">💰</span>
           <span data-en="Donations &amp; Tithes" data-af="Skenkings &amp; Tiendes">Skenkings &amp; Tiendes</span>
         </div>
-        <div class="nav-item" onclick="showScreen('checkin', event.currentTarget)">
-          <span class="nav-icon">👶</span>
-          <span data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</span>
-        </div>
+
         <div class="nav-item" onclick="showScreen('volunteers', event.currentTarget)">
           <span class="nav-icon">🙋</span>
           <span data-en="Volunteers" data-af="Vrywilligers">Vrywilligers</span>
+        </div>
+                <div class="nav-item" onclick="showScreen('agestats', event.currentTarget)">
+          <span class="nav-icon">📊</span>
+          <span data-en="Age Statistics" data-af="Ouderdomstatistieke">Ouderdomstatistieke</span>
         </div>
                 <div class="nav-item" onclick="showScreen('settings', event.currentTarget)">
           <span class="nav-icon">⚙️</span><span data-en="Settings &amp; Admin" data-af="Instellings &amp; Admin">Instellings &amp; Admin</span>
@@ -916,7 +917,7 @@ window._firebaseSDKLoaded = true;
       <div class="screen" id="screen-members">
         <div class="members-toolbar">
           <input class="search-input" type="text" id="memberSearch" data-af-data-af-placeholder="Soek lede..." data-en-placeholder="Search members..." placeholder="Soek lede..." data-en-placeholder="Search members..." placeholder="Soek lede..." oninput="filterMembers(this.value)">
-          <select class="filter-select" onchange="filterByRole(this.value)">
+          <select class="filter-select" id="memberRoleFilter" onchange="filterByRole(this.value);filterMembers(document.getElementById('memberSearch').value||'')">
             <option value="" data-en="All Roles" data-af="Alle Rolle">Alle Rolle</option>
             <option value="minister" data-en="Minister" data-af="Predikant">Predikant</option>
             <option value="elder" data-en="Elder" data-af="Ouderling">Ouderling</option>
@@ -2509,77 +2510,8 @@ window._firebaseSDKLoaded = true;
       </style>
 
       <!-- ══════════════════ CHILD CHECK-IN SCREEN ══════════════════ -->
-      <div class="screen" id="screen-checkin">
-        <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
-          <div>
-            <div class="page-title" data-en="Child Check-In" data-af="Kinders Inteken">Kinders Inteken</div>
-            <div style="font-size:13px;color:var(--muted)" data-en="Safe & secure child attendance" data-af="Veilige kinderbywoning">Veilige kinderbywoning</div>
-          </div>
-          <button class="btn btn-primary" onclick="openCheckinModal()" data-en="+ Check In Child" data-af="+ Kind Inteken">+ Kind Inteken</button>
-        </div>
-        <div style="padding:20px 28px">
-          <!-- Summary -->
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px">
-            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
-              <div style="font-size:28px;font-weight:700;color:var(--gold)" id="checkinToday">0</div>
-              <div style="font-size:12px;color:var(--muted)" data-en="Checked In Today" data-af="Vandag Ingeteken">Vandag Ingeteken</div>
-            </div>
-            <div style="background:#fff;border-radius:12px;padding:16px;border:1px solid #eee;text-align:center">
-              <div style="font-size:28px;font-weight:700;color:#27AE60" id="checkinTotal">0</div>
-              <div style="font-size:12px;color:var(--muted)" data-en="Total This Month" data-af="Totaal Hierdie Maand">Totaal Hierdie Maand</div>
-            </div>
-          </div>
-          <!-- Checked in list -->
-          <div style="background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden">
-            <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 80px;gap:8px;padding:12px 20px;background:var(--gold-pale);font-size:11px;font-weight:600;text-transform:uppercase;color:var(--muted)">
-              <span data-en="Child Name" data-af="Kindernaam">Kindernaam</span>
-              <span data-en="Parent / Guardian" data-af="Ouer / Voog">Ouer / Voog</span>
-              <span data-en="Class" data-af="Klas">Klas</span>
-              <span data-en="Time" data-af="Tyd">Tyd</span>
-              <span data-en="Status" data-af="Status">Status</span>
-            </div>
-            <div id="checkinList" style="padding:12px 20px;color:var(--muted);font-size:13px" data-en="No children checked in yet." data-af="Geen kinders ingeteken nie.">Geen kinders ingeteken nie.</div>
-          </div>
-        </div>
-        <!-- Check-In Modal -->
-        <div id="checkinModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
-          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:480px">
-            <h3 style="margin-bottom:20px" data-en="Child Check-In" data-af="Kind Inteken">Kind Inteken</h3>
-            <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Child's Full Name" data-af="Kind se Volle Naam">Kind se Volle Naam</label>
-              <input class="form-input" id="ciChildName" placeholder="">
-            </div>
-            <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Age" data-af="Ouderdom">Ouderdom</label>
-              <input class="form-input" type="number" id="ciChildAge" min="0" max="17" placeholder="0">
-            </div>
-            <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Parent / Guardian Name" data-af="Ouer / Voog Naam">Ouer / Voog Naam</label>
-              <input class="form-input" id="ciParentName" placeholder="">
-            </div>
-            <div style="margin-bottom:14px">
-              <label class="form-label" data-en="Parent Cell Number" data-af="Ouer Selfoon">Ouer Selfoon</label>
-              <input class="form-input" type="tel" id="ciParentCell" placeholder="082 000 0000">
-            </div>
-            <div style="margin-bottom:20px">
-              <label class="form-label" data-en="Class / Group" data-af="Klas / Groep">Klas / Groep</label>
-              <select class="form-input" id="ciClass">
-                <option value="babies" data-en="Babies (0-2)" data-af="Babas (0-2)">Babas (0-2)</option>
-                <option value="toddlers" data-en="Toddlers (3-5)" data-af="Kleuters (3-5)">Kleuters (3-5)</option>
-                <option value="junior" data-en="Junior (6-9)" data-af="Junior (6-9)">Junior (6-9)</option>
-                <option value="senior" data-en="Senior (10-13)" data-af="Senior (10-13)">Senior (10-13)</option>
-                <option value="youth" data-en="Youth (14-17)" data-af="Jeug (14-17)">Jeug (14-17)</option>
-              </select>
-            </div>
-            <div style="display:flex;gap:10px;justify-content:flex-end">
-              <button class="btn btn-ghost" onclick="closeCheckinModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
-              <button class="btn btn-primary" onclick="saveCheckin()" data-en="Check In" data-af="Inteken">Inteken</button>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- ══════════════════ VOLUNTEERS SCREEN ══════════════════ -->
+            <!-- ══════════════════ VOLUNTEERS SCREEN ══════════════════ -->
       <div class="screen" id="screen-volunteers">
         <div class="page-header" style="display:flex;align-items:center;justify-content:space-between;padding:20px 28px 0;flex-wrap:wrap;gap:10px">
           <div>
@@ -2676,6 +2608,37 @@ window._firebaseSDKLoaded = true;
             </div>
           </div>
         </div>
+      </div>
+
+
+      <!-- ══════════════════ AGE STATISTICS SCREEN ══════════════════ -->
+      <div class="screen" id="screen-agestats">
+        <div style="padding:0 0 20px">
+          <div class="page-title" data-en="Congregation Age Statistics" data-af="Gemeente Ouderdomstatistieke">Gemeente Ouderdomstatistieke</div>
+          <div style="font-size:13px;color:var(--muted)" data-en="Age distribution of all congregation members" data-af="Ouderdomsverdeling van alle gemeentelede">Ouderdomsverdeling van alle gemeentelede</div>
+        </div>
+
+        <!-- Summary cards -->
+        <div id="ageStatCards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:24px"></div>
+
+        <!-- Bar chart -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:24px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:600;color:var(--deep);margin-bottom:20px" data-en="Distribution by Age Group" data-af="Verdeling per Ouderdomsgroep">Verdeling per Ouderdomsgroep</div>
+          <div id="ageBarChart" style="display:flex;align-items:flex-end;gap:8px;height:160px"></div>
+          <div id="ageBarLabels" style="display:flex;gap:8px;margin-top:8px"></div>
+        </div>
+
+        <!-- Pie chart (CSS) -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:24px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:600;color:var(--deep);margin-bottom:20px" data-en="Percentage Breakdown" data-af="Persentasieverdeling">Persentasieverdeling</div>
+          <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+            <div id="agePieChart" style="width:180px;height:180px;border-radius:50%;flex-shrink:0"></div>
+            <div id="ageLegend" style="display:flex;flex-direction:column;gap:8px;flex:1"></div>
+          </div>
+        </div>
+
+        <!-- Data note -->
+        <div id="ageStatsNote" style="font-size:12px;color:var(--muted);text-align:center;padding:8px"></div>
       </div>
 
     </div><!-- end content-area -->
@@ -3709,8 +3672,8 @@ const ADMIN_PASS = 'mykerk2024';
 
 // ── TRANSLATIONS ──
 const screenTitles = {
-  af: { dashboard:'Paneelbord', members:'Lede', events:'Geleenthede & Dienste', ministries:'Bedieninge', prayer:'Gebedsmuur', groups:'Kleingroepe', sermons:'Preke', kerkraad:'Kerkraad', settings:'Instellings & Admin', attendance:'Bywoning', donations:'Skenkings & Tiendes', checkin:'Kinders Inteken', volunteers:'Vrywilligers' },
-  en: { dashboard:'Dashboard', members:'Members', events:'Events & Services', ministries:'Ministries', prayer:'Prayer Wall', groups:'Small Groups', sermons:'Sermons', kerkraad:'Church Board', settings:'Settings & Admin', attendance:'Attendance', donations:'Donations & Tithes', checkin:'Child Check-In', volunteers:'Volunteers' }
+  af: { dashboard:'Paneelbord', members:'Lede', agestats:'Ouderdomstatistieke', events:'Geleenthede & Dienste', ministries:'Bedieninge', prayer:'Gebedsmuur', groups:'Kleingroepe', sermons:'Preke', kerkraad:'Kerkraad', settings:'Instellings & Admin', attendance:'Bywoning', donations:'Skenkings & Tiendes', volunteers:'Vrywilligers' },
+  en: { dashboard:'Dashboard', members:'Members', agestats:'Age Statistics', events:'Events & Services', ministries:'Ministries', prayer:'Prayer Wall', groups:'Small Groups', sermons:'Sermons', kerkraad:'Church Board', settings:'Settings & Admin', attendance:'Attendance', donations:'Donations & Tithes', volunteers:'Volunteers' }
 };
 
 const roleLabelsLang = {
@@ -3802,11 +3765,27 @@ function renderMembers(list) {
 }
 
 function filterMembers(q) {
-  renderMembers(members.filter(m => m.name.toLowerCase().includes(q.toLowerCase()) || m.email.toLowerCase().includes(q.toLowerCase())));
+  var roleFilter = (document.getElementById('memberRoleFilter') || {}).value || '';
+  var filtered = members.filter(function(m) {
+    var matchSearch = !q || 
+      (m.name||'').toLowerCase().includes(q.toLowerCase()) || 
+      (m.email||'').toLowerCase().includes(q.toLowerCase()) ||
+      (m.phone||m.selfoon||'').toLowerCase().includes(q.toLowerCase());
+    var matchRole = !roleFilter || (m.role||m.rol||'').toLowerCase() === roleFilter.toLowerCase();
+    return matchSearch && matchRole;
+  });
+  renderMembers(filtered);
 }
 
 function filterByRole(role) {
-  renderMembers(role ? members.filter(m => m.role === role) : members);
+  if (!role) {
+    renderMembers(members);
+    return;
+  }
+  // Check both m.role (English) and m.rol (Afrikaans Firebase field)
+  renderMembers(members.filter(function(m) {
+    return (m.role || m.rol || '').toLowerCase() === role.toLowerCase();
+  }));
 }
 
 renderMembers(members);
@@ -5939,6 +5918,123 @@ window._switchSettingsPanel = function(panel, el) {
       });
   }
   window.addUserToFirestore = addUserToFirestore;
+
+
+  // ═══════════════════════════════════════════════════════════
+  // AGE STATISTICS MODULE — accessible to all members
+  // ═══════════════════════════════════════════════════════════
+  var AGE_GROUPS = [
+    { label: '0-6',   labelAf: '0-6',   min: 0,  max: 6   },
+    { label: '7-13',  labelAf: '7-13',  min: 7,  max: 13  },
+    { label: '14-18', labelAf: '14-18', min: 14, max: 18  },
+    { label: '19-35', labelAf: '19-35', min: 19, max: 35  },
+    { label: '36-60', labelAf: '36-60', min: 36, max: 60  },
+    { label: '61+',   labelAf: '61+',   min: 61, max: 999 }
+  ];
+
+  var AGE_COLORS = ['#F39C12','#27AE60','#2980B9','#8E44AD','#C9A84C','#E74C3C'];
+
+  function calcAge(dob) {
+    if (!dob) return null;
+    var birth = new Date(dob);
+    if (isNaN(birth)) return null;
+    var today = new Date();
+    var age = today.getFullYear() - birth.getFullYear();
+    if (today.getMonth() < birth.getMonth() || 
+        (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    return age >= 0 ? age : null;
+  }
+
+  function renderAgeStats() {
+    var af = currentLang === 'af';
+    var counts = AGE_GROUPS.map(function() { return 0; });
+    var unknown = 0;
+
+    // Use Firebase members if available, fallback to local
+    var memberList = members && members.length ? members : [];
+
+    memberList.forEach(function(m) {
+      var age = calcAge(m.dob || m.dateOfBirth || m.geboortedatum);
+      if (age === null) { unknown++; return; }
+      for (var i = 0; i < AGE_GROUPS.length; i++) {
+        if (age >= AGE_GROUPS[i].min && age <= AGE_GROUPS[i].max) {
+          counts[i]++;
+          break;
+        }
+      }
+    });
+
+    var total = counts.reduce(function(a, b) { return a + b; }, 0);
+    var maxCount = Math.max.apply(null, counts) || 1;
+
+    // ── Summary cards ──
+    var cards = document.getElementById('ageStatCards');
+    if (cards) {
+      cards.innerHTML = AGE_GROUPS.map(function(g, i) {
+        var pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+        return '<div style="background:#fff;border-radius:12px;border:1px solid #eee;padding:14px;text-align:center">' +
+          '<div style="font-size:26px;font-weight:700;color:' + AGE_COLORS[i] + '">' + counts[i] + '</div>' +
+          '<div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:2px">' + (af ? g.labelAf : g.label) + '</div>' +
+          '<div style="font-size:11px;color:var(--muted)">' + pct + '%</div>' +
+          '</div>';
+      }).join('');
+    }
+
+    // ── Bar chart ──
+    var chart = document.getElementById('ageBarChart');
+    var labels = document.getElementById('ageBarLabels');
+    if (chart) {
+      chart.innerHTML = AGE_GROUPS.map(function(g, i) {
+        var heightPct = Math.max(3, Math.round((counts[i] / maxCount) * 100));
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px">' +
+          '<div style="font-size:11px;font-weight:600;color:var(--deep)">' + counts[i] + '</div>' +
+          '<div style="width:100%;background:' + AGE_COLORS[i] + ';border-radius:6px 6px 0 0;height:' + heightPct + '%;min-height:4px;transition:height 0.5s ease;opacity:0.9"></div>' +
+          '</div>';
+      }).join('');
+    }
+    if (labels) {
+      labels.innerHTML = AGE_GROUPS.map(function(g, i) {
+        return '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted);font-weight:600">' + (af ? g.labelAf : g.label) + '</div>';
+      }).join('');
+    }
+
+    // ── Pie chart (CSS conic-gradient) ──
+    var pie = document.getElementById('agePieChart');
+    var legend = document.getElementById('ageLegend');
+    if (pie && total > 0) {
+      var segments = [];
+      var cumulative = 0;
+      AGE_GROUPS.forEach(function(g, i) {
+        var pct = (counts[i] / total) * 100;
+        segments.push(AGE_COLORS[i] + ' ' + cumulative + '% ' + (cumulative + pct) + '%');
+        cumulative += pct;
+      });
+      pie.style.background = 'conic-gradient(' + segments.join(', ') + ')';
+    } else if (pie) {
+      pie.style.background = '#eee';
+    }
+
+    if (legend) {
+      legend.innerHTML = AGE_GROUPS.map(function(g, i) {
+        var pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+        return '<div style="display:flex;align-items:center;gap:8px">' +
+          '<div style="width:12px;height:12px;border-radius:50%;background:' + AGE_COLORS[i] + ';flex-shrink:0"></div>' +
+          '<span style="font-size:13px;color:var(--deep);font-weight:500">' + (af ? g.labelAf : g.label) + '</span>' +
+          '<span style="font-size:12px;color:var(--muted);margin-left:auto">' + counts[i] + ' (' + pct + '%)</span>' +
+          '</div>';
+      }).join('');
+    }
+
+    // ── Note ──
+    var note = document.getElementById('ageStatsNote');
+    if (note) {
+      var known = memberList.length - unknown;
+      note.textContent = af
+        ? 'Gebaseer op ' + known + ' van ' + memberList.length + ' lede met bekende geboortedatums' + (unknown > 0 ? ' (' + unknown + ' onbekend)' : '')
+        : 'Based on ' + known + ' of ' + memberList.length + ' members with known dates of birth' + (unknown > 0 ? ' (' + unknown + ' unknown)' : '');
+    }
+  }
+  window.renderAgeStats = renderAgeStats;
 
   }); // end DOMContentLoaded
 </script>
