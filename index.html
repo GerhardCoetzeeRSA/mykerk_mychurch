@@ -941,6 +941,17 @@ window._firebaseSDKLoaded = true;
 
       <!-- EVENTS -->
       <div class="screen" id="screen-events">
+        <!-- TODAY'S BIRTHDAYS -->
+        <div id="todayBirthdaysBar" style="display:none;background:linear-gradient(135deg,var(--gold-pale),#FEF9E7);border-radius:12px;padding:14px 18px;margin-bottom:20px;border:1px solid var(--gold)">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <span style="font-size:22px">🎂</span>
+            <div>
+              <div style="font-weight:600;font-size:14px;color:var(--deep)" data-en="Today's Birthdays" data-af="Vandag se Verjaarsdae">Vandag se Verjaarsdae</div>
+              <div id="todayBirthdaysList" style="font-size:13px;color:var(--ink-soft);margin-top:2px"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="cal-grid">
           <div class="cal-month">
             <div class="cal-header">
@@ -3784,11 +3795,17 @@ function filterByRole(role) {
     renderMembers(members);
     return;
   }
-  // Check both m.role (English) and m.rol (Afrikaans Firebase field)
+  // Map English dropdown values to Afrikaans Firebase values
+  var roleMap = { minister:'predikant', elder:'ouderling', deacon:'diaken', member:'lid' };
+  var afRole = roleMap[role] || role;
   renderMembers(members.filter(function(m) {
-    return (m.role || m.rol || '').toLowerCase() === role.toLowerCase();
+    var mRole = (m.role || m.rol || '').toLowerCase();
+    return mRole === role.toLowerCase() || mRole === afRole.toLowerCase();
   }));
 }
+window.filterByRole = filterByRole;
+window.filterMembers = filterMembers;
+window.renderAgeStats = renderAgeStats;
 
 renderMembers(members);
 
@@ -5954,14 +5971,17 @@ window._switchSettingsPanel = function(panel, el) {
 
     // Use all available members
     var memberList = members && members.length ? members : [];
-    console.log('Age stats: ' + memberList.length + ' members, sample DOB fields:', 
-      memberList.slice(0,3).map(function(m){ 
-        return {name:m.name, dob:m.dob||m.dateOfBirth||m.geboortedatum||'none'}; 
-      }));
+    console.log('Age stats: memberList=' + memberList.length + 
+      ', sample:', JSON.stringify(memberList.slice(0,2).map(function(m){
+        return {name:m.name||m.naam, dob:m.dob||m.dateOfBirth||m.geboortedatum||m.birthDate||'NONE'};
+      })));
 
     memberList.forEach(function(m) {
-      var age = calcAge(m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
-                        m.birth_date || m.dateofbirth || m.DOB || m.geboorteDatum);
+      // Try all possible DOB field names from Firebase
+      var dobVal = m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
+                   m.birth_date || m.dateofbirth || m.DOB || m.geboorteDatum ||
+                   m.Geboortedatum || m.geboorte_datum || null;
+      var age = calcAge(dobVal);
       if (age === null) { unknown++; return; }
       for (var i = 0; i < AGE_GROUPS.length; i++) {
         if (age >= AGE_GROUPS[i].min && age <= AGE_GROUPS[i].max) {
@@ -6042,6 +6062,40 @@ window._switchSettingsPanel = function(panel, el) {
     }
   }
   window.renderAgeStats = renderAgeStats;
+
+
+  // ═══════════════════════════════════════════════════════════
+  // TODAY'S BIRTHDAYS
+  // ═══════════════════════════════════════════════════════════
+  function checkTodayBirthdays() {
+    var today = new Date();
+    var todayMonth = today.getMonth() + 1;
+    var todayDay = today.getDate();
+    var af = currentLang === 'af';
+
+    var birthdays = members.filter(function(m) {
+      var dob = m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
+                m.geboorteDatum || m.Geboortedatum || null;
+      if (!dob) return false;
+      var d = new Date(dob);
+      if (isNaN(d)) return false;
+      return (d.getMonth() + 1) === todayMonth && d.getDate() === todayDay;
+    });
+
+    var bar = document.getElementById('todayBirthdaysBar');
+    var list = document.getElementById('todayBirthdaysList');
+    if (!bar || !list) return;
+
+    if (birthdays.length > 0) {
+      bar.style.display = 'block';
+      list.textContent = birthdays.map(function(m) {
+        return (m.name || m.naam || af ? 'Onbekend' : 'Unknown');
+      }).join(', ');
+    } else {
+      bar.style.display = 'none';
+    }
+  }
+  window.checkTodayBirthdays = checkTodayBirthdays;
 
   }); // end DOMContentLoaded
 </script>
