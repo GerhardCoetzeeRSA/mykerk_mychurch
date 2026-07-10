@@ -4662,19 +4662,23 @@ function doMemberRegister() {
   var btn = document.getElementById('btnMemberRegister');
   if (btn) { btn.disabled = true; btn.textContent = af ? 'Besig...' : 'Please wait...'; }
 
-  // Soek die gemeente met hierdie kode
+  // Soek die gemeente met hierdie kode via Cloud Function
+  // (die persoon is nog nie aangemeld nie, so 'n direkte Firestore-navraag
+  // sou deur die sekuriteitsreëls geblokkeer word — vandaar die Function)
   if (!db) { showAuthError(af ? 'Geen verbinding nie. Probeer later.' : 'No connection. Try later.'); return; }
+  if (!zapperFunctions) zapperFunctions = firebase.functions();
 
-  db.collection('gemeentes').where('gemeenteCode', '==', code).limit(1).get()
-    .then(function(snap) {
-      if (snap.empty) {
+  var lookupGemeenteByCode = zapperFunctions.httpsCallable('lookupGemeenteByCode');
+  lookupGemeenteByCode({ code: code })
+    .then(function(result) {
+      var res = result.data;
+      if (!res || !res.found) {
         if (btn) { btn.disabled = false; btn.textContent = af ? 'Sluit aan by Gemeente' : 'Join Congregation'; }
         showAuthError(af ? 'Gemeente-kode nie gevind nie. Kyk of dit korrek is.' : 'Congregation code not found. Check that it is correct.');
         return;
       }
-      var gemeenteDoc = snap.docs[0];
-      var gemeenteId = gemeenteDoc.id;
-      var churchName = gemeenteDoc.data().churchName || '';
+      var gemeenteId = res.gemeenteId;
+      var churchName = res.churchName || '';
 
       // Skep Firebase Auth rekening
       return firebase.auth().createUserWithEmailAndPassword(email, pass)
