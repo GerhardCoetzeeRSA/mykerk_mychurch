@@ -1168,51 +1168,88 @@ window._firebaseSDKLoaded = true;
 
       <!-- SERMONS -->
       <div class="screen" id="screen-sermons">
-        <div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,var(--deep),var(--warm));border:none">
-          <div style="display:flex;align-items:center;gap:20px">
-            <div style="font-size:48px">🎤</div>
-            <div>
-              <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gold);margin-bottom:4px" data-en="Current Series" data-af="Huidige Reeks">Huidige Reeks</div>
-              <div style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--white)" data-en="Walk in His Light" data-af="Wandel in Sy Lig">Wandel in Sy Lig</div>
-              <div style="font-size:13px;color:rgba(255,255,255,0.6);margin-top:4px" data-en="A series on the Gospel of John" data-af="'n Reeks oor die Evangelie van Johannes">'n Reeks oor die Evangelie van Johannes</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+          <div>
+            <div class="page-title" data-en="Sermons" data-af="Preke">Preke</div>
+            <div style="font-size:13px;color:var(--muted)" data-en="YouTube or MP3 sermon library" data-af="YouTube of MP3 preekbiblioteek">YouTube of MP3 preekbiblioteek</div>
+          </div>
+          <button class="btn btn-primary" id="addSermonBtn" style="display:none" onclick="openAddSermonModal()" data-en="+ Add Sermon" data-af="+ Voeg Preek By">+ Voeg Preek By</button>
+        </div>
+
+        <!-- Sermon list -->
+        <div id="sermonList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+          <div style="grid-column:1/-1;padding:32px;text-align:center;color:var(--muted);font-size:14px" id="sermonEmpty" data-en="No sermons added yet." data-af="Geen preke bygevoeg nie.">No sermons added yet.</div>
+        </div>
+
+        <!-- YouTube player modal -->
+        <div id="youtubeModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:400;align-items:center;justify-content:center;flex-direction:column">
+          <button onclick="closeYoutubeModal()" style="position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:32px;cursor:pointer;z-index:401">✕</button>
+          <div style="width:90%;max-width:800px">
+            <div id="youtubeTitle" style="color:#fff;font-size:18px;font-weight:600;margin-bottom:12px;text-align:center;padding:0 40px"></div>
+            <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px">
+              <iframe id="youtubeFrame" style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;border-radius:12px" src="" allowfullscreen allow="autoplay;encrypted-media"></iframe>
             </div>
           </div>
         </div>
-        <div class="sermons-grid">
-          <div class="sermon-card" onclick="showToast(currentLang==='af'?'Speel preek...':'Playing sermon...')">
-            <div class="sermon-thumb" style="background:linear-gradient(135deg,#EBF5FB,#D6EAF8)">📖</div>
-            <div class="sermon-body">
-              <div class="sermon-series" data-en="Walk in His Light" data-af="Wandel in Sy Lig">Wandel in Sy Lig</div>
-              <div class="sermon-title" data-en="I Am the Light of the World" data-af="Ek is die Lig van die Wereld">Ek is die Lig van die Wereld</div>
-              <div class="sermon-meta">Ds. P. van der Berg · 8 Mrt 2026</div>
-              <div class="sermon-actions">
-                <button class="sermon-btn play" onclick="event.stopPropagation();showToast(currentLang==='af'?'Speel...':'Playing...')">&#9654; <span data-en="Play" data-af="Speel">Speel</span></button>
-                <button class="sermon-btn" onclick="event.stopPropagation();showToast(currentLang==='af'?'Laai af...':'Downloading...')">&#8595; <span data-en="Download" data-af="Laai af">Laai af</span></button>
+
+        <!-- MP3 Player -->
+        <div id="mp3PlayerBar" style="display:none;position:fixed;bottom:60px;left:0;right:0;background:var(--deep);padding:14px 20px;z-index:200;display:none;align-items:center;gap:14px;box-shadow:0 -4px 20px rgba(0,0,0,0.3)">
+          <div style="flex:1;min-width:0">
+            <div id="mp3Title" style="color:#fff;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></div>
+            <audio id="mp3Audio" controls style="width:100%;margin-top:6px;height:30px;filter:invert(1)"></audio>
+          </div>
+          <button onclick="closeMp3Player()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;flex-shrink:0">✕</button>
+        </div>
+
+        <!-- Add Sermon Modal -->
+        <div id="addSermonModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;align-items:center;justify-content:center">
+          <div style="background:#fff;border-radius:16px;padding:28px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto">
+            <h3 style="margin-bottom:20px" data-en="Add Sermon" data-af="Voeg Preek By">Voeg Preek By</h3>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Sermon Title" data-af="Preektitel">Preektitel</label>
+              <input class="form-input" id="sermonTitle" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Preacher" data-af="Prediker">Prediker</label>
+              <input class="form-input" id="sermonPreacher" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Series (optional)" data-af="Reeks (opsioneel)">Reeks (opsioneel)</label>
+              <input class="form-input" id="sermonSeries" placeholder="">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Date" data-af="Datum">Datum</label>
+              <input class="form-input" type="date" id="sermonDate">
+            </div>
+            <div style="margin-bottom:14px">
+              <label class="form-label" data-en="Media Type" data-af="Media Tipe">Media Tipe</label>
+              <div style="display:flex;gap:12px;margin-top:6px">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;border:2px solid var(--gold);border-radius:8px;padding:10px;font-size:13px">
+                  <input type="radio" name="sermonType" id="sermonTypeYoutube" value="youtube" checked onchange="toggleSermonType()">
+                  <span>▶ YouTube</span>
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;flex:1;border:2px solid #eee;border-radius:8px;padding:10px;font-size:13px">
+                  <input type="radio" name="sermonType" id="sermonTypeMp3" value="mp3" onchange="toggleSermonType()">
+                  <span>🎵 MP3 / Audio</span>
+                </label>
               </div>
             </div>
-          </div>
-          <div class="sermon-card" onclick="showToast(currentLang==='af'?'Speel preek...':'Playing sermon...')">
-            <div class="sermon-thumb" style="background:linear-gradient(135deg,#EAFAF1,#D5F5E3)">🌿</div>
-            <div class="sermon-body">
-              <div class="sermon-series" data-en="Walk in His Light" data-af="Wandel in Sy Lig">Wandel in Sy Lig</div>
-              <div class="sermon-title" data-en="The Vine and the Branches" data-af="Die Wingerd en die Lote">Die Wingerd en die Lote</div>
-              <div class="sermon-meta">Ds. P. van der Berg · 1 Mrt 2026</div>
-              <div class="sermon-actions">
-                <button class="sermon-btn play" onclick="event.stopPropagation();showToast('Playing...')">&#9654; <span data-en="Play" data-af="Speel">Speel</span></button>
-                <button class="sermon-btn" onclick="event.stopPropagation();showToast('Downloading...')">&#8595; <span data-en="Download" data-af="Laai af">Laai af</span></button>
-              </div>
+            <div id="youtubeField" style="margin-bottom:14px">
+              <label class="form-label">YouTube URL / Video ID</label>
+              <input class="form-input" id="sermonYoutubeUrl" placeholder="https://youtube.com/watch?v=... or video ID">
             </div>
-          </div>
-          <div class="sermon-card" onclick="showToast(currentLang==='af'?'Speel preek...':'Playing sermon...')">
-            <div class="sermon-thumb" style="background:linear-gradient(135deg,#FEF9E7,#FDEBD0)">🕊️</div>
-            <div class="sermon-body">
-              <div class="sermon-series" data-en="Walk in His Light" data-af="Wandel in Sy Lig">Wandel in Sy Lig</div>
-              <div class="sermon-title" data-en="Peace I Leave With You" data-af="Vrede Laat Ek by Julle">Vrede Laat Ek by Julle</div>
-              <div class="sermon-meta">Ds. P. van der Berg · 22 Feb 2026</div>
-              <div class="sermon-actions">
-                <button class="sermon-btn play" onclick="event.stopPropagation();showToast('Playing...')">&#9654; <span data-en="Play" data-af="Speel">Speel</span></button>
-                <button class="sermon-btn" onclick="event.stopPropagation();showToast('Downloading...')">&#8595; <span data-en="Download" data-af="Laai af">Laai af</span></button>
-              </div>
+            <div id="mp3Field" style="display:none;margin-bottom:14px">
+              <label class="form-label">MP3 / Audio URL</label>
+              <input class="form-input" id="sermonMp3Url" placeholder="https://yoursite.com/sermon.mp3">
+              <div style="font-size:11px;color:var(--muted);margin-top:4px" data-en="Link to MP3 hosted on Google Drive, Dropbox, etc." data-af="Skakel na MP3 op Google Drive, Dropbox, ens.">Link to MP3 hosted online</div>
+            </div>
+            <div style="margin-bottom:20px">
+              <label class="form-label" data-en="Description (optional)" data-af="Beskrywing (opsioneel)">Beskrywing</label>
+              <textarea class="form-input" id="sermonDesc" rows="2"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+              <button class="btn btn-ghost" onclick="closeAddSermonModal()" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+              <button class="btn btn-primary" onclick="saveSermon()" data-en="Save Sermon" data-af="Stoor Preek">Stoor Preek</button>
             </div>
           </div>
         </div>
@@ -5940,173 +5977,347 @@ window._switchSettingsPanel = function(panel, el) {
 
 
   // ═══════════════════════════════════════════════════════════
-  // AGE STATISTICS MODULE — accessible to all members
+  // AGE STATISTICS + BIRTHDAYS — bulletproof version
   // ═══════════════════════════════════════════════════════════
-  var AGE_GROUPS = [
-    { label: '0-6',   labelAf: '0-6',   min: 0,  max: 6   },
-    { label: '7-13',  labelAf: '7-13',  min: 7,  max: 13  },
-    { label: '14-18', labelAf: '14-18', min: 14, max: 18  },
-    { label: '19-35', labelAf: '19-35', min: 19, max: 35  },
-    { label: '36-60', labelAf: '36-60', min: 36, max: 60  },
-    { label: '61+',   labelAf: '61+',   min: 61, max: 999 }
-  ];
 
+  var AGE_GROUPS = [
+    { label:'0-6',   min:0,  max:6   },
+    { label:'7-13',  min:7,  max:13  },
+    { label:'14-18', min:14, max:18  },
+    { label:'19-35', min:19, max:35  },
+    { label:'36-60', min:36, max:60  },
+    { label:'61+',   min:61, max:999 }
+  ];
   var AGE_COLORS = ['#F39C12','#27AE60','#2980B9','#8E44AD','#C9A84C','#E74C3C'];
 
   function calcAge(dob) {
     if (!dob) return null;
-    var birth = new Date(dob);
-    if (isNaN(birth)) return null;
+    var d = new Date(dob);
+    if (isNaN(d.getTime())) return null;
     var today = new Date();
-    var age = today.getFullYear() - birth.getFullYear();
-    if (today.getMonth() < birth.getMonth() || 
-        (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())) age--;
+    var age = today.getFullYear() - d.getFullYear();
+    if (today.getMonth() < d.getMonth() || 
+        (today.getMonth() === d.getMonth() && today.getDate() < d.getDate())) age--;
     return age >= 0 ? age : null;
+  }
+
+  function getDOB(m) {
+    return m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate ||
+           m.birth_date || m.DOB || m.geboorteDatum || m.Geboortedatum || null;
   }
 
   function renderAgeStats() {
     var af = currentLang === 'af';
-    var counts = AGE_GROUPS.map(function() { return 0; });
-    var unknown = 0;
 
-    // Use all available members - if empty use demo data for display
-    var memberList = members && members.length ? members : [
-      {name:'Demo 1', dob:'2020-01-01'},
-      {name:'Demo 2', dob:'2010-06-15'},
-      {name:'Demo 3', dob:'2008-03-20'},
-      {name:'Demo 4', dob:'1995-09-10'},
-      {name:'Demo 5', dob:'1985-12-25'},
-      {name:'Demo 6', dob:'1975-04-30'},
-      {name:'Demo 7', dob:'1960-07-14'},
-      {name:'Demo 8', dob:'1945-11-02'},
-      {name:'Demo 9', dob:'2015-08-22'},
-      {name:'Demo 10', dob:'2003-02-18'}
+    // Use members array; fall back to demo data so graphs always show something
+    var memberList = (members && members.length > 0) ? members : [
+      {name:'A', dob:'2022-01-01'},{name:'B', dob:'2018-06-15'},
+      {name:'C', dob:'2012-03-20'},{name:'D', dob:'2008-09-10'},
+      {name:'E', dob:'2001-12-25'},{name:'F', dob:'1995-04-30'},
+      {name:'G', dob:'1988-07-14'},{name:'H', dob:'1975-11-02'},
+      {name:'I', dob:'1960-08-22'},{name:'J', dob:'1945-02-18'}
     ];
-    console.log('Age stats: memberList=' + memberList.length + 
-      ', sample:', JSON.stringify(memberList.slice(0,2).map(function(m){
-        return {name:m.name||m.naam, dob:m.dob||m.dateOfBirth||m.geboortedatum||m.birthDate||'NONE'};
-      })));
 
+    var counts = [0,0,0,0,0,0];
+    var unknown = 0;
     memberList.forEach(function(m) {
-      // Try all possible DOB field names from Firebase
-      var dobVal = m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
-                   m.birth_date || m.dateofbirth || m.DOB || m.geboorteDatum ||
-                   m.Geboortedatum || m.geboorte_datum || null;
-      var age = calcAge(dobVal);
+      var age = calcAge(getDOB(m));
       if (age === null) { unknown++; return; }
       for (var i = 0; i < AGE_GROUPS.length; i++) {
-        if (age >= AGE_GROUPS[i].min && age <= AGE_GROUPS[i].max) {
-          counts[i]++;
-          break;
-        }
+        if (age >= AGE_GROUPS[i].min && age <= AGE_GROUPS[i].max) { counts[i]++; break; }
       }
     });
 
-    var total = counts.reduce(function(a, b) { return a + b; }, 0);
-    var maxCount = Math.max.apply(null, counts) || 1;
+    var total = counts.reduce(function(a,b){return a+b;},0) || 1;
+    var maxCount = Math.max.apply(null,counts) || 1;
 
-    // ── Summary cards ──
+    // Summary cards
     var cards = document.getElementById('ageStatCards');
     if (cards) {
-      cards.innerHTML = AGE_GROUPS.map(function(g, i) {
-        var pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+      cards.innerHTML = AGE_GROUPS.map(function(g,i) {
+        var pct = Math.round((counts[i]/total)*100);
         return '<div style="background:#fff;border-radius:12px;border:1px solid #eee;padding:14px;text-align:center">' +
-          '<div style="font-size:26px;font-weight:700;color:' + AGE_COLORS[i] + '">' + counts[i] + '</div>' +
-          '<div style="font-size:11px;font-weight:600;color:var(--muted);margin-top:2px">' + (af ? g.labelAf : g.label) + '</div>' +
-          '<div style="font-size:11px;color:var(--muted)">' + pct + '%</div>' +
+          '<div style="font-size:26px;font-weight:700;color:'+AGE_COLORS[i]+'">'+counts[i]+'</div>' +
+          '<div style="font-size:11px;font-weight:600;color:#999;margin-top:2px">'+g.label+'</div>' +
+          '<div style="font-size:11px;color:#999">'+pct+'%</div>' +
           '</div>';
       }).join('');
     }
 
-    // ── Bar chart ──
+    // Bar chart
     var chart = document.getElementById('ageBarChart');
-    var labels = document.getElementById('ageBarLabels');
     if (chart) {
-      chart.innerHTML = AGE_GROUPS.map(function(g, i) {
-        var heightPct = Math.max(3, Math.round((counts[i] / maxCount) * 100));
-        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px">' +
-          '<div style="font-size:11px;font-weight:600;color:var(--deep)">' + counts[i] + '</div>' +
-          '<div style="width:100%;background:' + AGE_COLORS[i] + ';border-radius:6px 6px 0 0;height:' + heightPct + '%;min-height:4px;transition:height 0.5s ease;opacity:0.9"></div>' +
+      chart.innerHTML = AGE_GROUPS.map(function(g,i) {
+        var h = Math.max(4, Math.round((counts[i]/maxCount)*100));
+        return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px">' +
+          '<div style="font-size:11px;font-weight:600;color:#333">'+counts[i]+'</div>' +
+          '<div style="width:100%;background:'+AGE_COLORS[i]+';border-radius:4px 4px 0 0;height:'+h+'%;min-height:4px"></div>' +
           '</div>';
       }).join('');
     }
-    if (labels) {
-      labels.innerHTML = AGE_GROUPS.map(function(g, i) {
-        return '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted);font-weight:600">' + (af ? g.labelAf : g.label) + '</div>';
+
+    // Labels
+    var lbl = document.getElementById('ageBarLabels');
+    if (lbl) {
+      lbl.innerHTML = AGE_GROUPS.map(function(g,i) {
+        return '<div style="flex:1;text-align:center;font-size:9px;color:#999;font-weight:600">'+g.label+'</div>';
       }).join('');
     }
 
-    // ── Pie chart (CSS conic-gradient) ──
+    // Pie chart
     var pie = document.getElementById('agePieChart');
-    var legend = document.getElementById('ageLegend');
-    if (pie && total > 0) {
-      var segments = [];
-      var cumulative = 0;
-      AGE_GROUPS.forEach(function(g, i) {
-        var pct = (counts[i] / total) * 100;
-        segments.push(AGE_COLORS[i] + ' ' + cumulative + '% ' + (cumulative + pct) + '%');
-        cumulative += pct;
+    if (pie) {
+      var segs = [], cum = 0;
+      AGE_GROUPS.forEach(function(g,i) {
+        var pct = (counts[i]/total)*100;
+        segs.push(AGE_COLORS[i]+' '+cum+'% '+(cum+pct)+'%');
+        cum += pct;
       });
-      pie.style.background = 'conic-gradient(' + segments.join(', ') + ')';
-    } else if (pie) {
-      pie.style.background = '#eee';
+      pie.style.background = 'conic-gradient('+segs.join(',')+')';
     }
 
+    // Legend
+    var legend = document.getElementById('ageLegend');
     if (legend) {
-      legend.innerHTML = AGE_GROUPS.map(function(g, i) {
-        var pct = total > 0 ? Math.round((counts[i] / total) * 100) : 0;
+      legend.innerHTML = AGE_GROUPS.map(function(g,i) {
+        var pct = Math.round((counts[i]/total)*100);
         return '<div style="display:flex;align-items:center;gap:8px">' +
-          '<div style="width:12px;height:12px;border-radius:50%;background:' + AGE_COLORS[i] + ';flex-shrink:0"></div>' +
-          '<span style="font-size:13px;color:var(--deep);font-weight:500">' + (af ? g.labelAf : g.label) + '</span>' +
-          '<span style="font-size:12px;color:var(--muted);margin-left:auto">' + counts[i] + ' (' + pct + '%)</span>' +
+          '<div style="width:12px;height:12px;border-radius:50%;background:'+AGE_COLORS[i]+';flex-shrink:0"></div>' +
+          '<span style="font-size:13px;font-weight:500">'+g.label+'</span>' +
+          '<span style="font-size:12px;color:#999;margin-left:auto">'+counts[i]+' ('+pct+'%)</span>' +
           '</div>';
       }).join('');
     }
 
-    // ── Note ──
+    // Note
     var note = document.getElementById('ageStatsNote');
     if (note) {
       var known = memberList.length - unknown;
-      note.textContent = af
-        ? 'Gebaseer op ' + known + ' van ' + memberList.length + ' lede met bekende geboortedatums' + (unknown > 0 ? ' (' + unknown + ' onbekend)' : '')
-        : 'Based on ' + known + ' of ' + memberList.length + ' members with known dates of birth' + (unknown > 0 ? ' (' + unknown + ' unknown)' : '');
+      note.textContent = (af
+        ? 'Gebaseer op '+known+' van '+memberList.length+' lede'
+        : 'Based on '+known+' of '+memberList.length+' members') +
+        (members.length === 0 ? (af ? ' (Demo data)' : ' (Demo data)') : '');
     }
   }
   window.renderAgeStats = renderAgeStats;
 
-
-  // ═══════════════════════════════════════════════════════════
-  // TODAY'S BIRTHDAYS
-  // ═══════════════════════════════════════════════════════════
+  // ── TODAY'S BIRTHDAYS ──
   function checkTodayBirthdays() {
-    var today = new Date();
-    var todayMonth = today.getMonth() + 1;
-    var todayDay = today.getDate();
     var af = currentLang === 'af';
+    var today = new Date();
+    var mm = today.getMonth() + 1;
+    var dd = today.getDate();
 
-    var birthdays = members.filter(function(m) {
-      var dob = m.dob || m.dateOfBirth || m.geboortedatum || m.birthDate || 
-                m.geboorteDatum || m.Geboortedatum || null;
+    var memberList = members && members.length > 0 ? members : [];
+    var bdays = memberList.filter(function(m) {
+      var dob = getDOB(m);
       if (!dob) return false;
       var d = new Date(dob);
-      if (isNaN(d)) return false;
-      return (d.getMonth() + 1) === todayMonth && d.getDate() === todayDay;
+      return !isNaN(d.getTime()) && (d.getMonth()+1) === mm && d.getDate() === dd;
     });
 
     var bar = document.getElementById('todayBirthdaysBar');
     var list = document.getElementById('todayBirthdaysList');
     if (!bar || !list) return;
 
-    if (birthdays.length > 0) {
+    if (bdays.length > 0) {
       bar.style.display = 'block';
-      list.textContent = birthdays.map(function(m) {
-        return (m.name || m.naam || af ? 'Onbekend' : 'Unknown');
-      }).join(', ');
+      list.textContent = bdays.map(function(m){ return m.name || m.naam || '?'; }).join(', ');
     } else {
       bar.style.display = 'none';
     }
   }
   window.checkTodayBirthdays = checkTodayBirthdays;
+
+
+  // ═══════════════════════════════════════════════════════════
+  // SERMONS MODULE — YouTube + MP3
+  // ═══════════════════════════════════════════════════════════
+  var sermonsData = JSON.parse(localStorage.getItem('mykerk_sermons') || '[]');
+
+  function toggleSermonType() {
+    var isYt = document.getElementById('sermonTypeYoutube').checked;
+    document.getElementById('youtubeField').style.display = isYt ? 'block' : 'none';
+    document.getElementById('mp3Field').style.display = isYt ? 'none' : 'block';
+    // Style labels
+    document.getElementById('sermonTypeYoutube').closest('label').style.borderColor = isYt ? 'var(--gold)' : '#eee';
+    document.getElementById('sermonTypeMp3').closest('label').style.borderColor = isYt ? '#eee' : 'var(--gold)';
+  }
+  window.toggleSermonType = toggleSermonType;
+
+  function openAddSermonModal() {
+    document.getElementById('sermonTitle').value = '';
+    document.getElementById('sermonPreacher').value = '';
+    document.getElementById('sermonSeries').value = '';
+    document.getElementById('sermonDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('sermonYoutubeUrl').value = '';
+    document.getElementById('sermonMp3Url').value = '';
+    document.getElementById('sermonDesc').value = '';
+    document.getElementById('sermonTypeYoutube').checked = true;
+    toggleSermonType();
+    document.getElementById('addSermonModal').style.display = 'flex';
+  }
+  window.openAddSermonModal = openAddSermonModal;
+
+  function closeAddSermonModal() {
+    document.getElementById('addSermonModal').style.display = 'none';
+  }
+  window.closeAddSermonModal = closeAddSermonModal;
+
+  function extractYoutubeId(url) {
+    if (!url) return '';
+    var clean = url.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(clean)) return clean;
+    var m = clean.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : clean;
+  }
+
+  function saveSermon() {
+    var af = currentLang === 'af';
+    var title = document.getElementById('sermonTitle').value.trim();
+    var date = document.getElementById('sermonDate').value;
+    var isYt = document.getElementById('sermonTypeYoutube').checked;
+    if (!title || !date) {
+      showToast(af ? 'Voer titel en datum in.' : 'Please fill in title and date.');
+      return;
+    }
+    var mediaUrl = isYt
+      ? extractYoutubeId(document.getElementById('sermonYoutubeUrl').value.trim())
+      : document.getElementById('sermonMp3Url').value.trim();
+    if (!mediaUrl) {
+      showToast(af ? 'Voer media-skakel in.' : 'Please enter a media link.');
+      return;
+    }
+    var sermon = {
+      id: Date.now(),
+      title: title,
+      preacher: document.getElementById('sermonPreacher').value.trim(),
+      series: document.getElementById('sermonSeries').value.trim(),
+      date: date,
+      mediaType: isYt ? 'youtube' : 'mp3',
+      mediaUrl: mediaUrl,
+      desc: document.getElementById('sermonDesc').value.trim()
+    };
+    sermonsData.unshift(sermon);
+    localStorage.setItem('mykerk_sermons', JSON.stringify(sermonsData));
+    if (db && currentGemeenteId && currentGemeenteId !== 'demo') {
+      gemeentePath('preke').doc(String(sermon.id)).set(sermon).catch(function(){});
+    }
+    closeAddSermonModal();
+    renderSermons();
+    showToast(af ? '✅ Preek gestoor!' : '✅ Sermon saved!');
+  }
+  window.saveSermon = saveSermon;
+
+  function playSermon(id) {
+    var s = sermonsData.find(function(x){ return x.id === id; });
+    if (!s) return;
+    if (s.mediaType === 'youtube') {
+      document.getElementById('youtubeTitle').textContent = s.title;
+      document.getElementById('youtubeFrame').src = 'https://www.youtube.com/embed/' + s.mediaUrl + '?autoplay=1&rel=0';
+      document.getElementById('youtubeModal').style.display = 'flex';
+    } else {
+      // MP3 player
+      var bar = document.getElementById('mp3PlayerBar');
+      var audio = document.getElementById('mp3Audio');
+      var title = document.getElementById('mp3Title');
+      if (bar && audio && title) {
+        title.textContent = s.title + (s.preacher ? ' — ' + s.preacher : '');
+        audio.src = s.mediaUrl;
+        bar.style.display = 'flex';
+        audio.play().catch(function(){});
+      } else {
+        window.open(s.mediaUrl, '_blank');
+      }
+    }
+  }
+  window.playSermon = playSermon;
+
+  function closeYoutubeModal() {
+    document.getElementById('youtubeFrame').src = '';
+    document.getElementById('youtubeModal').style.display = 'none';
+  }
+  window.closeYoutubeModal = closeYoutubeModal;
+
+  function closeMp3Player() {
+    var bar = document.getElementById('mp3PlayerBar');
+    var audio = document.getElementById('mp3Audio');
+    if (audio) audio.pause();
+    if (bar) bar.style.display = 'none';
+  }
+  window.closeMp3Player = closeMp3Player;
+
+  function deleteSermon(id) {
+    sermonsData = sermonsData.filter(function(s){ return s.id !== id; });
+    localStorage.setItem('mykerk_sermons', JSON.stringify(sermonsData));
+    if (db && currentGemeenteId !== 'demo') {
+      gemeentePath('preke').doc(String(id)).delete().catch(function(){});
+    }
+    renderSermons();
+  }
+  window.deleteSermon = deleteSermon;
+
+  function renderSermons() {
+    var af = currentLang === 'af';
+    var list = document.getElementById('sermonList');
+    if (!list) return;
+
+    // Show add button for admins
+    var addBtn = document.getElementById('addSermonBtn');
+    if (addBtn) addBtn.style.display = currentUserRole === 'admin' ? 'inline-flex' : 'none';
+
+    // Load from Firebase
+    if (db && currentGemeenteId && currentGemeenteId !== 'demo' && sermonsData.length === 0) {
+      gemeentePath('preke').orderBy('date','desc').get().then(function(snap) {
+        if (!snap.empty) {
+          sermonsData = snap.docs.map(function(d){ return d.data(); });
+          localStorage.setItem('mykerk_sermons', JSON.stringify(sermonsData));
+          renderSermons();
+        }
+      }).catch(function(){});
+    }
+
+    var empty = document.getElementById('sermonEmpty');
+    if (!sermonsData.length) {
+      if (empty) empty.style.display = 'block';
+      // Remove any cards
+      list.querySelectorAll('.sermon-card-item').forEach(function(el){ el.remove(); });
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    // Render cards
+    var existing = list.querySelectorAll('.sermon-card-item');
+    existing.forEach(function(el){ el.remove(); });
+
+    sermonsData.forEach(function(s) {
+      var card = document.createElement('div');
+      card.className = 'sermon-card-item';
+      card.style.cssText = 'background:#fff;border-radius:12px;border:1px solid #eee;overflow:hidden';
+      var thumb = s.mediaType === 'youtube'
+        ? '<div style="position:relative;background:#000;height:140px">' +
+          '<img src="https://img.youtube.com/vi/'+s.mediaUrl+'/mqdefault.jpg" style="width:100%;height:140px;object-fit:cover;opacity:0.85">' +
+          '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">' +
+          '<div style="width:48px;height:48px;background:rgba(255,0,0,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center">' +
+          '<div style="color:#fff;font-size:18px;margin-left:3px">▶</div></div></div></div>'
+        : '<div style="height:100px;background:linear-gradient(135deg,#FEF9E7,#FDEBD0);display:flex;align-items:center;justify-content:center;font-size:48px">🎵</div>';
+      var badge = s.mediaType === 'youtube'
+        ? '<span style="background:#FF0000;color:#fff;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700">YouTube</span>'
+        : '<span style="background:var(--gold);color:var(--deep);font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700">MP3</span>';
+      card.innerHTML = thumb +
+        '<div style="padding:14px">' +
+        (s.series ? '<div style="font-size:10px;font-weight:600;text-transform:uppercase;color:var(--gold);margin-bottom:4px">'+s.series+'</div>' : '') +
+        '<div style="font-size:14px;font-weight:600;margin-bottom:4px">'+s.title+'</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">'+(s.preacher||'')+(s.preacher&&s.date?' · ':'')+( s.date||'')+'</div>' +
+        '<div style="display:flex;gap:6px;align-items:center">' + badge +
+        '<button onclick="playSermon('+s.id+')" style="flex:1;background:var(--gold);color:var(--deep);border:none;border-radius:6px;padding:7px;font-size:12px;font-weight:600;cursor:pointer">' +
+        (s.mediaType==='youtube' ? '▶ '+(af?'Kyk':'Watch') : '🎵 '+(af?'Luister':'Listen'))+'</button>' +
+        (currentUserRole==='admin' ? '<button onclick="deleteSermon('+s.id+')" style="background:none;border:1px solid #eee;border-radius:6px;padding:7px 9px;color:#e74c3c;cursor:pointer">🗑</button>' : '') +
+        '</div></div>';
+      list.appendChild(card);
+    });
+  }
+  window.renderSermons = renderSermons;
 
   }); // end DOMContentLoaded
 </script>
