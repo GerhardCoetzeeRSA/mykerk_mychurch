@@ -743,7 +743,7 @@ window._firebaseSDKLoaded = true;
         <div class="nav-item drawer-nav" onclick="showScreen('groups',event.currentTarget);closeDrawer()"><span class="nav-icon">&#129309;</span><span data-en="Small Groups" data-af="Kleingroepe">Kleingroepe</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('sermons',event.currentTarget);closeDrawer()"><span class="nav-icon">&#127908;</span><span data-en="Sermons" data-af="Preke">Preke</span></div>
       </div>
-      <div class="nav-section">
+      <div class="nav-section" data-admin-only>
         <div class="nav-label" data-en="Leadership" data-af="Leierskap">Leierskap</div>
         <div class="nav-item drawer-nav" onclick="showScreen('kerkraad',event.currentTarget);closeDrawer()"><span class="nav-icon">&#127963;&#65039;</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span></div>
         <div class="nav-item drawer-nav" onclick="showScreen('attendance',event.currentTarget);closeDrawer()"><span class="nav-icon">✅</span><span data-en="Attendance" data-af="Bywoning">Bywoning</span></div>
@@ -808,7 +808,7 @@ window._firebaseSDKLoaded = true;
           <span class="nav-icon">🎤</span><span data-en="Sermons" data-af="Preke">Preke</span>
         </div>
       </div>
-      <div class="nav-section">
+      <div class="nav-section" data-admin-only>
         <div class="nav-label" data-en="Leadership" data-af="Leierskap">Leierskap</div>
         <div class="nav-item" onclick="showScreen('kerkraad', event.currentTarget)">
           <span class="nav-icon">🏛️</span><span data-en="Church Board" data-af="Kerkraad">Kerkraad</span>
@@ -864,6 +864,11 @@ window._firebaseSDKLoaded = true;
   <div id="memberWelcomeBanner" style="display:none;background:linear-gradient(135deg,#F0FFF4,#E8F5E9);border-bottom:1px solid #C6F6D5;padding:10px 20px;font-size:13px;color:#276749;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
     <span>👋 <span data-en="Welcome! You have free access as a congregation member." data-af="Welkom! Jy het gratis toegang as gemeentelid.">Welkom! Jy het gratis toegang as gemeentelid.</span></span>
     <span style="font-size:11px;color:#27AE60;font-weight:600" id="memberChurchBadge"></span>
+    <span style="font-size:11px;color:#276749;font-weight:600;display:flex;align-items:center;gap:6px">
+      <span data-en="Congregation code:" data-af="Gemeente-kode:">Gemeente-kode:</span>
+      <span id="memberChurchCode" style="font-family:monospace;letter-spacing:1px">----</span>
+      <button onclick="copyGemeenteCode()" style="background:none;border:none;cursor:pointer;font-size:12px" title="Copy">📋</button>
+    </span>
   </div>
         <div class="stats-grid">
           <div class="stat-card">
@@ -3124,7 +3129,7 @@ function onUserSignedIn(user) {
             var data = doc.data();
             updateChurchNameUI(data.churchName, user.displayName || userData.naam);
           }
-          applyRoleToUI('lid');
+          applyRoleToUI('member');
           hideAuthGate();
           loadAllData();
           showToast(af ? '👋 Welkom, ' + (user.displayName || '') + '!' : '👋 Welcome, ' + (user.displayName || '') + '!');
@@ -3255,7 +3260,8 @@ function hideAuthGate() {
   if (shell) {
     shell.classList.add('visible');
     isAuthenticated = true;
-    currentUserRole = 'admin';
+    // currentUserRole is set by applyRoleToUI() before this runs — do NOT
+    // overwrite it here, or every member becomes an admin in the UI.
     var now = new Date();
     var t = now.toLocaleTimeString('af-ZA', {hour:'2-digit',minute:'2-digit'});
     var auditEl = document.getElementById('auditLoginTime');
@@ -3440,15 +3446,19 @@ function loadMembersFromFirestore() {
       if (snapshot.empty) {
         // Geen data in Firestore nie - gebruik plaaslike seed data
         console.log('Geen lede in Firestore, gebruik plaaslike data');
+        if (typeof checkTodayBirthdays === 'function') checkTodayBirthdays();
+        if (typeof renderAgeStats === 'function') renderAgeStats();
         return;
       }
-      // Vervang plaaslike lede-array met Firestore data
-      members = snapshot.docs.map(doc => ({
+      // Vervang plaaslike lede-array met Firestore data (genormaliseer)
+      members = snapshot.docs.map(doc => normalizeMember({
         firestoreId: doc.id,
         ...doc.data()
       }));
       renderMembers();
       updateDashboardStats();
+      if (typeof checkTodayBirthdays === 'function') checkTodayBirthdays();
+      if (typeof renderAgeStats === 'function') renderAgeStats();
       console.log('Lede herlaai:', members.length);
     }, err => {
       console.warn('Lede laai fout:', err.message);
@@ -3750,13 +3760,37 @@ let members = [
   { id:12,name:'Johan van Zyl (man)',    initials:'JZ',  color:'#C0392B', email:'johan@email.com',             phone:'082 999 1111', role:'member',  status:'active', familyId:'fam-2', joinYear:2020 },
 ];
 
+// ── NORMALISEER FIRESTORE-LEDE (Afrikaans velde → veld-name wat render-kode verwag) ──
+const ROL_NA_ROLE = { lid:'member', ouderling:'elder', diaken:'deacon', predikant:'minister' };
+const NAME_COLOR_PALETTE = ['#C9A84C','#2980B9','#E74C3C','#27AE60','#9B59B6','#E67E22','#C0392B','#2C3E50','#16A085','#8E44AD','#D35400'];
+function normalizeMember(raw) {
+  if (raw.name && raw.color && raw.initials && raw.role) return raw; // reeds in die regte vorm (demo/admin data)
+  var name = raw.name || raw.naam || '—';
+  var role = raw.role || ROL_NA_ROLE[raw.rol] || raw.rol || 'member';
+  var initials = raw.initials || name.split(' ').map(function(w){ return w[0]; }).filter(Boolean).slice(0,2).join('').toUpperCase();
+  var seed = (raw.firestoreId || name).split('').reduce(function(a,c){ return a + c.charCodeAt(0); }, 0);
+  var color = raw.color || NAME_COLOR_PALETTE[seed % NAME_COLOR_PALETTE.length];
+  return Object.assign({}, raw, { name: name, role: role, initials: initials, color: color });
+}
+
 // ── RENDER MEMBERS (rolbewus / role-aware) ──
+function getMyMemberRecord(list) {
+  // Werklike aangemelde lid: vind "ek" via Firebase UID == firestoreId
+  if (currentFirebaseUser) {
+    var mine = list.find(function(m) { return m.firestoreId === currentFirebaseUser.uid; });
+    if (mine) return mine;
+  }
+  // Demo/aflyn-modus terugval
+  return members[currentMemberId] || null;
+}
+
 function getVisibleMembers(list) {
   if (currentUserRole === 'admin') return list;
   // Lid sien slegs sy eie en gesin se rekords
-  const me = members[currentMemberId];
-  const myFamilyId = me ? me.familyId : null;
-  return list.filter(m => m.id === currentMemberId || (myFamilyId && m.familyId === myFamilyId));
+  const me = getMyMemberRecord(list);
+  if (!me) return []; // kan nie "ek" identifiseer nie — wys niks (veiliger verstek vir POPIA)
+  const myFamilyId = me.familyId || null;
+  return list.filter(m => m === me || (myFamilyId && m.familyId === myFamilyId));
 }
 
 function renderMembers(list) {
@@ -3789,9 +3823,10 @@ function renderMembers(list) {
     return;
   }
 
+  const me = getMyMemberRecord(list);
   el.innerHTML = privacyBanner + visible.map(m => {
-    const isSelf = m.id === currentMemberId;
-    const isFamily = m.familyId === (members[currentMemberId]?.familyId) && !isSelf;
+    const isSelf = me ? (m === me) : (m.id === currentMemberId);
+    const isFamily = !!(me && me.familyId && m.familyId === me.familyId && !isSelf);
     const tag = isSelf ? `<span style="font-size:10px;background:var(--gold);color:var(--white);border-radius:4px;padding:1px 6px;margin-left:6px">${af?'Ek':'Me'}</span>`
                        : isFamily ? `<span style="font-size:10px;background:#9B59B6;color:var(--white);border-radius:4px;padding:1px 6px;margin-left:6px">${af?'Gesin':'Family'}</span>` : '';
     return `
@@ -4753,6 +4788,8 @@ function applyRoleToUI(role) {
         if (doc.exists && badgeEl) badgeEl.textContent = doc.data().churchName || '';
       }).catch(function(){});
     }
+    var codeEl2 = document.getElementById('memberChurchCode');
+    if (codeEl2) codeEl2.textContent = currentGemeenteCode || '----';
   }
 
   // Wys rol badge in sidebar
