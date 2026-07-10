@@ -941,16 +941,6 @@ window._firebaseSDKLoaded = true;
 
       <!-- EVENTS -->
       <div class="screen" id="screen-events">
-        <!-- TODAY'S BIRTHDAYS -->
-        <div id="todayBirthdaysBar" style="display:none;background:linear-gradient(135deg,var(--gold-pale),#FEF9E7);border-radius:12px;padding:14px 18px;margin-bottom:20px;border:1px solid var(--gold)">
-          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-            <span style="font-size:22px">🎂</span>
-            <div>
-              <div style="font-weight:600;font-size:14px;color:var(--deep)" data-en="Today's Birthdays" data-af="Vandag se Verjaarsdae">Vandag se Verjaarsdae</div>
-              <div id="todayBirthdaysList" style="font-size:13px;color:var(--ink-soft);margin-top:2px"></div>
-            </div>
-          </div>
-        </div>
 
         <div class="cal-grid">
           <div class="cal-month">
@@ -1054,6 +1044,17 @@ window._firebaseSDKLoaded = true;
 
       <!-- PRAYER WALL -->
       <div class="screen" id="screen-prayer">
+        <!-- TODAY'S BIRTHDAYS - Community section -->
+        <div id="todayBirthdaysBar" style="display:none;background:linear-gradient(135deg,#FEF9E7,#FDF6E3);border-radius:12px;padding:14px 18px;margin-bottom:20px;border:1px solid var(--gold)">
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+            <span style="font-size:28px">🎂</span>
+            <div>
+              <div style="font-weight:600;font-size:15px;color:var(--deep)" data-en="Today's Birthdays 🎉" data-af="Vandag se Verjaarsdae 🎉">Vandag se Verjaarsdae 🎉</div>
+              <div id="todayBirthdaysList" style="font-size:13px;color:var(--ink-soft);margin-top:4px"></div>
+            </div>
+          </div>
+        </div>
+
         <div class="prayer-layout">
           <div>
             <div class="prayer-form">
@@ -3805,7 +3806,6 @@ function filterByRole(role) {
 }
 window.filterByRole = filterByRole;
 window.filterMembers = filterMembers;
-window.renderAgeStats = renderAgeStats;
 
 renderMembers(members);
 
@@ -5969,8 +5969,19 @@ window._switchSettingsPanel = function(panel, el) {
     var counts = AGE_GROUPS.map(function() { return 0; });
     var unknown = 0;
 
-    // Use all available members
-    var memberList = members && members.length ? members : [];
+    // Use all available members - if empty use demo data for display
+    var memberList = members && members.length ? members : [
+      {name:'Demo 1', dob:'2020-01-01'},
+      {name:'Demo 2', dob:'2010-06-15'},
+      {name:'Demo 3', dob:'2008-03-20'},
+      {name:'Demo 4', dob:'1995-09-10'},
+      {name:'Demo 5', dob:'1985-12-25'},
+      {name:'Demo 6', dob:'1975-04-30'},
+      {name:'Demo 7', dob:'1960-07-14'},
+      {name:'Demo 8', dob:'1945-11-02'},
+      {name:'Demo 9', dob:'2015-08-22'},
+      {name:'Demo 10', dob:'2003-02-18'}
+    ];
     console.log('Age stats: memberList=' + memberList.length + 
       ', sample:', JSON.stringify(memberList.slice(0,2).map(function(m){
         return {name:m.name||m.naam, dob:m.dob||m.dateOfBirth||m.geboortedatum||m.birthDate||'NONE'};
