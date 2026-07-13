@@ -1675,6 +1675,9 @@ window._firebaseSDKLoaded = true;
               <div class="settings-nav-item" onclick="switchSettingsTab('tab-aansoeke', this)" data-admin-only>
                 <span class="settings-nav-icon">📝</span><span data-en="Applications" data-af="Aansoeke">Aansoeke</span><span class="nav-badge" id="aansoekeBadge" style="display:none">0</span>
               </div>
+              <div class="settings-nav-item" id="eftVerifyNavItem" onclick="switchSettingsTab('tab-eft-verify', this)" style="display:none">
+                <span class="settings-nav-icon">🏦</span><span data-en="Pending EFT Payments" data-af="Hangende EFT-betalings">Hangende EFT-betalings</span><span class="nav-badge" id="eftVerifyBadge" style="display:none">0</span>
+              </div>
               <div class="settings-nav-item" onclick="switchSettingsTab('tab-users', this)" data-admin-only>
                 <span class="settings-nav-icon">👥</span><span data-en="User Access" data-af="Gebruikerstoegang">Gebruikerstoegang</span>
               </div>
@@ -2124,6 +2127,13 @@ window._firebaseSDKLoaded = true;
               <div id="aansoekeList" style="margin-top:16px"></div>
             </div>
 
+            <!-- PENDING EFT PAYMENTS (super admin only, across ALL congregations) -->
+            <div class="settings-panel" id="tab-eft-verify">
+              <div class="settings-section-title" data-en="Pending EFT Payments" data-af="Hangende EFT-betalings">Hangende EFT-betalings</div>
+              <div class="settings-section-desc" data-en="Congregations across the whole platform who reported a direct bank deposit, awaiting your manual confirmation." data-af="Gemeentes regoor die hele platform wat 'n direkte bankdeposito gerapporteer het, wagtend op jou handmatige bevestiging.">Gemeentes regoor die hele platform wat 'n direkte bankdeposito gerapporteer het, wagtend op jou handmatige bevestiging.</div>
+              <div id="eftVerifyList" style="margin-top:16px"></div>
+            </div>
+
             <!-- USER ACCESS TAB -->
             <div class="settings-panel" id="tab-users">
               <div class="admin-section-header">
@@ -2477,6 +2487,23 @@ window._firebaseSDKLoaded = true;
                     <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px" data-en="Secure payment via Zapper. Scan with the Zapper app to pay." data-af="Veilige betaling via Zapper. Skandeer met die Zapper-app om te betaal.">Veilige betaling via Zapper. Skandeer met die Zapper-app om te betaal.</div>
                   </div>
                 </div>
+              </div>
+
+              <!-- Direct EFT / Bank Deposit -->
+              <div class="settings-card">
+                <div class="settings-card-title" data-en="Pay via Direct EFT" data-af="Betaal via Direkte EFT">Betaal via Direkte EFT</div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:12px" data-en="Prefer a manual bank transfer? Deposit directly into our business account using the details below." data-af="Verkies jy 'n handmatige bankoorplasing? Betaal direk in ons besigheidsrekening met die besonderhede hieronder.">Verkies jy 'n handmatige bankoorplasing? Betaal direk in ons besigheidsrekening met die besonderhede hieronder.</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12px;background:var(--gold-pale);border-radius:8px;padding:14px;margin-bottom:14px">
+                  <div><div style="color:var(--muted);margin-bottom:2px" data-en="Bank" data-af="Bank">Bank</div><div style="font-weight:600">Capitec Business</div></div>
+                  <div><div style="color:var(--muted);margin-bottom:2px" data-en="Account Holder" data-af="Rekeninghouer">Rekeninghouer</div><div style="font-weight:600">Coetzee Data AI Consultants (Pty) Ltd</div></div>
+                  <div><div style="color:var(--muted);margin-bottom:2px" data-en="Account Number" data-af="Rekeningnommer">Rekeningnommer</div><div style="font-weight:600">1054553661</div></div>
+                  <div><div style="color:var(--muted);margin-bottom:2px" data-en="Branch Code" data-af="Taknommer">Taknommer</div><div style="font-weight:600">450105</div></div>
+                  <div><div style="color:var(--muted);margin-bottom:2px" data-en="Amount Due" data-af="Bedrag Verskuldig">Bedrag Verskuldig</div><div style="font-weight:600" id="eftAmountDue">—</div></div>
+                  <div style="grid-column:1/-1"><div style="color:var(--muted);margin-bottom:2px" data-en="Reference (use this exactly)" data-af="Verwysing (gebruik presies)">Verwysing (gebruik presies)</div><div style="font-weight:700;color:#8a6d1a;font-family:monospace;font-size:13px" id="eftReference">—</div></div>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-bottom:10px" data-en="Once you've made the deposit, click the button below so we know to look out for it. Your subscription will be activated manually once the payment is confirmed on our side (usually within 1 business day)." data-af="Sodra jy die deposito gemaak het, klik die knoppie hieronder sodat ons weet om daarna uit te kyk. Jou intekening sal handmatig geaktiveer word sodra die betaling aan ons kant bevestig is (gewoonlik binne 1 werksdag).">Sodra jy die deposito gemaak het, klik die knoppie hieronder sodat ons weet om daarna uit te kyk. Jou intekening sal handmatig geaktiveer word sodra die betaling aan ons kant bevestig is (gewoonlik binne 1 werksdag).</div>
+                <button class="btn btn-primary" style="width:100%" onclick="submitEftPayment()" data-en="I've Made This Payment" data-af="Ek het Hierdie Betaling Gemaak">Ek het Hierdie Betaling Gemaak</button>
+                <div id="eftPaymentStatus" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center"></div>
               </div>
 
               <!-- Zapper merchant details - CONFIRMED -->
@@ -3356,6 +3383,7 @@ function loadAllData() {
   loadSeedDataIfEmpty();
   if (typeof renderSermons === 'function') renderSermons();
   if (typeof loadAansoekeFromFirestore === 'function') loadAansoekeFromFirestore();
+  if (typeof loadPendingEftPayments === 'function') loadPendingEftPayments();
 }
 
 function createGemeenteProfile(user) {
@@ -3889,6 +3917,7 @@ function updateDashboardStats() {
 let currentLang = 'af';
 let isAuthenticated = false;
 let currentUserRole = 'member'; // 'member' or 'admin' — set on login
+const SUPER_ADMIN_UID = 'rinnYZ2e7GSmzaEcbJ4RGBfzK592';
 let currentMemberId = 2; // Demo: logged-in as Maria van Zyl (index 2) — familyId:'fam-1'
 let autoLockTimer = null;
 
@@ -5186,8 +5215,52 @@ function updateSelectedPlanSummary() {
   if (summary) {
     summary.innerHTML = '<strong>' + (af ? 'Gekies: ' + tierName + ' Plan – ' + priceStr + per : 'Selected: ' + tierName + ' Plan – ' + priceStr + per) + '</strong>';
   }
+  var eftAmountEl = document.getElementById('eftAmountDue');
+  if (eftAmountEl) eftAmountEl.textContent = priceStr + per;
+  var eftRefEl = document.getElementById('eftReference');
+  if (eftRefEl) eftRefEl.textContent = buildEftReference();
   updateZapperCode();
 }
+
+function buildEftReference() {
+  // Vaste, voorspelbare verwysing per gemeente sodat betalings maklik
+  // aan die regte gemeente gekoppel kan word tydens versoening.
+  var base = (currentGemeenteCode || currentGemeenteId || 'MYKERK').toString().toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 12);
+  return 'MK-' + (base || 'GEMEENTE');
+}
+
+function submitEftPayment() {
+  var af = currentLang === 'af';
+  if (!db || !currentGemeenteId) {
+    showToast(af ? 'Geen verbinding nie. Probeer later.' : 'No connection. Try later.');
+    return;
+  }
+  var tier = selectedTier;
+  var billing = selectedBilling;
+  var amount = PLAN_TIERS[tier][billing];
+  var reference = buildEftReference();
+
+  db.collection('gemeentes').doc(currentGemeenteId).set({
+    pendingEftPayment: {
+      tier: tier,
+      billing: billing,
+      amount: amount,
+      reference: reference,
+      submittedBy: (currentFirebaseUser && currentFirebaseUser.uid) || null,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      status: 'awaiting_verification'
+    }
+  }, { merge: true }).then(function() {
+    var statusEl = document.getElementById('eftPaymentStatus');
+    if (statusEl) statusEl.textContent = af
+      ? '✅ Dankie! Ons sal jou betaling nagaan en jou intekening binnekort aktiveer.'
+      : '✅ Thanks! We\'ll check for your payment and activate your subscription shortly.';
+    showToast(af ? '✅ Betaling gerapporteer!' : '✅ Payment reported!');
+  }).catch(function(err) {
+    showToast('❌ ' + err.message);
+  });
+}
+window.submitEftPayment = submitEftPayment;
 
 window._selectTier = function(t) {
   selectedTier = t;
@@ -5510,6 +5583,88 @@ function deleteAansoek(id) {
   gemeentePath('aansoeke').doc(id).delete().catch(function() {});
 }
 window.deleteAansoek = deleteAansoek;
+
+// ── HANGENDE EFT-BETALINGS (super admin, oor ALLE gemeentes) ──
+function loadPendingEftPayments() {
+  if (!db || !currentFirebaseUser || currentFirebaseUser.uid !== SUPER_ADMIN_UID) return;
+  var navItem = document.getElementById('eftVerifyNavItem');
+  if (navItem) navItem.style.display = '';
+  const unsub = db.collection('gemeentes')
+    .where('pendingEftPayment.status', '==', 'awaiting_verification')
+    .onSnapshot(function(snapshot) {
+      renderEftVerifyList(snapshot.docs.map(function(d) { return Object.assign({ gemeenteId: d.id }, d.data()); }));
+    }, function(err) { console.warn('EFT-betalings laai fout:', err.message); });
+  firestoreListeners.push(unsub);
+}
+
+function renderEftVerifyList(list) {
+  var af = currentLang === 'af';
+  var badge = document.getElementById('eftVerifyBadge');
+  if (badge) { badge.style.display = list.length > 0 ? 'inline-block' : 'none'; badge.textContent = list.length; }
+
+  var container = document.getElementById('eftVerifyList');
+  if (!container) return;
+  if (list.length === 0) {
+    container.innerHTML = '<div style="padding:30px;text-align:center;color:var(--muted)">' +
+      (af ? 'Geen hangende EFT-betalings nie.' : 'No pending EFT payments.') + '</div>';
+    return;
+  }
+  container.innerHTML = list.map(function(g) {
+    var p = g.pendingEftPayment || {};
+    var datum = (p.submittedAt && p.submittedAt.toDate) ? p.submittedAt.toDate().toLocaleString('af-ZA') : '';
+    return '<div class="settings-card" style="margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap">' +
+      '<div><div style="font-weight:600">' + (g.churchName || g.gemeenteId) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted)">' + (p.tier || '') + ' · ' + (p.billing || '') + ' · R' + (p.amount || 0) + '</div>' +
+      '<div style="font-size:12px;color:var(--muted);font-family:monospace">' + (af ? 'Verwysing: ' : 'Reference: ') + (p.reference || '—') + '</div>' +
+      '<div style="font-size:11px;color:var(--muted)">' + datum + '</div></div>' +
+      '<span class="badge" style="background:#FEF3C7;color:#92400E">' + (af ? 'Wag' : 'Pending') + '</span>' +
+      '</div>' +
+      '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button class="btn btn-primary" style="font-size:12px;padding:6px 12px" onclick="verifyEftPayment(\'' + g.gemeenteId + '\')">' + (af ? '✅ Bevestig & Aktiveer' : '✅ Confirm & Activate') + '</button>' +
+      '<button class="btn btn-ghost" style="font-size:12px;padding:6px 10px;color:#e74c3c" onclick="dismissEftPayment(\'' + g.gemeenteId + '\')">' + (af ? 'Verwerp' : 'Dismiss') + '</button>' +
+      '</div></div>';
+  }).join('');
+  window._eftVerifyCache = list;
+}
+window.renderEftVerifyList = renderEftVerifyList;
+
+function verifyEftPayment(gemeenteId) {
+  var g = (window._eftVerifyCache || []).find(function(x) { return x.gemeenteId === gemeenteId; });
+  if (!g || !g.pendingEftPayment) return;
+  var p = g.pendingEftPayment;
+  var af = currentLang === 'af';
+  if (!confirm(af
+    ? 'Bevestig dat R' + p.amount + ' vanaf ' + (g.churchName || gemeenteId) + ' (verwysing: ' + p.reference + ') ontvang is in die bankrekening?'
+    : 'Confirm that R' + p.amount + ' from ' + (g.churchName || gemeenteId) + ' (reference: ' + p.reference + ') has been received in the bank account?')) return;
+
+  var paidUntil = new Date();
+  if (p.billing === 'annual') { paidUntil.setFullYear(paidUntil.getFullYear() + 1); }
+  else { paidUntil.setMonth(paidUntil.getMonth() + 1); }
+
+  db.collection('gemeentes').doc(gemeenteId).update({
+    subscription: {
+      status: 'active', tier: p.tier, plan: p.billing,
+      paidUntil: paidUntil.toISOString(), activatedAt: new Date().toISOString(),
+      method: 'eft', reference: p.reference
+    },
+    pendingEftPayment: firebase.firestore.FieldValue.delete()
+  }).then(function() {
+    showToast(af ? '✅ Intekening geaktiveer!' : '✅ Subscription activated!');
+  }).catch(function(err) {
+    showToast('❌ ' + err.message);
+  });
+}
+window.verifyEftPayment = verifyEftPayment;
+
+function dismissEftPayment(gemeenteId) {
+  var af = currentLang === 'af';
+  if (!confirm(af ? 'Verwerp hierdie EFT-rapport sonder om te aktiveer?' : 'Dismiss this EFT report without activating?')) return;
+  db.collection('gemeentes').doc(gemeenteId).update({
+    pendingEftPayment: firebase.firestore.FieldValue.delete()
+  }).catch(function(err) { showToast('❌ ' + err.message); });
+}
+window.dismissEftPayment = dismissEftPayment;
 
 function downloadPOPIATemplate() {
   const af = currentLang === 'af';
