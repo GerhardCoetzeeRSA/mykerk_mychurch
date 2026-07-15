@@ -3071,6 +3071,10 @@ window._firebaseSDKLoaded = true;
         </select>
       </div>
     </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Address" data-af="Adres">Adres</label>
+      <input class="form-input" type="text" id="newMemberAddress" data-af-placeholder="Straatadres, stad" data-en-placeholder="Street address, city" placeholder="Straatadres, stad">
+    </div>
 
     <!-- Gesin / Family section -->
     <div style="margin-top:18px;padding-top:14px;border-top:2px dashed var(--border)">
@@ -3092,6 +3096,62 @@ window._firebaseSDKLoaded = true;
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('addMemberModal')" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
       <button class="btn btn-primary" onclick="addMember()" data-en="Register Member" data-af="Registreer Lid">Registreer Lid</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="editMemberModal">
+  <div class="modal" style="max-width:600px;max-height:90vh;overflow-y:auto">
+    <div class="modal-header">
+      <div class="modal-title" data-en="Edit Member" data-af="Redigeer Lid">Redigeer Lid</div>
+      <button class="modal-close" onclick="closeModal('editMemberModal')">&#x2715;</button>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" data-en="Full Name" data-af="Volle Naam">Volle Naam</label>
+        <input class="form-input" type="text" id="editMemberName">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-en="Role" data-af="Rol">Rol</label>
+        <select class="form-select" id="editMemberRole">
+          <option value="member" data-en="Member" data-af="Lid">Lid</option>
+          <option value="deacon" data-en="Deacon" data-af="Diaken">Diaken</option>
+          <option value="elder" data-en="Elder" data-af="Ouderling">Ouderling</option>
+          <option value="minister" data-en="Minister" data-af="Predikant">Predikant</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="editMemberEmail">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-en="Phone" data-af="Telefoon">Telefoon</label>
+        <input class="form-input" type="text" id="editMemberPhone">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" data-en="Date of Birth" data-af="Geboortedatum">Geboortedatum</label>
+        <input class="form-input" type="date" id="editMemberDob">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-en="Gender" data-af="Geslag">Geslag</label>
+        <select class="form-select" id="editMemberGender">
+          <option value="" data-en="Select..." data-af="Kies...">Kies...</option>
+          <option value="m" data-en="Male" data-af="Manlik">Manlik</option>
+          <option value="f" data-en="Female" data-af="Vroulik">Vroulik</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-en="Address" data-af="Adres">Adres</label>
+      <input class="form-input" type="text" id="editMemberAddress" data-af-placeholder="Straatadres, stad" data-en-placeholder="Street address, city" placeholder="Straatadres, stad">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('editMemberModal')" data-en="Cancel" data-af="Kanselleer">Kanselleer</button>
+      <button class="btn btn-primary" onclick="saveMemberEdit()" data-en="Save Changes" data-af="Stoor Veranderinge">Stoor Veranderinge</button>
     </div>
   </div>
 </div>
@@ -3857,16 +3917,16 @@ async function loadSeedDataIfEmpty() {
     var todayMM = String(new Date().getMonth() + 1).padStart(2, '0');
     var todayDD = String(new Date().getDate()).padStart(2, '0');
     const seedLede = [
-      { id:0, name:'Ds. Pieter van der Berg', initials:'PvB', color:'#C9A84C', email:'ds.pieter@hoopgemeente.co.za', phone:'082 111 2222', role:'minister', status:'active', familyId:'fam-0', joinYear:2018, dob:'1968-03-12' },
-      { id:1, name:'Koos Joubert',            initials:'KJ',  color:'#2980B9', email:'koos@email.com',              phone:'076 543 2109', role:'elder',   status:'active', familyId:'fam-1', joinYear:2019, dob:'1975-01-22' },
-      { id:2, name:'Maria van Zyl',           initials:'MV',  color:'#E74C3C', email:'maria@email.com',             phone:'073 234 5678', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1990-' + todayMM + '-' + todayDD },
-      { id:3, name:'Themba Nkosi',            initials:'TN',  color:'#27AE60', email:'themba@email.com',            phone:'076 890 1234', role:'deacon',  status:'active', familyId:'fam-3', joinYear:2021, dob:'1983-09-30' },
-      { id:4, name:'Anna Nel',                initials:'AN',  color:'#9B59B6', email:'anna@email.com',              phone:'072 456 7890', role:'elder',   status:'active', familyId:'fam-4', joinYear:2019, dob:'1971-11-14' },
-      { id:5, name:'Sandra Botha',            initials:'SB',  color:'#E67E22', email:'sandra@email.com',            phone:'074 678 9012', role:'elder',   status:'active', familyId:'fam-5', joinYear:2020, dob:'1979-02-18' },
-      { id:6, name:'Priya Naidoo',            initials:'PN',  color:'#C0392B', email:'priya@email.com',             phone:'075 789 0123', role:'deacon',  status:'active', familyId:'fam-6', joinYear:2021, dob:'1987-08-03' },
-      { id:7, name:'Riaan van Wyk',           initials:'RvW', color:'#2C3E50', email:'riaan@email.com',             phone:'078 012 3456', role:'deacon',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1992-04-27' },
-      { id:8, name:'Susan Meyer',             initials:'SM',  color:'#16A085', email:'susan@email.com',             phone:'079 123 4567', role:'member',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1994-12-09' },
-      { id:9, name:'Pieter du Plessis',       initials:'PdP', color:'#8E44AD', email:'pieter@email.com',            phone:'081 234 5678', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'2001-05-16' },
+      { id:0, name:'Ds. Pieter van der Berg', initials:'PvB', color:'#C9A84C', email:'ds.pieter@hoopgemeente.co.za', phone:'082 111 2222', role:'minister', status:'active', familyId:'fam-0', joinYear:2018, dob:'1968-03-12', address:'14 Kerkstraat, Potchefstroom' },
+      { id:1, name:'Koos Joubert',            initials:'KJ',  color:'#2980B9', email:'koos@email.com',              phone:'076 543 2109', role:'elder',   status:'active', familyId:'fam-1', joinYear:2019, dob:'1975-01-22', address:'8 Wilgeboomlaan, Potchefstroom' },
+      { id:2, name:'Maria van Zyl',           initials:'MV',  color:'#E74C3C', email:'maria@email.com',             phone:'073 234 5678', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1990-' + todayMM + '-' + todayDD, address:'22 Bloekomstraat, Grimbeekpark' },
+      { id:3, name:'Themba Nkosi',            initials:'TN',  color:'#27AE60', email:'themba@email.com',            phone:'076 890 1234', role:'deacon',  status:'active', familyId:'fam-3', joinYear:2021, dob:'1983-09-30', address:'5 Van Riebeecklaan, Baillie Park' },
+      { id:4, name:'Anna Nel',                initials:'AN',  color:'#9B59B6', email:'anna@email.com',              phone:'072 456 7890', role:'elder',   status:'active', familyId:'fam-4', joinYear:2019, dob:'1971-11-14', address:'17 Proteastraat, Potchefstroom' },
+      { id:5, name:'Sandra Botha',            initials:'SB',  color:'#E67E22', email:'sandra@email.com',            phone:'074 678 9012', role:'elder',   status:'active', familyId:'fam-5', joinYear:2020, dob:'1979-02-18', address:'3 Jasmynweg, Mooirivier' },
+      { id:6, name:'Priya Naidoo',            initials:'PN',  color:'#C0392B', email:'priya@email.com',             phone:'075 789 0123', role:'deacon',  status:'active', familyId:'fam-6', joinYear:2021, dob:'1987-08-03', address:'41 Oewerlaan, Potchefstroom' },
+      { id:7, name:'Riaan van Wyk',           initials:'RvW', color:'#2C3E50', email:'riaan@email.com',             phone:'078 012 3456', role:'deacon',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1992-04-27', address:'12 Kastaiingstraat, Grimbeekpark' },
+      { id:8, name:'Susan Meyer',             initials:'SM',  color:'#16A085', email:'susan@email.com',             phone:'079 123 4567', role:'member',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1994-12-09', address:'12 Kastaiingstraat, Grimbeekpark' },
+      { id:9, name:'Pieter du Plessis',       initials:'PdP', color:'#8E44AD', email:'pieter@email.com',            phone:'081 234 5678', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'2001-05-16', address:'9 Doringboomstraat, Baillie Park' },
     ];
     seedLede.forEach(lid => {
       const ref = gemeentePath('lede').doc();
@@ -3941,20 +4001,20 @@ const roleBadgeClass = { elder:'badge-elder', deacon:'badge-deacon', member:'bad
 
 // ── MEMBERS DATA ──
 let members = [
-  { id:0, name:'Ds. Pieter van der Berg', initials:'PvB', color:'#C9A84C', email:'ds.pieter@hoopgemeente.co.za', phone:'082 111 2222', role:'minister', status:'active', familyId:'fam-0', joinYear:2018, dob:'1968-03-12' },
-  { id:1, name:'Koos Joubert',            initials:'KJ',  color:'#2980B9', email:'koos@email.com',              phone:'076 543 2109', role:'elder',   status:'active', familyId:'fam-1', joinYear:2019, dob:'1975-01-22' },
-  { id:2, name:'Maria van Zyl',           initials:'MV',  color:'#E74C3C', email:'maria@email.com',             phone:'073 234 5678', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1990-06-05' },
-  { id:3, name:'Themba Nkosi',            initials:'TN',  color:'#27AE60', email:'themba@email.com',            phone:'076 890 1234', role:'deacon',  status:'active', familyId:'fam-3', joinYear:2021, dob:'1983-09-30' },
-  { id:4, name:'Anna Nel',               initials:'AN',  color:'#9B59B6', email:'anna@email.com',              phone:'072 456 7890', role:'elder',   status:'active', familyId:'fam-4', joinYear:2019, dob:'1971-11-14' },
-  { id:5, name:'Sandra Botha',           initials:'SB',  color:'#E67E22', email:'sandra@email.com',            phone:'074 678 9012', role:'elder',   status:'active', familyId:'fam-5', joinYear:2020, dob:'1979-02-18' },
-  { id:6, name:'Priya Naidoo',           initials:'PN',  color:'#C0392B', email:'priya@email.com',             phone:'075 789 0123', role:'deacon',  status:'active', familyId:'fam-6', joinYear:2021, dob:'1987-08-03' },
-  { id:7, name:'Riaan van Wyk',          initials:'RvW', color:'#2C3E50', email:'riaan@email.com',             phone:'078 012 3456', role:'deacon',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1992-04-27' },
-  { id:8, name:'Susan Meyer',            initials:'SM',  color:'#16A085', email:'susan@email.com',             phone:'079 123 4567', role:'member',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1994-12-09' }, // gesin van Riaan
-  { id:9, name:'Pieter du Plessis',      initials:'PdP', color:'#8E44AD', email:'pieter@email.com',            phone:'081 234 5678', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'2001-05-16' },
-  { id:10,name:'Anita Pretorius',        initials:'AP',  color:'#D35400', email:'anita@email.com',             phone:'082 345 6789', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'1999-10-08' }, // gesin van Pieter
+  { id:0, name:'Ds. Pieter van der Berg', initials:'PvB', color:'#C9A84C', email:'ds.pieter@hoopgemeente.co.za', phone:'082 111 2222', role:'minister', status:'active', familyId:'fam-0', joinYear:2018, dob:'1968-03-12', address:'14 Kerkstraat, Potchefstroom' },
+  { id:1, name:'Koos Joubert',            initials:'KJ',  color:'#2980B9', email:'koos@email.com',              phone:'076 543 2109', role:'elder',   status:'active', familyId:'fam-1', joinYear:2019, dob:'1975-01-22', address:'8 Wilgeboomlaan, Potchefstroom' },
+  { id:2, name:'Maria van Zyl',           initials:'MV',  color:'#E74C3C', email:'maria@email.com',             phone:'073 234 5678', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1990-06-05', address:'22 Bloekomstraat, Grimbeekpark' },
+  { id:3, name:'Themba Nkosi',            initials:'TN',  color:'#27AE60', email:'themba@email.com',            phone:'076 890 1234', role:'deacon',  status:'active', familyId:'fam-3', joinYear:2021, dob:'1983-09-30', address:'5 Van Riebeecklaan, Baillie Park' },
+  { id:4, name:'Anna Nel',               initials:'AN',  color:'#9B59B6', email:'anna@email.com',              phone:'072 456 7890', role:'elder',   status:'active', familyId:'fam-4', joinYear:2019, dob:'1971-11-14', address:'17 Proteastraat, Potchefstroom' },
+  { id:5, name:'Sandra Botha',           initials:'SB',  color:'#E67E22', email:'sandra@email.com',            phone:'074 678 9012', role:'elder',   status:'active', familyId:'fam-5', joinYear:2020, dob:'1979-02-18', address:'3 Jasmynweg, Mooirivier' },
+  { id:6, name:'Priya Naidoo',           initials:'PN',  color:'#C0392B', email:'priya@email.com',             phone:'075 789 0123', role:'deacon',  status:'active', familyId:'fam-6', joinYear:2021, dob:'1987-08-03', address:'41 Oewerlaan, Potchefstroom' },
+  { id:7, name:'Riaan van Wyk',          initials:'RvW', color:'#2C3E50', email:'riaan@email.com',             phone:'078 012 3456', role:'deacon',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1992-04-27', address:'12 Kastaiingstraat, Grimbeekpark' },
+  { id:8, name:'Susan Meyer',            initials:'SM',  color:'#16A085', email:'susan@email.com',             phone:'079 123 4567', role:'member',  status:'active', familyId:'fam-7', joinYear:2022, dob:'1994-12-09', address:'12 Kastaiingstraat, Grimbeekpark' }, // gesin van Riaan
+  { id:9, name:'Pieter du Plessis',      initials:'PdP', color:'#8E44AD', email:'pieter@email.com',            phone:'081 234 5678', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'2001-05-16', address:'9 Doringboomstraat, Baillie Park' },
+  { id:10,name:'Anita Pretorius',        initials:'AP',  color:'#D35400', email:'anita@email.com',             phone:'082 345 6789', role:'member',  status:'active', familyId:'fam-8', joinYear:2023, dob:'1999-10-08', address:'9 Doringboomstraat, Baillie Park' }, // gesin van Pieter
   // Gesinslede (nie-aangemeld) — via gesin-inskrywing
-  { id:11,name:'Lize van Zyl (dogter)',  initials:'LZ',  color:'#E74C3C', email:'',                            phone:'',             role:'member',  status:'active', familyId:'fam-2', joinYear:2020, isDependent:true, dob:'2014-07-21' },
-  { id:12,name:'Johan van Zyl (man)',    initials:'JZ',  color:'#C0392B', email:'johan@email.com',             phone:'082 999 1111', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1988-01-30' },
+  { id:11,name:'Lize van Zyl (dogter)',  initials:'LZ',  color:'#E74C3C', email:'',                            phone:'',             role:'member',  status:'active', familyId:'fam-2', joinYear:2020, isDependent:true, dob:'2014-07-21', address:'22 Bloekomstraat, Grimbeekpark' },
+  { id:12,name:'Johan van Zyl (man)',    initials:'JZ',  color:'#C0392B', email:'johan@email.com',             phone:'082 999 1111', role:'member',  status:'active', familyId:'fam-2', joinYear:2020, dob:'1988-01-30', address:'22 Bloekomstraat, Grimbeekpark' },
 ];
 // Sorg dat daar altyd IEMAND se verjaarsdag vandag is in demo-modus,
 // ongeag wanneer die demo getoets word.
@@ -4035,7 +4095,7 @@ function renderMembers(list) {
     const tag = isSelf ? `<span style="font-size:10px;background:var(--gold);color:var(--white);border-radius:4px;padding:1px 6px;margin-left:6px">${af?'Ek':'Me'}</span>`
                        : isFamily ? `<span style="font-size:10px;background:#9B59B6;color:var(--white);border-radius:4px;padding:1px 6px;margin-left:6px">${af?'Gesin':'Family'}</span>` : '';
     return `
-    <div class="table-row" onclick="showToast('${af?"Oopmaak":"Opening"} ${m.name}...')">
+    <div class="table-row" ${currentUserRole === 'admin' ? `onclick="openEditMemberModal('${m.firestoreId}')"` : `onclick="showToast('${af?"Oopmaak":"Opening"} ${m.name}...')"`}>
       <div class="member-cell">
         <div class="member-avatar" style="background:${m.color}">${m.initials}</div>
         <div>
@@ -4048,7 +4108,9 @@ function renderMembers(list) {
       <div><span class="badge ${roleBadgeClass[m.role]}">${labels[m.role]}</span></div>
       <div><span class="badge badge-active">${af?'Aktief':'Active'}</span></div>
       <div class="row-actions">
-        <button class="icon-btn" onclick="event.stopPropagation();showToast('${af?"Redigeer":"Editing"} ${m.name}...')">&#9998;</button>
+        ${currentUserRole === 'admin'
+          ? `<button class="icon-btn" onclick="event.stopPropagation();openEditMemberModal('${m.firestoreId}')">&#9998;</button>`
+          : ''}
         <button class="icon-btn" onclick="event.stopPropagation();showToast('&#128222; ${m.name}')">&#128222;</button>
       </div>
     </div>`;
@@ -4254,6 +4316,7 @@ function addMember() {
     email: document.getElementById('newMemberEmail')?.value?.trim() || '',
     phone: document.getElementById('newMemberPhone')?.value?.trim() || '',
     dob:   document.getElementById('newMemberDob')?.value || '',
+    address: document.getElementById('newMemberAddress')?.value?.trim() || '',
     role: document.getElementById('newMemberRole')?.value || 'member',
     status: 'active',
     initials: name.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase(),
@@ -4299,12 +4362,63 @@ function addMember() {
   document.getElementById('newMemberEmail').value = '';
   document.getElementById('newMemberPhone').value = '';
   if (document.getElementById('newMemberDob')) document.getElementById('newMemberDob').value = '';
+  if (document.getElementById('newMemberAddress')) document.getElementById('newMemberAddress').value = '';
   document.getElementById('familyRows').innerHTML = '';
   document.getElementById('noFamilyMsg').style.display = '';
   familyRowCount = 0;
   closeModal('addMemberModal');
   showToast(msg);
 }
+
+// ── REDIGEER LID ──
+let editingMemberFirestoreId = null;
+function openEditMemberModal(firestoreId) {
+  var m = members.find(function(x) { return x.firestoreId === firestoreId; });
+  if (!m) { showToast(currentLang === 'af' ? 'Kon nie lid vind nie.' : 'Could not find member.'); return; }
+  editingMemberFirestoreId = firestoreId;
+  document.getElementById('editMemberName').value = m.name || '';
+  document.getElementById('editMemberRole').value = m.role || 'member';
+  document.getElementById('editMemberEmail').value = m.email || '';
+  document.getElementById('editMemberPhone').value = m.phone || '';
+  document.getElementById('editMemberDob').value = m.dob || '';
+  document.getElementById('editMemberGender').value = m.gender || '';
+  document.getElementById('editMemberAddress').value = m.address || '';
+  showModal('editMemberModal');
+}
+window.openEditMemberModal = openEditMemberModal;
+
+function saveMemberEdit() {
+  var af = currentLang === 'af';
+  if (!editingMemberFirestoreId) return;
+  var name = document.getElementById('editMemberName')?.value?.trim();
+  if (!name) { showToast(af ? "Voer asseblief die lid se naam in" : "Please enter the member's name"); return; }
+
+  var updates = {
+    name: name,
+    role: document.getElementById('editMemberRole')?.value || 'member',
+    email: document.getElementById('editMemberEmail')?.value?.trim() || '',
+    phone: document.getElementById('editMemberPhone')?.value?.trim() || '',
+    dob: document.getElementById('editMemberDob')?.value || '',
+    gender: document.getElementById('editMemberGender')?.value || '',
+    address: document.getElementById('editMemberAddress')?.value?.trim() || '',
+    initials: name.split(' ').map(function(w) { return w[0]; }).filter(Boolean).slice(0, 3).join('').toUpperCase(),
+    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+
+  if (!db || !currentGemeenteId) {
+    showToast(af ? 'Geen verbinding nie. Probeer later.' : 'No connection. Try later.');
+    return;
+  }
+
+  gemeentePath('lede').doc(editingMemberFirestoreId).update(updates).then(function() {
+    closeModal('editMemberModal');
+    showToast(af ? '✅ Lid se besonderhede bygewerk!' : "✅ Member's details updated!");
+    editingMemberFirestoreId = null;
+  }).catch(function(err) {
+    showToast('❌ ' + err.message);
+  });
+}
+window.saveMemberEdit = saveMemberEdit;
 function addEvent() {
   const title = document.getElementById('newEventTitle')?.value?.trim();
   if (!title) { showToast(currentLang==='af'?'Voer beskrywing van die geleentheid in':'Enter event title'); return; }
