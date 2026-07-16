@@ -5988,6 +5988,20 @@ window._switchSettingsPanel = function(panel, el) {
   initSubscriptionStatus();
   // Check if welcome overlay must be shown (first-time visitor)
   checkWelcomeOverlay();
+  // Wys altyd 'n werkende demo-basislyn onmiddellik by laai, ongeag of
+  // die persoon al voorheen die welkomskerm gesien het. Sodra werklike
+  // Firebase-aanmelding voltooi (indien enige), oorskryf loadAllData()
+  // dit met die regte rol en data.
+  // Vertraag met setTimeout sodat dit ná die VOLLE skrip klaar geloop
+  // het — sommige veranderlikes (bv. sermonsData) word eers verderaan
+  // in die lêer geïnitialiseer.
+  setTimeout(function() {
+    applyRoleToUI('admin');
+    renderMembers();
+    if (typeof checkTodayBirthdays === 'function') checkTodayBirthdays();
+    if (typeof renderAgeStats === 'function') renderAgeStats();
+    if (typeof renderSermons === 'function') renderSermons();
+  }, 0);
   // Show auth gate after brief delay to allow Firebase auth check
   // (prevents gate from blocking hamburger on page load)
   setTimeout(function() {
