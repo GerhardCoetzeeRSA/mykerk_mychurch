@@ -4922,6 +4922,16 @@ function startWelcomeSignin() {
 
 function dismissWelcome() {
   hideWelcomeOverlay();
+  // Demo-modus: wys die volle admin-ervaring met plaaslike voorbeelddata,
+  // sonder om regtig aan te meld. Al die skerms wat normaalweg eers ná
+  // aanmelding "aanskakel" (verjaarsdae, preke, ens.) moet hier ook
+  // eksplisiet geaktiveer word, aangesien loadAllData() nie deur hierdie
+  // pad loop nie.
+  applyRoleToUI('admin');
+  renderMembers();
+  if (typeof checkTodayBirthdays === 'function') checkTodayBirthdays();
+  if (typeof renderAgeStats === 'function') renderAgeStats();
+  if (typeof renderSermons === 'function') renderSermons();
   // Stay on dashboard in demo mode
   showToast(welcomeLang === 'af'
     ? 'Demo modus — Instellings > Registreer om jou gemeente te aktiveer'
