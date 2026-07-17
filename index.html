@@ -855,7 +855,7 @@ window._firebaseSDKLoaded = true;
       <div class="page-title" id="pageTitle">Dashboard</div>
       <div class="topbar-actions">
       <div id="fbStatus" style="font-size:11px;font-weight:600;padding:4px 10px;border:1px solid var(--border);border-radius:20px;cursor:default;display:flex;align-items:center;gap:4px">🔄 Verbind...</div>
-        <button class="btn btn-ghost" onclick="showModal('addMemberModal')" data-en="+ Add Member" data-af="+ Voeg Lid By">+ Voeg Lid By</button>
+        <button class="btn btn-ghost" onclick="openAddMemberModal()" data-en="+ Add Member" data-af="+ Voeg Lid By">+ Voeg Lid By</button>
         <button class="btn btn-primary" onclick="showModal('addEventModal')" data-en="+ New Event" data-af="+ Nuwe Geleentheid">+ Nuwe Geleentheid</button>
       </div>
     </div>
@@ -943,7 +943,7 @@ window._firebaseSDKLoaded = true;
             <option value="deacon" data-en="Deacon" data-af="Diaken">Diaken</option>
             <option value="member" data-en="Member" data-af="Lid">Lid</option>
           </select>
-          <button class="btn btn-primary" onclick="showModal('addMemberModal')" data-en="+ Add Member" data-af="+ Voeg Lid By">+ Voeg Lid By</button>
+          <button class="btn btn-primary" onclick="openAddMemberModal()" data-en="+ Add Member" data-af="+ Voeg Lid By">+ Voeg Lid By</button>
         </div>
         <div class="members-table">
           <div class="table-header">
@@ -1669,6 +1669,9 @@ window._firebaseSDKLoaded = true;
 
             <div class="settings-sidebar-section">
               <div class="settings-sidebar-section-label" data-en="Administration" data-af="Administrasie">Administrasie</div>
+              <div class="settings-nav-item" onclick="switchSettingsTab('tab-rolle', this)" data-admin-only>
+                <span class="settings-nav-icon">🏷️</span><span data-en="Manage Roles" data-af="Bestuur Rolle">Bestuur Rolle</span>
+              </div>
               <div class="settings-nav-item" onclick="switchSettingsTab('tab-import', this)" data-admin-only>
                 <span class="settings-nav-icon">📥</span><span data-en="Import Members" data-af="Voer Lede In">Voer Lede In</span>
               </div>
@@ -2063,6 +2066,36 @@ window._firebaseSDKLoaded = true;
                 Webwerf / Website: <a href="https://inforegulator.org.za" target="_blank">inforegulator.org.za ↗</a><br>
                 E-pos klagtes / Email complaints: <a href="/cdn-cgi/l/email-protection#de8e918e979f9db1b3aeb2bfb7b0aaad9eb7b0b8b1acbbb9abb2bfaab1acf0b1acb9f0a4bf"><span class="__cf_email__" data-cfemail="ca9a859a838b89a5a7baa6aba3a4beb98aa3a4aca5b8afadbfa6abbea5b8e4a5b8ade4b0ab">[email&#160;protected]</span></a><br>
                 Tel: 010 023 5207</p>
+              </div>
+            </div>
+
+            <!-- MANAGE ROLES TAB -->
+            <div class="settings-panel" id="tab-rolle">
+              <div class="settings-section-title" data-en="Manage Roles" data-af="Bestuur Rolle">Bestuur Rolle</div>
+              <div class="settings-section-desc" data-en="Create custom roles beyond the built-in ones, and assign more than one role to any member." data-af="Skep pasgemaakte rolle bo en behalwe die ingeboude rolle, en ken meer as een rol aan enige lid toe.">Skep pasgemaakte rolle bo en behalwe die ingeboude rolle, en ken meer as een rol aan enige lid toe.</div>
+
+              <div class="settings-card" style="margin-top:16px">
+                <div class="settings-card-title" data-en="Add a New Role" data-af="Voeg 'n Nuwe Rol By">Voeg 'n Nuwe Rol By</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" data-en="Role Name (Afrikaans)" data-af="Rolnaam (Afrikaans)">Rolnaam (Afrikaans)</label>
+                    <input class="form-input" type="text" id="newRoleNameAf" placeholder="bv. Lofprysingspan">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" data-en="Role Name (English)" data-af="Rolnaam (Engels)">Rolnaam (Engels)</label>
+                    <input class="form-input" type="text" id="newRoleNameEn" placeholder="e.g. Worship Team">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-en="Badge Color" data-af="Wapenkleur">Wapenkleur</label>
+                  <input type="color" id="newRoleColor" value="#2980B9" style="width:60px;height:36px;border:1px solid #ddd;border-radius:6px;cursor:pointer">
+                </div>
+                <button class="btn btn-primary" onclick="saveCustomRole()" data-en="+ Add Role" data-af="+ Voeg Rol By">+ Voeg Rol By</button>
+              </div>
+
+              <div class="settings-card" style="margin-top:16px">
+                <div class="settings-card-title" data-en="All Roles" data-af="Alle Rolle">Alle Rolle</div>
+                <div id="rolesManagementList"></div>
               </div>
             </div>
 
@@ -3039,12 +3072,8 @@ window._firebaseSDKLoaded = true;
         <input class="form-input" type="text" id="newMemberName" data-af-data-af-placeholder="Volle naam" data-en-placeholder="Full name" placeholder="Volle naam" data-en-placeholder="Full name" placeholder="Volle naam">
       </div>
       <div class="form-group">
-        <label class="form-label" data-en="Role" data-af="Rol">Rol</label>
-        <select class="form-select" id="newMemberRole">
-          <option value="member" data-en="Member" data-af="Lid">Lid</option>
-          <option value="deacon" data-en="Deacon" data-af="Diaken">Diaken</option>
-          <option value="elder" data-en="Elder" data-af="Ouderling">Ouderling</option>
-        </select>
+        <label class="form-label" data-en="Roles (select one or more)" data-af="Rolle (kies een of meer)">Rolle (kies een of meer)</label>
+        <div id="newMemberRoles" style="border:1px solid #ddd;border-radius:8px;padding:8px 12px"></div>
       </div>
     </div>
     <div class="form-row">
@@ -3112,13 +3141,8 @@ window._firebaseSDKLoaded = true;
         <input class="form-input" type="text" id="editMemberName">
       </div>
       <div class="form-group">
-        <label class="form-label" data-en="Role" data-af="Rol">Rol</label>
-        <select class="form-select" id="editMemberRole">
-          <option value="member" data-en="Member" data-af="Lid">Lid</option>
-          <option value="deacon" data-en="Deacon" data-af="Diaken">Diaken</option>
-          <option value="elder" data-en="Elder" data-af="Ouderling">Ouderling</option>
-          <option value="minister" data-en="Minister" data-af="Predikant">Predikant</option>
-        </select>
+        <label class="form-label" data-en="Roles (select one or more)" data-af="Rolle (kies een of meer)">Rolle (kies een of meer)</label>
+        <div id="editMemberRoles" style="border:1px solid #ddd;border-radius:8px;padding:8px 12px"></div>
       </div>
     </div>
     <div class="form-row">
@@ -3444,6 +3468,7 @@ function loadAllData() {
   if (typeof renderSermons === 'function') renderSermons();
   if (typeof loadAansoekeFromFirestore === 'function') loadAansoekeFromFirestore();
   if (typeof loadPendingEftPayments === 'function') loadPendingEftPayments();
+  if (typeof loadCustomRoles === 'function') loadCustomRoles();
 }
 
 function createGemeenteProfile(user) {
@@ -4029,14 +4054,136 @@ let members = [
 const ROL_NA_ROLE = { lid:'member', ouderling:'elder', diaken:'deacon', predikant:'minister' };
 const NAME_COLOR_PALETTE = ['#C9A84C','#2980B9','#E74C3C','#27AE60','#9B59B6','#E67E22','#C0392B','#2C3E50','#16A085','#8E44AD','#D35400'];
 function normalizeMember(raw) {
-  if (raw.name && raw.color && raw.initials && raw.role) return raw; // reeds in die regte vorm (demo/admin data)
   var name = raw.name || raw.naam || '—';
-  var role = raw.role || ROL_NA_ROLE[raw.rol] || raw.rol || 'member';
+  var roles;
+  if (Array.isArray(raw.roles) && raw.roles.length > 0) {
+    roles = raw.roles;
+  } else {
+    var singleRole = raw.role || ROL_NA_ROLE[raw.rol] || raw.rol || 'member';
+    roles = [singleRole];
+  }
+  if (raw.name && raw.color && raw.initials && Array.isArray(raw.roles)) return raw; // reeds in die regte vorm
   var initials = raw.initials || name.split(' ').map(function(w){ return w[0]; }).filter(Boolean).slice(0,2).join('').toUpperCase();
   var seed = (raw.firestoreId || name).split('').reduce(function(a,c){ return a + c.charCodeAt(0); }, 0);
   var color = raw.color || NAME_COLOR_PALETTE[seed % NAME_COLOR_PALETTE.length];
-  return Object.assign({}, raw, { name: name, role: role, initials: initials, color: color });
+  return Object.assign({}, raw, { name: name, roles: roles, role: roles[0], initials: initials, color: color });
 }
+
+// ── ROLLE-BESTUUR (ingeboude + pasgemaakte rolle) ──
+const BUILTIN_ROLES = [
+  { id:'minister', naamAf:'Predikant', naamEn:'Minister', kleur:'#C9A84C', builtin:true },
+  { id:'elder',    naamAf:'Ouderling', naamEn:'Elder',    kleur:'#2980B9', builtin:true },
+  { id:'deacon',   naamAf:'Diaken',    naamEn:'Deacon',   kleur:'#8E44AD', builtin:true },
+  { id:'member',   naamAf:'Lid',       naamEn:'Member',   kleur:'#7F8C8D', builtin:true }
+];
+let customRoles = [];
+
+function getAllRoles() {
+  return BUILTIN_ROLES.concat(customRoles);
+}
+function getRoleDef(roleId) {
+  return getAllRoles().find(function(r) { return r.id === roleId; }) ||
+    { id: roleId, naamAf: roleId, naamEn: roleId, kleur: '#7F8C8D', builtin: false };
+}
+function roleLabel(roleId) {
+  var af = currentLang === 'af';
+  var def = getRoleDef(roleId);
+  return af ? def.naamAf : def.naamEn;
+}
+
+function loadCustomRoles() {
+  if (!db || !currentGemeenteId) return;
+  const unsub = gemeentePath('instellings').doc('rolle').onSnapshot(function(doc) {
+    customRoles = (doc.exists && Array.isArray(doc.data().custom)) ? doc.data().custom : [];
+    populateRoleFilterOptions();
+    renderRolesManagementList();
+    renderMembers();
+  }, function(err) { console.warn('Rolle laai fout:', err.message); });
+  firestoreListeners.push(unsub);
+}
+
+function populateRoleFilterOptions() {
+  var sel = document.getElementById('memberRoleFilter');
+  if (!sel) return;
+  var af = currentLang === 'af';
+  var current = sel.value;
+  var allOpt = '<option value="" data-en="All Roles" data-af="Alle Rolle">' + (af ? 'Alle Rolle' : 'All Roles') + '</option>';
+  sel.innerHTML = allOpt + getAllRoles().map(function(r) {
+    return '<option value="' + r.id + '">' + (af ? r.naamAf : r.naamEn) + '</option>';
+  }).join('');
+  sel.value = current || '';
+}
+
+function renderRoleCheckboxes(containerId, selectedRoles) {
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  var af = currentLang === 'af';
+  selectedRoles = selectedRoles || [];
+  container.innerHTML = getAllRoles().map(function(r) {
+    var checked = selectedRoles.indexOf(r.id) !== -1 ? 'checked' : '';
+    return '<label style="display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer">' +
+      '<input type="checkbox" value="' + r.id + '" ' + checked + '>' +
+      '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + r.kleur + '"></span>' +
+      '<span>' + (af ? r.naamAf : r.naamEn) + '</span></label>';
+  }).join('');
+}
+
+function getCheckedRoles(containerId) {
+  var container = document.getElementById(containerId);
+  if (!container) return ['member'];
+  var checked = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(function(el) { return el.value; });
+  return checked.length > 0 ? checked : ['member'];
+}
+
+function saveCustomRole() {
+  var af = currentLang === 'af';
+  var naamAf = document.getElementById('newRoleNameAf')?.value?.trim();
+  var naamEn = document.getElementById('newRoleNameEn')?.value?.trim();
+  var kleur = document.getElementById('newRoleColor')?.value || '#7F8C8D';
+  if (!naamAf && !naamEn) {
+    showToast(af ? 'Voer asseblief \'n rolnaam in' : 'Please enter a role name');
+    return;
+  }
+  var id = 'custom-' + (naamEn || naamAf).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  if (getAllRoles().some(function(r) { return r.id === id; })) {
+    showToast(af ? 'Hierdie rol bestaan reeds.' : 'This role already exists.');
+    return;
+  }
+  var newRole = { id: id, naamAf: naamAf || naamEn, naamEn: naamEn || naamAf, kleur: kleur, builtin: false };
+  var updated = customRoles.concat([newRole]);
+  if (!db || !currentGemeenteId) { showToast(af ? 'Geen verbinding nie.' : 'No connection.'); return; }
+  gemeentePath('instellings').doc('rolle').set({ custom: updated }, { merge: true }).then(function() {
+    document.getElementById('newRoleNameAf').value = '';
+    document.getElementById('newRoleNameEn').value = '';
+    showToast(af ? '✅ Rol bygevoeg!' : '✅ Role added!');
+  }).catch(function(err) { showToast('❌ ' + err.message); });
+}
+window.saveCustomRole = saveCustomRole;
+
+function deleteCustomRole(id) {
+  var af = currentLang === 'af';
+  if (!confirm(af ? 'Verwyder hierdie rol? Lede wat dit het, sal dit verloor.' : 'Remove this role? Members who have it will lose it.')) return;
+  var updated = customRoles.filter(function(r) { return r.id !== id; });
+  gemeentePath('instellings').doc('rolle').set({ custom: updated }, { merge: true }).catch(function(err) { showToast('❌ ' + err.message); });
+}
+window.deleteCustomRole = deleteCustomRole;
+
+function renderRolesManagementList() {
+  var container = document.getElementById('rolesManagementList');
+  if (!container) return;
+  var af = currentLang === 'af';
+  container.innerHTML = getAllRoles().map(function(r) {
+    return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee">' +
+      '<div style="display:flex;align-items:center;gap:10px">' +
+      '<span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:' + r.kleur + '"></span>' +
+      '<span style="font-weight:600">' + (af ? r.naamAf : r.naamEn) + '</span>' +
+      (r.builtin ? '<span class="badge" style="background:#eee;color:#666;font-size:10px">' + (af ? 'Ingebou' : 'Built-in') + '</span>' : '') +
+      '</div>' +
+      (r.builtin ? '' : '<button class="btn btn-ghost" style="font-size:12px;padding:5px 10px;color:#e74c3c" onclick="deleteCustomRole(\'' + r.id + '\')">' + (af ? 'Verwyder' : 'Remove') + '</button>') +
+      '</div>';
+  }).join('');
+}
+window.renderRolesManagementList = renderRolesManagementList;
 
 // ── RENDER MEMBERS (rolbewus / role-aware) ──
 function getMyMemberRecord(list) {
@@ -4061,7 +4208,6 @@ function getVisibleMembers(list) {
 function renderMembers(list) {
   if (!list) list = members;
   const el = document.getElementById('membersList');
-  const labels = roleLabelsLang[currentLang] || roleLabelsLang.af;
   const visible = getVisibleMembers(list);
 
   // Show filter for all, hide Add Member button for non-admins
@@ -4105,7 +4251,10 @@ function renderMembers(list) {
       </div>
       <div class="cell-text">${m.email || '—'}</div>
       <div class="cell-text">${m.phone || '—'}</div>
-      <div><span class="badge ${roleBadgeClass[m.role]}">${labels[m.role]}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${(m.roles || [m.role || 'member']).map(rid => {
+        var rdef = getRoleDef(rid);
+        return `<span class="badge" style="background:${rdef.kleur}22;color:${rdef.kleur};border:1px solid ${rdef.kleur}55">${af ? rdef.naamAf : rdef.naamEn}</span>`;
+      }).join('')}</div>
       <div><span class="badge badge-active">${af?'Aktief':'Active'}</span></div>
       <div class="row-actions">
         ${currentUserRole === 'admin'
@@ -4124,7 +4273,7 @@ function filterMembers(q) {
       (m.name||'').toLowerCase().includes(q.toLowerCase()) || 
       (m.email||'').toLowerCase().includes(q.toLowerCase()) ||
       (m.phone||m.selfoon||'').toLowerCase().includes(q.toLowerCase());
-    var matchRole = !roleFilter || (m.role||m.rol||'').toLowerCase() === roleFilter.toLowerCase();
+    var matchRole = !roleFilter || (m.roles || [m.role || m.rol]).map(r => (r||'').toLowerCase()).includes(roleFilter.toLowerCase());
     return matchSearch && matchRole;
   });
   renderMembers(filtered);
@@ -4135,18 +4284,15 @@ function filterByRole(role) {
     renderMembers(members);
     return;
   }
-  // Map English dropdown values to Afrikaans Firebase values
-  var roleMap = { minister:'predikant', elder:'ouderling', deacon:'diaken', member:'lid' };
-  var afRole = roleMap[role] || role;
   renderMembers(members.filter(function(m) {
-    var mRole = (m.role || m.rol || '').toLowerCase();
-    return mRole === role.toLowerCase() || mRole === afRole.toLowerCase();
+    return (m.roles || [m.role || m.rol]).map(r => (r||'').toLowerCase()).includes(role.toLowerCase());
   }));
 }
 window.filterByRole = filterByRole;
 window.filterMembers = filterMembers;
 
 renderMembers(members);
+populateRoleFilterOptions();
 
 // ── CALENDAR ──
 (function buildCal() {
@@ -4241,6 +4387,7 @@ window._switchSettingsTab = function(tabId, navEl) {
   if (panel) panel.classList.add('active');
   if (navEl) navEl.classList.add('active');
   if (tabId === 'tab-subscription' && typeof updateSelectedPlanSummary === 'function') updateSelectedPlanSummary();
+  if (tabId === 'tab-rolle' && typeof renderRolesManagementList === 'function') renderRolesManagementList();
 }
 
 // ── MODALS ──
@@ -4305,6 +4452,12 @@ function addFamilyRow() {
   container.appendChild(div);
 }
 
+function openAddMemberModal() {
+  renderRoleCheckboxes('newMemberRoles', ['member']);
+  showModal('addMemberModal');
+}
+window.openAddMemberModal = openAddMemberModal;
+
 function addMember() {
   const name = document.getElementById('newMemberName')?.value?.trim();
   if (!name) { showToast(currentLang==='af'?'Voer asseblief die lid se naam in':"Please enter the member's name"); return; }
@@ -4317,7 +4470,8 @@ function addMember() {
     phone: document.getElementById('newMemberPhone')?.value?.trim() || '',
     dob:   document.getElementById('newMemberDob')?.value || '',
     address: document.getElementById('newMemberAddress')?.value?.trim() || '',
-    role: document.getElementById('newMemberRole')?.value || 'member',
+    role: getCheckedRoles('newMemberRoles')[0],
+    roles: getCheckedRoles('newMemberRoles'),
     status: 'active',
     initials: name.split(' ').map(w=>w[0]).join('').slice(0,3).toUpperCase(),
     color: ['#C9A84C','#2980B9','#27AE60','#E74C3C','#9B59B6','#E67E22','#16A085'][Math.floor(Math.random()*7)],
@@ -4377,7 +4531,7 @@ function openEditMemberModal(firestoreId) {
   if (!m) { showToast(currentLang === 'af' ? 'Kon nie lid vind nie.' : 'Could not find member.'); return; }
   editingMemberFirestoreId = firestoreId;
   document.getElementById('editMemberName').value = m.name || '';
-  document.getElementById('editMemberRole').value = m.role || 'member';
+  renderRoleCheckboxes('editMemberRoles', m.roles || [m.role || 'member']);
   document.getElementById('editMemberEmail').value = m.email || '';
   document.getElementById('editMemberPhone').value = m.phone || '';
   document.getElementById('editMemberDob').value = m.dob || '';
@@ -4393,9 +4547,11 @@ function saveMemberEdit() {
   var name = document.getElementById('editMemberName')?.value?.trim();
   if (!name) { showToast(af ? "Voer asseblief die lid se naam in" : "Please enter the member's name"); return; }
 
+  var roles = getCheckedRoles('editMemberRoles');
   var updates = {
     name: name,
-    role: document.getElementById('editMemberRole')?.value || 'member',
+    role: roles[0],
+    roles: roles,
     email: document.getElementById('editMemberEmail')?.value?.trim() || '',
     phone: document.getElementById('editMemberPhone')?.value?.trim() || '',
     dob: document.getElementById('editMemberDob')?.value || '',
@@ -5054,6 +5210,7 @@ function doMemberRegister() {
               naam: name,
               email: email,
               rol: 'lid',
+              roles: ['member'],
               gemeenteId: gemeenteId,
               churchName: churchName,
               gemeenteCode: code,
