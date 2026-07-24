@@ -999,6 +999,7 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "663597762476",
   appId: "1:663597762476:web:d2cc1ffe7f547e16721c09"
 };
+const SUPER_ADMIN_UID = 'rinnYZ2e7GSmzaEcbJ4RGBfzK592';
 
 // ════════════════════════════════════════════════════
 // STATE
@@ -1053,11 +1054,20 @@ function initFirebase() {
     db = firebase.firestore();
 
     firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
+      if (user && user.uid === SUPER_ADMIN_UID) {
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboard').style.display = 'block';
         setStatus('connected');
         loadAllData();
+      } else if (user) {
+        // Successfully authenticated, but NOT the platform owner — reject
+        // outright rather than showing a broken/empty dashboard.
+        firebase.auth().signOut();
+        const err = document.getElementById('loginError');
+        err.textContent = 'This account does not have Super Admin access.';
+        err.style.display = 'block';
+        document.getElementById('dashboard').style.display = 'none';
+        document.getElementById('loginScreen').style.display = 'flex';
       } else {
         document.getElementById('dashboard').style.display = 'none';
         document.getElementById('loginScreen').style.display = 'flex';
