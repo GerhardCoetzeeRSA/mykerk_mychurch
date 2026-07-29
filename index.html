@@ -964,15 +964,15 @@ window._firebaseSDKLoaded = true;
         <div class="cal-grid">
           <div class="cal-month">
             <div class="cal-header">
-              <div class="cal-month-name">Maart 2026</div>
+              <div class="cal-month-name" data-en="March 2026" data-af="Maart 2026">Maart 2026</div>
               <div style="display:flex;gap:6px">
                 <button class="icon-btn">&#8249;</button>
                 <button class="icon-btn">&#8250;</button>
               </div>
             </div>
             <div class="cal-days-header">
-              <div class="cal-day-label">So</div><div class="cal-day-label">Ma</div><div class="cal-day-label">Di</div>
-              <div class="cal-day-label">Wo</div><div class="cal-day-label">Do</div><div class="cal-day-label">Vr</div><div class="cal-day-label">Sa</div>
+              <div class="cal-day-label" data-en="Su" data-af="So">So</div><div class="cal-day-label" data-en="Mo" data-af="Ma">Ma</div><div class="cal-day-label" data-en="Tu" data-af="Di">Di</div>
+              <div class="cal-day-label" data-en="We" data-af="Wo">Wo</div><div class="cal-day-label" data-en="Th" data-af="Do">Do</div><div class="cal-day-label" data-en="Fr" data-af="Vr">Vr</div><div class="cal-day-label" data-en="Sa" data-af="Sa">Sa</div>
             </div>
             <div class="cal-days" id="calDays"></div>
           </div>
@@ -4307,7 +4307,8 @@ populateRoleFilterOptions();
   for (let d = 1; d <= 31; d++) {
     const isToday = d === 11;
     const hasEvent = eventDays.includes(d);
-    html += `<div class="cal-day${isToday?' today':''}${hasEvent?' has-event':''}" onclick="showToast('${d} Maart 2026')">${d}</div>`;
+    const monthLabel = currentLang === 'af' ? 'Maart 2026' : 'March 2026';
+    html += `<div class="cal-day${isToday?' today':''}${hasEvent?' has-event':''}" onclick="showToast('${d} ${monthLabel}')">${d}</div>`;
   }
   days.innerHTML = html;
 })();
